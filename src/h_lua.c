@@ -52,7 +52,7 @@ h_lua_loadfile(lua_State *L)
 
 	if (luaL_loadfile(L, filename)) {
 		die_with_message("Cannot load file '%s': %s", filename,
-				 lua_tostring(L, -1));
+		                 lua_tostring(L, -1));
 	}
 
 	return 1;
