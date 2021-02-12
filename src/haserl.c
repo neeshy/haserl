@@ -79,7 +79,7 @@
 
 /* Refuse to disable the subshell */
 #ifndef SUBSHELL_CMD
-#define SUBSHELL_CMD "/bin/sh"
+#define SUBSHELL_CMD "lua"
 #endif
 
 haserl_t global;
@@ -615,7 +615,7 @@ main(int argc, char *argv[])
 
 	/* populate the function pointers based on the shell selected */
 	if (strcmp(global.shell, "lua") && strcmp(global.shell, "luac")) {
-		die_with_message("Bash shell is not enabled.");
+		die_with_message("Invalid shell specified.");
 	} else {
 		global.var_prefix = "FORM.";
 		global.nul_prefix = "ENV.";
