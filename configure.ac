@@ -103,7 +103,7 @@ case $enable_subshell in
 		;;
 	esac
 
-AC_DEFINE_UNQUOTED( [SUBSHELL_CMD], "$enable_subshell", 
+AC_DEFINE_UNQUOTED( [SUBSHELL_CMD], "$enable_subshell",
 	[the subshell to start up])
 
 CFLAGS="$CFLAGS -Wall"
@@ -113,7 +113,7 @@ AC_CONFIG_FILES([Makefile
 		doc/Makefile
 		])
 
-AC_OUTPUT 
+AC_OUTPUT
 
 dnl  report configuration
 AC_MSG_RESULT([

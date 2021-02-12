@@ -159,7 +159,7 @@ mime_var_putenv(list_t *env, mime_var_t *obj)
 	if (obj->name) {
 		/* For file uploads, this creates FORM_foo=tempfile_pathspec.
 		 * That name can be overwritten by a subsequent foo=/etc/passwd,
-		 * for instance.  This code block is depricated for FILE uploads
+		 * for instance. This code block is depricated for FILE uploads
 		 * only. (it is still valid for non-form uploads */
 		buffer_add(&(obj->value), "", 1);
 		buffer_add(&buf, obj->name, strlen(obj->name));
@@ -171,7 +171,7 @@ mime_var_putenv(list_t *env, mime_var_t *obj)
 		buffer_reset(&buf);
 	}
 	if (obj->filename) {
-		/* This creates HASERL_foo_path=tempfile_pathspec.  */
+		/* This creates HASERL_foo_path=tempfile_pathspec. */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_path=", 6);
 		buffer_add(&buf, (char *)obj->value.data,
@@ -245,7 +245,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 		new_action.sa_flags = 0;
 		sigaction(SIGPIPE, &new_action, NULL);
 	}
-	/* control should get to this point only in the parent.  */
+	/* control should get to this point only in the parent. */
 } /* end mime_exec */
 
 void
@@ -271,7 +271,7 @@ mime_var_open_target(mime_var_t *obj)
 		ok = 0;
 	}
 
-	/* reuse the name as a fifo if we have a handler.  We do this
+	/* reuse the name as a fifo if we have a handler. We do this
 	 * because tempnam uses TEMPDIR if defined, among other bugs
 	 */
 	if ((ok) && global.uploadhandler) {

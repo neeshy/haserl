@@ -19,13 +19,12 @@
  * ------------------------------------------------------------------------ */
 
 /* This program loads the source file, and then uses lua_dump to output it
- * to a c const char array.  Because lua_dump is used instead of the internal
- * luaU_dump function, debugging info is in the output array.   If you want
+ * to a c const char array. Because lua_dump is used instead of the internal
+ * luaU_dump function, debugging info is in the output array. If you want
  * to compile the array without debugging information, first use luac on the
  * .lua source, and then run lua2c on that output:
  * luac -s -o foo haserl_lualib.lua
- * lua2c haserl_lualib foo >haserl_lualib.inc
- */
+ * lua2c haserl_lualib foo >haserl_lualib.inc */
 
 #if HAVE_CONFIG_H
 #include <config.h>

@@ -1,6 +1,6 @@
 2015-03-11
 	0.9.35
-	*	Geert Jan de Groot reported a possible segfault if CONTENT_TYPE is not 
+	*	Geert Jan de Groot reported a possible segfault if CONTENT_TYPE is not
 		specified.  This bug was introduced in 0.9.33
 
 2015-02-15
@@ -8,17 +8,17 @@
 	*	Fixes for Lua 5.3 compatibility
 	*	Move sys/fnctl.h to fnctl.h
 	*	Victor Cook sent in a patch to rfc2388.c -
-		"In rfc2388.c rfc2388_handler() during processing of the header information, 
-		if a buffer read falls on the point where the next character is crlf it 
-		results in the header reading to be terminated early. When the error occurs 
-		the results are unpredictable and depend on what is then incorrectly interpreted.  
+		"In rfc2388.c rfc2388_handler() during processing of the header information,
+		if a buffer read falls on the point where the next character is crlf it
+		results in the header reading to be terminated early. When the error occurs
+		the results are unpredictable and depend on what is then incorrectly interpreted.
 
-		The chance of a failure depends on the length and complexity of the header data, 
+		The chance of a failure depends on the length and complexity of the header data,
 		but can become very significant."
 
 2014-06-07
 	0.9.33
-	*	Fix various security vulnerabilities - most serious is a 
+	*	Fix various security vulnerabilities - most serious is a
 		  Heap Overflow Vulnerability in sliding_buffer.c
 		Reported by Stephen Röttger
 	* 	Allow PUT and DELETE method (But prefix is still POST/GET)
@@ -38,7 +38,7 @@
 
 2013-27-06
 	0.9.30
-	* 	The Mayhem Team of CMU found an undisclosed segfault when the first 
+	* 	The Mayhem Team of CMU found an undisclosed segfault when the first
 		command-line argument is '' or "" (null-quoted string).  Chow Loong Jin
 		supplied a patch.
 	*	Natanael Copa supplied a patch to rename the deprecated string.gfind
@@ -49,21 +49,21 @@
 	*	Jan Rome reported an off-by one error in handling array input (formvar[])
 	*	Chow Loong Jin reported multiple header files with no copyright information
 		This is part of the process to get haserl into Ubuntu.
-	*	Chow Loong Jin noticed haserl_lua.inc is no longer necessary in the 
+	*	Chow Loong Jin noticed haserl_lua.inc is no longer necessary in the
 		tarball  (sf id 3298883)
-	* 	Oliver Metz noted that haserl aborted on SIGPIPE from a custom upload 
-		handler.  Haserl now ignores the signal.  
+	* 	Oliver Metz noted that haserl aborted on SIGPIPE from a custom upload
+		handler.  Haserl now ignores the signal.
 		(Example: uploading to a 'tar xvf' handler)
 		text	   data	    bss	    dec	    hex	filename
 		19637	    836	    176	  20649	   50a9	src/haserl
 
 2011-03-25
 	0.9.28
-	*	Lua script did not have variables in the correct tables (Mixure for 
+	*	Lua script did not have variables in the correct tables (Mixure for
 		FORM. and POST_, GET_ They should now be in the correct table format
 	* 	Natanael Copa provided patches to compile lua2c if necessary
-	*	Chow Loong Jin proposes using printf '%s' instead of echo -n; 
-		no reason not to. 
+	*	Chow Loong Jin proposes using printf '%s' instead of echo -n;
+		no reason not to.
 		text	   data	    bss	    dec	    hex	filename
 		28598	    948	    176	  29722	   741a	src/haserl
 		
@@ -100,18 +100,18 @@
  		18949	    820	    172	  19941	   4de5	haserl
 2008-04-14
 	0.9.24
-	*	haserl.c - myputenv caused a segfault when a variable without 
+	*	haserl.c - myputenv caused a segfault when a variable without
 		an = (assignment) was passed.  (Scott)
 	*	doc/haserl.1 - Misc typos fixed (Scott)
-	*	scott's bash-extensions are included if configured with 
+	*	scott's bash-extensions are included if configured with
 		--enable-bash-extensions
-	*	running haserl with no args now tells you if lua or 
+	*	running haserl with no args now tells you if lua or
 		the bash extensions are enabled.
 	* 	configure.ac - FORM_ now hardcoded
 	*	tests/* - beginnings of unit tests (make check)
 	*	haserl.c - varibles now stored as FORM_ + GET_, POST_, COOKIE_
 		(scott) - WIP - need to clean up the putenv so that only one
-		copy is saved in the host, and the child gets all the 
+		copy is saved in the host, and the child gets all the
 		duplicates
    		text	   data	    bss	    dec	    hex	filename
   		18519	    824	    172	  19515	   4c3b	src/haserl
@@ -123,7 +123,7 @@
 	*	haserl.c - myputenv makes a newline delimited "array" out
 		of variables that end in [].  (php-style for multi-selects)
 	 	Lua variables will have same behavior - they are not treated
-		as true arrays yet. (WIP - need to handle the env variables 
+		as true arrays yet. (WIP - need to handle the env variables
 		as abstracts until subshell startup for this to work)
 		text	   data	    bss	    dec	    hex	filename
 		18237       820     128   19185    4af1 src/haserl
@@ -166,14 +166,14 @@
 	*	configure.ac - Don't require dl on BSD/OSX (N Copa)
 	*	h_script.c - Don't switch <% %> <? ?> in include files.  Check
 		only on the original script (Hinko Kocevar)
-	*	Workaround for cross-compiling haserl_lualib.inc (reported by 
+	*	Workaround for cross-compiling haserl_lualib.inc (reported by
 		Andreas Schultz)
-	*	haserl.* - add extern definitions to shell function pointers 
+	*	haserl.* - add extern definitions to shell function pointers
 		so uClinux (gcc 3.2.3) can compile haserl (glhs329 at gmail)
    		 text	   data	    bss	    dec	    hex	filename
 		17584	    784	    128	  18496	   4840	src/haserl
-2007-07-23 
-	0.9.18 
+2007-07-23
+	0.9.18
 	*	h_script.c, lua2c.c - Fixed two typos that prevented
 		compilation.
 	*	configure.ac patch to compile with pkg-config, if found
@@ -181,10 +181,10 @@
 2007-07-22
 	0.9.17
 	*	h_bash.c - rc3 commented out the signal call, so an <? exit ?>
-		would cause the script to hang. 
+		would cause the script to hang.
 	*	h_bash.c - don't wait for the echo statement to signal end of
 		script.   Do a waitpid instead. This means fd 5 is now not
-		used. 
+		used.
 	*	*lua.* -  precompiled lua support, with reorganization of all
 		lua source code (Robin Haberkorn)
 	*	configure.ac / makefile.am - Ability to turn off
@@ -239,8 +239,8 @@
 	*	h_lua.c h_bash.c  - don't add extra linebreaks in echo or eval commands.
 		use "; " instead
 	*	haserl.c - fixed --accept-all (was --Accept-all)
-	*	h_lua.* h_bash.* haserl.h - now prints the name of the file when 
-		reporting syntax or runtime error.  Previously, the script was an 
+	*	h_lua.* h_bash.* haserl.h - now prints the name of the file when
+		reporting syntax or runtime error.  Previously, the script was an
 		anonymous string
 	*	haserl.c - removed debug message in file-upload unlink code. (oops)
 	*	h_script.c - shell_exec runs "code; ", not "code\n"
@@ -250,18 +250,18 @@
 	0.9.13
 	*	Public Release
 2006-10-28
-	0.9.13_rc [major code refactoring] 
+	0.9.13_rc [major code refactoring]
 	*	haserldb removed
 	* 	haserll removed; lua code is now part of the main haserl program.
-	*	<?if <?el <?fi <?ab tags removed.  
+	*	<?if <?el <?fi <?ab tags removed.
 	*	removed the extras directory
-	* 	changed license to GPL2 only 
+	* 	changed license to GPL2 only
 2006-09-26
 	0.9.12
-	*	haserl.c Alexander Bigga pointed out the accept-all / accept-none short 
+	*	haserl.c Alexander Bigga pointed out the accept-all / accept-none short
 		options were wrong, and the optional argument for -u is a gnu extension.
-	*	h_luascript.c if a form variable has a number component, force the variable 
-		to be numeric ->  foo.1.var = foo[1].var, not foo["1"].var 
+	*	h_luascript.c if a form variable has a number component, force the variable
+		to be numeric ->  foo.1.var = foo[1].var, not foo["1"].var
 2006-09-12
 	0.9.11
 	*	a bash shell cannot be opened until AFTER all the environment variables are
@@ -270,7 +270,7 @@
 2006-09-09
 	0.9.10_rc2
 	*	Special linking options so that lua "require" will work when linking c libraries
-	*	remove <?if <?el <?fi from lua shell 
+	*	remove <?if <?el <?fi from lua shell
 2006-09-06
 	0.9.10_rc1
 	*	html outputting now uses io.write with [[ ]], so the html function
@@ -291,14 +291,14 @@
 	*	Public Release (no changes from rc1)
 2006-07-31
 	0.9.9_rc1
-	*	haserl.c remove check for LABEL and GOTO tags (they don't exist, and 
+	*	haserl.c remove check for LABEL and GOTO tags (they don't exist, and
 		cause segfaults on secure OS'es)
 	0.9.9-rc0
 	*	haserldb.c - added strftime strptime functions
 2006-05-19
 	0.9.8	version
 	*	haserl.c - unlink all uploaded files at the end of the script
-	*	haserl.c - --upload-none option added to prevent parsing stdin as 
+	*	haserl.c - --upload-none option added to prevent parsing stdin as
 		web server content (for haserl scripts called from haserl scripts)
 	*	haserl.c - if its a GET request and --accept-all is set, then silently
 		ignore the post content if CONTENT_LENGTH is not set.
@@ -317,18 +317,18 @@
 		argc_argv now passes a argv_t pointer around; which includes
 		an indicator if the string was quoted or not.   This allows
 		keywords to be used as literal strings:
-			haserldb \"fetch"\ username store 
+			haserldb \"fetch"\ username store
 	*	Large chunks of haserl were refactored.
-	*	haserl.c, h_script.c 
+	*	haserl.c, h_script.c
 		If an HTML token is entirely whitespace, output is suppressed.
 		The "Verbatim" flag is no longer supported.
-	*	h_subshell.c 
+	*	h_subshell.c
 		HTML tokens are passed as "echo -n" commands, so the "debug"
 		option can be used to actually print out the shell script that would
 		be used.
  		All tokens are passed to the subshell, and then the parent haserl waits
 		for the script to end.  This means that the <?if <?el <?fi tokens are
-		no longer needed, although still supported (for now).  
+		no longer needed, although still supported (for now).
 		 <? while ... ?>stuff<? do ?>
 		is now possible.
 		
@@ -337,7 +337,7 @@
 	*	haserldb.c - sort, rsort, merge and split functions
 	*	haserl.c - fix off-by-one error on include files (included
 		files were incorrectly truncated)
-	*	silently rejects argv beyond argv[2] 
+	*	silently rejects argv beyond argv[2]
 		http://192.168.0.1/test.cgi?--upload-limit%3d2059&foo%3dbar
 		should not not reset the upload limit.   This duplicates
 		0.8.0 behaviour, broke in 0.9.3
@@ -347,7 +347,7 @@
 		the new token in getCommandString - fixed
 2005-11-04	
 	0.9.3	version
-	*	haserl.c - command-line parsing now uses optarg - "haserl foo.txt" 
+	*	haserl.c - command-line parsing now uses optarg - "haserl foo.txt"
 		now works; new command-line options supported.
 	*	haserl.c new command-line options (upload-limit, verbatim,
 		etc)
@@ -366,7 +366,7 @@
 		login.cgi, index.cgi, loginlib.sh, haserldb-howto.txt
 	*	haserldb.c - RAM-db is now live throughout a run, so
 		the RAM-db is now extra storage through run of system
-	*	Some language keyword changes to make the language a 
+	*	Some language keyword changes to make the language a
 		little more orthogonal - repl->sub, clear->empty
 2005-10-25	
 	0.9.1	version (not released)
@@ -378,7 +378,7 @@
 	0.9.0	version
 	*	added haserldb (common.* lists.* sha256.* haserldb.*)
 	*	An example of using haserldb is in the extras directory:
-		(haserldb-howto.txt, loginlib.sh, login.cgi) 
+		(haserldb-howto.txt, loginlib.sh, login.cgi)
 2005-03-22 	
 	0.8.0	version
 	* 	configure.ac - Remove check for malloc, as it fails
@@ -393,9 +393,9 @@
 	*  extras/* - tutorial removed; buttons and a few examples moved here
 	*  doc/haserl.1 - a real manual page
 2004-11-10	
-	0.7.2	version 
+	0.7.2	version
 	* haserl.c - misc fixes from Eric Titl to compile with gcc 2.95.3
-		and glibc 2.0.7  
+		and glibc 2.0.7
 		(include SIGNAL_H for sigchild; move variable declaration to
 		top of function in ReadMimeEncodedInput)
 2004-11-02	
@@ -423,7 +423,7 @@
 2004-10-06	
 	0.5.1	version
 	* haserl.c - <? (run) tags can now be delimited by
-		space, tab, or newline.  This means <?\n will 
+		space, tab, or newline.  This means <?\n will
 		now work correctly.
 2004-09-28	
 	0.5.0	version
@@ -432,19 +432,19 @@
 		parsing is done.
 2004-09-27	
 	0.4.3	version
-	* haserl.c - "abort" doesn't follow the standard of 2 chars 
+	* haserl.c - "abort" doesn't follow the standard of 2 chars
 	(if/el/fi); changed to "ab"
 2004-09-24	
 	0.4.2 version
 	* haserl.c/.h: Added the "abort" directive.
 	* tutorial/language.cgi.in - documented the abort function
-	* tutorial/source.cgi.in - added the code to make the "source" 
+	* tutorial/source.cgi.in - added the code to make the "source"
 		link at the bottom of each web page work.
 2004-09-02	
 	0.4.1 version
 	* haserl.c: The name of the tempfile created by a mime-upload
 		was not stored in the variable by that name.  Fixed.
-	  
+	
 2004-07-25	
 	0.4.0 version ------------------------------------
 
@@ -465,21 +465,21 @@
 		Added code to specify maximum upload size, to prevent
 		20GB file uploads.   Current compile default is 2MB
 
-	* Makefile.am:  
-		Make -Wall -O2 CFLAG defaults 
+	* Makefile.am:
+		Make -Wall -O2 CFLAG defaults
 
 
 2004-07-14	
-	* Added autoconf/automake support 
+	* Added autoconf/automake support
 	
 	* webconf.c: added code to support and use autoconf/automake constructs,
 		
 		added code to protect from uploads of arbitrary size (compile-time
 		setting up MAX_UPLOAD_MB)
 		
-		added logic to allow a "zero-length" upload to proceed - its 
-		/possible/ someone does a post without any form elements 
+		added logic to allow a "zero-length" upload to proceed - its
+		/possible/ someone does a post without any form elements
 		selected.	
 
 0.2.0
-	Initial release.  
+	Initial release.

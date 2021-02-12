@@ -37,8 +37,8 @@ void *xrealloc(void *buf, size_t size);
 /*
  * split a string into an argv[] array, and return the number of elements.
  * Warning:  Overwrites instr with nulls (to make ASCIIZ strings) and mallocs
- * space for the argv array.  The argv array will point to the offsets in
- * instr where the elements occur.  The calling function must free the argv
+ * space for the argv array. The argv array will point to the offsets in
+ * instr where the elements occur. The calling function must free the argv
  * array, and should do so before freeing instr memory.
  *
  * If comment points to a non-null string, then any character in the string
@@ -296,7 +296,7 @@ main(){
 	strcpy(string,
 	       "\\This\\ string will be  '' \"separated into\"  \"'\\\"'\" ' 16 ' elements.\n"
 	       "' including a multi-line\n"
-	       "element' with a comment.  # This should not be parsed\n"
+	       "element' with a comment. # This should not be parsed\n"
 	       ";Nor should this\n" "The End.");
 
 	argc = argc_argv(string, &argv, "#;");

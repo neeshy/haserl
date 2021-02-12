@@ -2,7 +2,7 @@ To build this package, you will need the autoconf/automake tools.
 
 BUILDING FROM SVN SOURCES
 --------------------------
-aclocal && autoheader && automake -a && autoconf 
+aclocal && autoheader && automake -a && autoconf
 
 
 BUILDING HASERL (without lua)
@@ -27,7 +27,7 @@ If lua 5.2.x dev libraries are already installed, then
 make
 make install
 
-If you don't have the lua dev libraries, or you have 
+If you don't have the lua dev libraries, or you have
 a different version then:
 
 tar zxvf lua-5.x.x.tar.gz
@@ -38,4 +38,3 @@ cp src/* /tmp/lua
 cd <haserl path>
 ./configure --with-lua=/tmp/lua --with-lua-headers=/tmp/lua
 make
-

@@ -1,6 +1,6 @@
 PACKAGE=@PACKAGE_TARNAME@
 
 LIBS=
-SUBDIRS = src doc 
+SUBDIRS = src doc
 docdir=$(datadir)/$(PACKAGE)
 datarootdir=@datarootdir@

@@ -52,8 +52,8 @@ die_with_error(char *msg)
 	exit(-1);
 }
 
-/* print an error message and die.  If sp or where are non-null pointers, then
- * a line is added saying where in the script buffer the error occured.  If
+/* print an error message and die. If sp or where are non-null pointers, then
+ * a line is added saying where in the script buffer the error occured. If
  * there's a request method, then http headers are added. */
 void
 die_with_message(const char *s, ...)

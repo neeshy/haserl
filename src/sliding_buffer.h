@@ -24,7 +24,7 @@
 /* sliding buffer structure */
 typedef struct {
 	int            fh;                     /* the input filehandle for the buffer */
-	unsigned char *buf;                    /* pointer to the buffer  */
+	unsigned char *buf;                    /* pointer to the buffer */
 	unsigned char *ptr;                    /* start positon (used internally) */
 	unsigned char *segment;                /* the start position of this segment */
 	size_t         len;                    /* length of this segment */

@@ -38,9 +38,8 @@
 #endif
 #include "h_error.h"
 
-/* this is not a mistake.  We are including the
- * definition of the lualib here
- */
+/* this is not a mistake. We are including the
+ * definition of the lualib here */
 #include "haserl_lualib.inc"
 
 lua_State *lua_vm = NULL;
@@ -70,7 +69,7 @@ lua_common_putenv(char *str)
 void
 lua_common_setup(char *shell, list_t *env)
 {
-	/*  create a lua instance */
+	/* create a lua instance */
 	lua_vm = luaL_newstate();
 	luaL_openlibs(lua_vm);
 

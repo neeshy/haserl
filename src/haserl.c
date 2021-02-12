@@ -227,7 +227,7 @@ myputenv(list_t *cur, char *str, char *prefix)
 		}
 	} /* end if matching key */
 
-	/* add the value to the end of the chain  */
+	/* add the value to the end of the chain */
 	cur = xmalloc(sizeof(list_t));
 	cur->buf = entry;
 	if (prev != NULL) {

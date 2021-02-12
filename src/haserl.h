@@ -21,7 +21,7 @@
 #ifndef _HASERL_H
 #define _HASERL_H
 
-/* Just a silly construct to contain global variables    */
+/* Just a silly construct to contain global variables */
 typedef struct {
 	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none) */
 	char          *shell;          /* The shell we use                           */
