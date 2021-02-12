@@ -1,41 +1,41 @@
-/* --------------------------------------------------------------------------
-* Copyright 2003-2011 (inclusive) Nathan Angelacos
-*                   (nangel@users.sourceforge.net)
-*
-*   This file is part of haserl.
-*
-*   Haserl is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License version 2,
-*   as published by the Free Software Foundation.
-*
-*   Haserl is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
-*
-* ------------------------------------------------------------------------ */
+/* ---------------------------------------------------------------------------
+ * Copyright 2003-2011 (inclusive) Nathan Angelacos
+ *                   (nangel@users.sourceforge.net)
+ *
+ *   This file is part of haserl.
+ *
+ *   Haserl is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License version 2,
+ *   as published by the Free Software Foundation.
+ *
+ *   Haserl is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ------------------------------------------------------------------------ */
 
 #ifndef _HASERL_H
-#define _HASERL_H       1
+#define _HASERL_H
 
 /* Just a silly construct to contain global variables    */
 typedef struct {
-	unsigned long	uploadkb;       /* how big an upload do we allow (0 for none)*/
-	char *		shell;          /* The shell we use                          */
-	char *		uploaddir;      /* where we upload to                        */
-	char *		uploadhandler;  /* a handler for uploads		     */
-	char *		var_prefix;     /* what name we give to FORM variables	     */
-	char *		get_prefix;     /* what name we give to POST variables	     */
-	char *		post_prefix;    /* what name we give to POST variables       */
-	char *		cookie_prefix;  /* what name we give to COOKIE variables     */
-	char *		nul_prefix;     /* what name we give to environment variables*/
-	char *		haserl_prefix;  /* what name we give to HASERL variables     */
-	int		acceptall;      /* true if we'll accept POST data on
-	                                 *      GETs and vice versa 		     */
-	int		silent;         /* true if we never print errors             */
+	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none)*/
+	char          *shell;          /* The shell we use                          */
+	char          *uploaddir;      /* where we upload to                        */
+	char          *uploadhandler;  /* a handler for uploads                     */
+	char          *var_prefix;     /* what name we give to FORM variables       */
+	char          *get_prefix;     /* what name we give to GET variables        */
+	char          *post_prefix;    /* what name we give to POST variables       */
+	char          *cookie_prefix;  /* what name we give to COOKIE variables     */
+	char          *nul_prefix;     /* what name we give to environment variables*/
+	char          *haserl_prefix;  /* what name we give to HASERL variables     */
+	int            acceptall;      /* true if we'll accept POST data on
+	                                *      GETs and vice versa                  */
+	int            silent;         /* true if we never print errors             */
 } haserl_t;
 
 extern haserl_t global;
@@ -62,11 +62,4 @@ void assignGlobalStartupValues(void);
 void unlink_uploadlist(void);
 int main(int argc, char *argv[]);
 
-extern void (*shell_exec)(buffer_t *buf, char *str);
-extern void (*shell_echo)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_eval)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_setup)(char *, list_t *);
-extern void (*shell_doscript)(buffer_t *, char *);
-extern void (*shell_destroy) (void);
-
-#endif /* !_HASERL_H */
+#endif /* _HASERL_H */

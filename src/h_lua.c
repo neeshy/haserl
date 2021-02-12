@@ -1,22 +1,22 @@
-/* --------------------------------------------------------------------------
-* Copyright 2003-2011 (inclusive) Nathan Angelacos
-*                   (nangel@users.sourceforge.net)
-*
-*   This file is part of haserl.
-*
-*   Haserl is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License version 2,
-*   as published by the Free Software Foundation.
-*
-*   Haserl is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
-*
-* ------------------------------------------------------------------------ */
+/* ---------------------------------------------------------------------------
+ * Copyright 2003-2011 (inclusive) Nathan Angelacos
+ *                   (nangel@users.sourceforge.net)
+ *
+ *   This file is part of haserl.
+ *
+ *   Haserl is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License version 2,
+ *   as published by the Free Software Foundation.
+ *
+ *   Haserl is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ------------------------------------------------------------------------ */
 
 #if HAVE_CONFIG_H
 #include <config.h>
@@ -51,9 +51,10 @@ h_lua_loadfile(lua_State *L)
 {
 	const char *filename = luaL_checkstring(L, 1);
 
-	if (luaL_loadfile(L, filename))
+	if (luaL_loadfile(L, filename)) {
 		die_with_message("Cannot load file '%s': %s", filename,
 				 lua_tostring(L, -1));
+	}
 	return 1;             /* we return one value, the buffer, as a function */
 }
 
@@ -64,8 +65,9 @@ lua_doscript(char *name)
 
 	if (status && !lua_isnil(lua_vm, -1)) {
 		const char *msg = lua_tostring(lua_vm, -1);
-		if (msg == NULL)
+		if (msg == NULL) {
 			msg = "(error object is not a string)";
+		}
 		die_with_message("%s", msg);
 	}
 }

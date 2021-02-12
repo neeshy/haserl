@@ -93,16 +93,16 @@ haserl_t global;
  */
 
 struct option ga_long_options[] = {
-	{ "version",	    no_argument,       0, 'v' },
-	{ "help",	    no_argument,       0, 'h' },
+	{ "version",        no_argument,       0, 'v' },
+	{ "help",           no_argument,       0, 'h' },
 	{ "upload-limit",   required_argument, 0, 'u' },
-	{ "upload-dir",	    required_argument, 0, 'U' },
+	{ "upload-dir",     required_argument, 0, 'U' },
 	{ "upload-handler", required_argument, 0, 'H' },
-	{ "accept-all",	    no_argument,       0, 'a' },
+	{ "accept-all",     no_argument,       0, 'a' },
 	{ "accept-none",    no_argument,       0, 'n' },
-	{ "shell",	    required_argument, 0, 's' },
-	{ "silent",	    no_argument,       0, 'S' },
-	{ 0,		    0,		       0, 0   }
+	{ "shell",          required_argument, 0, 's' },
+	{ "silent",         no_argument,       0, 'S' },
+	{ 0,                0,                 0, 0   }
 };
 
 const char *gs_short_options = "+vhu:U:H:ans:S";
@@ -132,10 +132,12 @@ unescape_url(char *url)
 	int i, j;
 
 	for (i = 0, j = 0; url[j]; ++i, ++j) {
-		if ((url[i] = url[j]) != '%')
+		if ((url[i] = url[j]) != '%') {
 			continue;
-		if (!url[j + 1] || !url[j + 2])
+		}
+		if (!url[j + 1] || !url[j + 2]) {
 			break;
+		}
 		url[i] = x2c(&url[j + 1]);
 		j += 2;
 	}
@@ -150,8 +152,9 @@ xmalloc(size_t size)
 {
 	void *buf;
 
-	if ((buf = malloc(size)) == NULL)
+	if ((buf = malloc(size)) == NULL) {
 		die_with_message(g_err_msg[E_MALLOC_FAIL]);
+	}
 	memset(buf, 0, size);
 	return buf;
 }
@@ -162,8 +165,9 @@ xmalloc(size_t size)
 void *
 xrealloc(void *buf, size_t size)
 {
-	if ((buf = realloc(buf, size)) == NULL)
+	if ((buf = realloc(buf, size)) == NULL) {
 		die_with_message(g_err_msg[E_MALLOC_FAIL]);
+	}
 	return buf;
 }
 
@@ -183,8 +187,9 @@ myputenv(list_t *cur, char *str, char *prefix)
 
 	temp = memchr(str, '=', strlen(str));
 	/* if we don't have an equal sign, exit early */
-	if (temp == 0)
+	if (temp == 0) {
 		return cur;
+	}
 
 	keylen = (size_t)(temp - str);
 
@@ -196,8 +201,9 @@ myputenv(list_t *cur, char *str, char *prefix)
 
 	entry = xmalloc(strlen(str) + strlen(prefix) + 1);
 	entry[0] = '\0';
-	if ((prefixlen = strlen(prefix)))
+	if ((prefixlen = strlen(prefix))) {
 		strncat(entry, prefix, prefixlen);
+	}
 
 	if (array == 1) {
 		strncat(entry, str, keylen);
@@ -223,21 +229,24 @@ myputenv(list_t *cur, char *str, char *prefix)
 			}
 			/* delete the old entry */
 			free(cur->buf);
-			if (prev != NULL)
+			if (prev != NULL) {
 				prev->next = cur->next;
+			}
 			free(cur);
 			cur = prev;
 		}               /* end if found a matching key */
 		prev = cur;
-		if (cur)
+		if (cur) {
 			cur = (list_t *)cur->next;
+		}
 	}                           /* end if matching key */
 
 	/* add the value to the end of the chain  */
 	cur = xmalloc(sizeof(list_t));
 	cur->buf = entry;
-	if (prev != NULL)
+	if (prev != NULL) {
 		prev->next = cur;
+	}
 
 	return cur;
 }
@@ -281,17 +290,19 @@ CookieVars(list_t *env)
 	char *qs;
 	char *token;
 
-	if (getenv("HTTP_COOKIE") != NULL)
+	if (getenv("HTTP_COOKIE") != NULL) {
 		qs = strdup(getenv("HTTP_COOKIE"));
-	else
+	} else {
 		return;
+	}
 
 	/** split on; to extract name value pairs */
 	token = strtok(qs, ";");
 	while (token) {
 		// skip leading spaces
-		while (token[0] == ' ')
+		while (token[0] == ' ') {
 			token++;
+		}
 		myputenv(env, token, global.var_prefix);
 		myputenv(env, token, global.cookie_prefix);
 		token = strtok(NULL, ";");
@@ -348,15 +359,18 @@ ReadCGIQueryString(list_t *env)
 	char *token;
 	int i;
 
-	if (getenv("QUERY_STRING") != NULL)
+	if (getenv("QUERY_STRING") != NULL) {
 		qs = strdup(getenv("QUERY_STRING"));
-	else
+	} else {
 		return 0;
+	}
 
 	/* change plusses into spaces */
-	for (i = 0; qs[i]; i++)
-		if (qs[i] == '+')
+	for (i = 0; qs[i]; i++) {
+		if (qs[i] == '+') {
 			qs[i] = ' ';
+		}
+	}
 	;
 
 	/** split on & and ; to extract name value pairs */
@@ -391,8 +405,9 @@ ReadCGIPOSTValues(list_t *env)
 	char *content_type = NULL;
 
 	if ((getenv(CONTENT_LENGTH) == NULL) ||
-	    (strtoul(getenv(CONTENT_LENGTH), NULL, 10) == 0))
+	    (strtoul(getenv(CONTENT_LENGTH), NULL, 10) == 0)) {
 		return 0;
+	}
 
 	content_type = getenv(CONTENT_TYPE);
 
@@ -416,22 +431,26 @@ ReadCGIPOSTValues(list_t *env)
 	s_buffer_init(&sbuf, 32768);
 	sbuf.fh = STDIN;
 
-	if (getenv(CONTENT_LENGTH))
+	if (getenv(CONTENT_LENGTH)) {
 		sbuf.maxread = strtoul(getenv(CONTENT_LENGTH), NULL, 10);
+	}
 	haserl_buffer_init(&token);
 
-	if (urldecoding == 0)
+	if (urldecoding == 0) {
 		buffer_add(&token, "body=", 5);
+	}
 
-	do{
+	do {
 		/* x is true if this token ends with a matchstr or is at the end of stream */
 		x = s_buffer_read(&sbuf, matchstr);
 		content_length += sbuf.len;
-		if (content_length > max_len)
+		if (content_length > max_len) {
 			die_with_message("Attempted to send content larger than allowed limits.");
+		}
 
-		if ((x == 0) || (token.data))
+		if ((x == 0) || (token.data)) {
 			buffer_add(&token, (char *)sbuf.segment, sbuf.len);
+		}
 
 		if (x) {
 			data = sbuf.segment;
@@ -445,17 +464,20 @@ ReadCGIPOSTValues(list_t *env)
 			if (urldecoding) {
 				/* change plusses into spaces */
 				j = strlen((char *)data);
-				for (i = 0; i <= j; i++)
-					if (data[i] == '+')
+				for (i = 0; i <= j; i++) {
+					if (data[i] == '+') {
 						data[i] = ' ';
+					}
+				}
 				unescape_url((char *)data);
 			}
 			myputenv(env, (char *)data, global.var_prefix);
 			myputenv(env, (char *)data, global.post_prefix);
-			if (token.data)
+			if (token.data) {
 				buffer_reset(&token);
+			}
 		}
-	}while (!sbuf.eof);
+	} while (!sbuf.eof);
 	s_buffer_destroy(&sbuf);
 	buffer_destroy(&token);
 	return 0;
@@ -483,10 +505,11 @@ parseCommandLine(int argc, char *argv[])
 			global.silent = TRUE;
 			break;
 		case 'u':
-			if (optarg)
+			if (optarg) {
 				global.uploadkb = atoi(optarg);
-			else
+			} else {
 				global.uploadkb = MAX_UPLOAD_KB;
+			}
 			break;
 		case 'a':
 			global.acceptall = TRUE;
@@ -516,8 +539,9 @@ BecomeUser(uid_t uid, gid_t gid)
 {
 	/* This silently fails if it doesn't work */
 	/* Following is from Timo Teras */
-	if (getuid() == 0)
+	if (getuid() == 0) {
 		setgroups(1, &gid);
+	}
 
 	setgid(gid);
 	setgid(getgid());
@@ -594,21 +618,25 @@ main(int argc, char *argv[])
 			av2c = argc - 1 + command;
 			av2 = xmalloc(sizeof(char *) * av2c);
 			av2[0] = argv[0];
-			for (count = 1; count <= command; count++)
+			for (count = 1; count <= command; count++) {
 				av2[count] = av[count - 1].string;
-			for (; count < av2c; count++)
+			}
+			for (; count < av2c; count++) {
 				av2[count] = argv[count - command + 1];
+			}
 		}
 
 		parseCommandLine(av2c, av2);
 		free(av);
-		if (av2 != argv)
+		if (av2 != argv) {
 			free(av2);
+		}
 
-		if (optind < av2c)
+		if (optind < av2c) {
 			filename = av2[optind];
-		else
+		} else {
 			die_with_message("No script file specified");
+		}
 
 		break;
 	}
@@ -651,15 +679,17 @@ main(int argc, char *argv[])
 		if (getenv("REQUEST_METHOD")) {
 			if ((strcasecmp(getenv("REQUEST_METHOD"), "GET") == 0) ||
 			    (strcasecmp(getenv("REQUEST_METHOD"), "DELETE") == 0)) {
-				if (global.acceptall == TRUE)
+				if (global.acceptall == TRUE) {
 					ReadCGIPOSTValues(env);
+				}
 				ReadCGIQueryString(env);
 			}
 
 			if ((strcasecmp(getenv("REQUEST_METHOD"), "POST") == 0) ||
 			    (strcasecmp(getenv("REQUEST_METHOD"), "PUT") == 0)) {
-				if (global.acceptall == TRUE)
+				if (global.acceptall == TRUE) {
 					ReadCGIQueryString(env);
+				}
 				ReadCGIPOSTValues(env);
 			}
 		}

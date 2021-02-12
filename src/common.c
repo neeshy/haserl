@@ -1,22 +1,23 @@
-/* --------------------------------------------------------------------------
-* Copyright 2003-2014 (inclusive) Nathan Angelacos
-*                   (nangel@users.sourceforge.net)
-*
-*   This file is part of haserl.
-*
-*   Haserl is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License version 2,
-*   as published by the Free Software Foundation.
-*
-*   Haserl is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
-*
-* ------------------------------------------------------------------------ */
+/* ---------------------------------------------------------------------------
+ * Copyright 2003-2014 (inclusive) Nathan Angelacos
+ *                   (nangel@users.sourceforge.net)
+ *
+ *   This file is part of haserl.
+ *
+ *   Haserl is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License version 2,
+ *   as published by the Free Software Foundation.
+ *
+ *   Haserl is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ------------------------------------------------------------------------ */
+
 #if HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -119,8 +120,9 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 			}
 			/* otherwise, its just a normal character */
 			else {
-				if (state == WHITESPACE)
+				if (state == WHITESPACE) {
 					state = TOKENSTART;
+				}
 			}
 			break;
 
@@ -139,23 +141,21 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 			break;
 
 		default:
-			if (state == WHITESPACE)
+			if (state == WHITESPACE) {
 				state = TOKENSTART;
-
+			}
 		}               /* end switch */
 
 		if (state == TOKENSTART) {
 			arg_count++;
 			if (arg_count > argc_slots) {
 				argc_slots += ALLOC_CHUNK;
-				argv_array =
-					(argv_t *)xrealloc(argv_array,
-							   sizeof(argv_t) * (argc_slots +
-									     ALLOC_CHUNK));
+				argv_array = xrealloc(argv_array, sizeof(argv_t) * (argc_slots + ALLOC_CHUNK));
 			}
 
-			if (argv_array == NULL)
+			if (argv_array == NULL) {
 				return -1;
+			}
 			argv_array[arg_count - 1].string = instr;
 			argv_array[arg_count - 1].quoted = quoted;
 			state = WORDSPACE;
@@ -186,8 +186,9 @@ haserl_buffer_init(buffer_t *buf)
 void
 buffer_destroy(buffer_t *buf)
 {
-	if (buf->data)
+	if (buf->data) {
 		free(buf->data);
+	}
 	haserl_buffer_init(buf);
 }
 
@@ -195,10 +196,11 @@ buffer_destroy(buffer_t *buf)
 void
 buffer_reset(buffer_t *buf)
 {
-	if (buf->data)
+	if (buf->data) {
 		buf->ptr = buf->data;
-	else
+	} else {
 		buf->ptr = NULL;
+	}
 }
 
 void
@@ -211,12 +213,14 @@ buffer_add(buffer_t *buf, const void *data, unsigned long size)
 	if ((buf->ptr + size) >= buf->limit) {
 		index = (buf->limit - buf->data);
 		newsize = index;
-		while (newsize <= index + size)
+		while (newsize <= index + size) {
 			newsize += 1024;
+		}
 		index = buf->ptr - buf->data;
 		buf->data = realloc(buf->data, newsize);
-		if (buf->data == NULL)
+		if (buf->data == NULL) {
 			die_with_message("Memory allocation error");
+		}
 		buf->limit = buf->data + newsize;
 		buf->ptr = buf->data + index;
 	}
@@ -251,8 +255,9 @@ lowercase(char *instr)
 char *
 skip_whitespace(char *instr)
 {
-	while (isspace(*instr) && *instr)
+	while (isspace(*instr) && *instr) {
 		instr++;
+	}
 	return instr;
 }
 
@@ -260,8 +265,9 @@ skip_whitespace(char *instr)
 char *
 find_whitespace(char *instr)
 {
-	while (!isspace(*instr) && *instr)
+	while (!isspace(*instr) && *instr) {
 		instr++;
+	}
 	return instr;
 }
 
@@ -272,8 +278,9 @@ count_lines(char *instr, size_t len, char *where)
 	size_t line = 1;
 
 	while ((where > instr) && (len)) {
-		if (*instr == '\n')
+		if (*instr == '\n') {
 			line++;
+		}
 		len--;
 		instr++;
 	}
@@ -300,14 +307,16 @@ main(){
 
 	for (count = 0; count < argc; count++) {
 		printf("%03d: [%s] ", count, argv[count].string, "");
-		if (argv[count].quoted)
+		if (argv[count].quoted) {
 			printf("(it was quoted)");
+		}
 		printf("\n");
 	}
-	if (argc != 15)
+	if (argc != 15) {
 		puts("Test FAILED");
-	else
+	} else {
 		puts("Test PASSED");
+	}
 	free(argv);
 }
 

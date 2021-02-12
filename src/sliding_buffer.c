@@ -1,22 +1,22 @@
-/* --------------------------------------------------------------------------
-* Copyright 2003-2014 (inclusive) Nathan Angelacos
-*                   (nangel@users.sourceforge.net)
-*
-*   This file is part of haserl.
-*
-*   Haserl is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License version 2,
-*   as published by the Free Software Foundation.
-*
-*   Haserl is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
-*
-* ------------------------------------------------------------------------ */
+/* ---------------------------------------------------------------------------
+ * Copyright 2003-2014 (inclusive) Nathan Angelacos
+ *                   (nangel@users.sourceforge.net)
+ *
+ *   This file is part of haserl.
+ *
+ *   Haserl is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License version 2,
+ *   as published by the Free Software Foundation.
+ *
+ *   Haserl is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ------------------------------------------------------------------------ */
 
 #if HAVE_CONFIG_H
 #include <config.h>
@@ -77,8 +77,9 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	/*
 	 * if eof and ptr ran off the buffer, then we are done
 	 */
-	if ((sbuf->eof) && (sbuf->ptr > sbuf->buf))
+	if ((sbuf->eof) && (sbuf->ptr > sbuf->buf)) {
 		return 0;
+	}
 
 	/*
 	 * if need to fill the buffer, do so
@@ -86,8 +87,9 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	if ((sbuf->bufsize == 0) ||
 	    (sbuf->ptr >= (sbuf->buf + sbuf->bufsize - strlen(matchstr)))) {
 		len = sbuf->bufsize - (sbuf->ptr - sbuf->buf);
-		if (len)
+		if (len) {
 			memmove(sbuf->buf, sbuf->ptr, len);
+		}
 		sbuf->ptr = sbuf->buf;
 		sbuf->bufsize = len;
 		/* if the filedescriptor is invalid, we are obviously
@@ -97,8 +99,9 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			r = 0;
 		} else {
 			size_t n = sbuf->maxsize - len;
-			if (sbuf->maxread && sbuf->maxread < sbuf->nrread + n)
+			if (sbuf->maxread && sbuf->maxread < sbuf->nrread + n) {
 				n = sbuf->maxread - sbuf->nrread;
+			}
 			r = read(sbuf->fh, sbuf->buf + len, n);
 		}
 		/*
@@ -124,8 +127,9 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 
 	/* if have a matchstr, look for it, otherwise return the chunk */
 	if (strlen(matchstr) > 0) {
-		while (memcmp(matchstr, sbuf->ptr + pos, strlen(matchstr)) && (pos < len))
+		while (memcmp(matchstr, sbuf->ptr + pos, strlen(matchstr)) && (pos < len)) {
 			pos++;
+		}
 
 		/*
 		 * if we found it
@@ -137,9 +141,9 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			return -1;
 		}
 
-		if (sbuf->eof)
+		if (sbuf->eof) {
 			len += strlen(matchstr);
-
+		}
 	}
 	/*
 	 * ran off the end, didn't find the matchstr
@@ -152,20 +156,20 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 
 #ifdef TEST_FRAMEWORK
 
-main(){
+main() {
 	int x;
 	sliding_buffer_t sb;
 	char foo[200];
 
 	s_buffer_init(&sb, 32);
 
-	do{
+	do {
 		x = s_buffer_read(&sb, "&");
 		sprintf(foo, "%03d- %03d - %03d", x, sb.eof, sb.len);
 		write(1, foo, strlen(foo));
 		write(1, sb.segment, sb.len);
 		write(1, "\n", 1);
-	}while ((!sb.eof));
+	} while ((!sb.eof));
 	s_buffer_destroy(&sb);
 }
 

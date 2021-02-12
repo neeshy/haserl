@@ -1,22 +1,22 @@
-/* --------------------------------------------------------------------------
-* Copyright 2003-2014 (inclusive) Nathan Angelacos
-*                   (nangel@users.sourceforge.net)
-*
-*   This file is part of haserl.
-*
-*   Haserl is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License version 2,
-*   as published by the Free Software Foundation.
-*
-*   Haserl is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
-*
-* ------------------------------------------------------------------------ */
+/* ---------------------------------------------------------------------------
+ * Copyright 2003-2014 (inclusive) Nathan Angelacos
+ *                   (nangel@users.sourceforge.net)
+ *
+ *   This file is part of haserl.
+ *
+ *   Haserl is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License version 2,
+ *   as published by the Free Software Foundation.
+ *
+ *   Haserl is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ------------------------------------------------------------------------ */
 
 #if HAVE_CONFIG_H
 #include <config.h>
@@ -104,10 +104,12 @@ mime_substr(char *start, int len)
 {
 	char *ptr;
 
-	if (!start)
+	if (!start) {
 		return NULL;
-	if (len < 0)
+	}
+	if (len < 0) {
 		return NULL;
+	}
 	ptr = xmalloc(len + 2);
 	memcpy(ptr, start, len);
 	return ptr;
@@ -124,24 +126,27 @@ mime_tag_add(mime_var_t *obj, char *str)
 	if (a) {
 		a += strlen(tag[0]);
 		b = strchr(a, '"');
-		if ((!obj->name) && (b))
+		if ((!obj->name) && (b)) {
 			obj->name = mime_substr(a, b - a);
+		}
 	}
 
 	a = strcasestr(str, tag[1]);
 	if (a) {
 		a += strlen(tag[1]);
 		b = strchr(a, '"');
-		if ((!obj->filename) && (b))
+		if ((!obj->filename) && (b)) {
 			obj->filename = mime_substr(a, b - a);
+		}
 	}
 
 	a = strcasestr(str, tag[2]);
 	if (a) {
 		a += strlen(tag[2]);
 		b = a + strlen(a);
-		if (!obj->type)
+		if (!obj->type) {
 			obj->type = mime_substr(a, b - a);
+		}
 	}
 }
 
@@ -264,8 +269,9 @@ mime_var_open_target(mime_var_t *obj)
 	strcat(tmpname, "/XXXXXX");
 	obj->fh = mkstemp(tmpname);
 
-	if (obj->fh == -1)
+	if (obj->fh == -1) {
 		ok = 0;
+	}
 
 	/* reuse the name as a fifo if we have a handler.  We do this
 	 * because tempnam uses TEMPDIR if defined, among other bugs
@@ -274,8 +280,9 @@ mime_var_open_target(mime_var_t *obj)
 		/* I have a handler */
 		close(obj->fh);
 		unlink(tmpname);
-		if (mkfifo(tmpname, 0600))
+		if (mkfifo(tmpname, 0600)) {
 			ok = 0;
+		}
 		/* you must open the fifo for reading before writing
 		 * on non linux systems
 		 */
@@ -283,8 +290,9 @@ mime_var_open_target(mime_var_t *obj)
 			mime_exec(obj, tmpname);
 			obj->fh = open(tmpname, O_WRONLY);
 		}
-		if (obj->fh == -1)
+		if (obj->fh == -1) {
 			ok = 0;
+		}
 	} else {
 		buffer_add(&(obj->value), tmpname, strlen(tmpname));
 	}
@@ -301,20 +309,23 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 	int err;
 
 	/* if not a file upload, then just a normal variable */
-	if (!obj->filename)
+	if (!obj->filename) {
 		buffer_add(&(obj->value), str, len);
+	}
 
 	/* if a file upload, but don't have an open filehandle, open one */
-	if ((!obj->fh) && (obj->filename))
+	if ((!obj->fh) && (obj->filename)) {
 		mime_var_open_target(obj);
+	}
 
 	/* if we have an open file, write the chunk */
 	if (obj->fh > 0) {
 		err = write(obj->fh, str, len);
 		/* if there was an error, invert the filehandle; we need the
 		 * handle for later when we close it */
-		if (err == -1)
+		if (err == -1) {
 			obj->fh = abs(obj->fh) * -1;
+		}
 	}
 }
 
@@ -346,24 +357,27 @@ rfc2388_handler(list_t *env)
 	/* get the boundary info */
 	str = getenv("CONTENT_TYPE");
 	i = strlen(str) - 9;
-	while ((i >= 0) && (memcmp("boundary=", str + i, 9)))
+	while ((i >= 0) && (memcmp("boundary=", str + i, 9))) {
 		i--;
+	}
 	if (i == -1) {
 		empty_stdin();
 		die_with_message("No Mime Boundary Information Found");
 	}
 
 	i = i + 9;
-	if (str[i] == '"')
+	if (str[i] == '"') {
 		i++;
+	}
 
 	boundary = xmalloc(strlen(str + i) + 5); /* \r\n-- + NULL */
 	memcpy(boundary, crlf, 2);
 	memcpy(boundary + 2, "--", 2);
 	memcpy(boundary + 4, str + i, strlen(str + i) + 1);
 	if ((i > 0) && (str[i - 1] == '"')) {
-		while ((boundary[i]) && (boundary[i] != '"'))
+		while ((boundary[i]) && (boundary[i] != '"')) {
 			i++;
+		}
 		boundary[i] = '\0';
 	}
 
@@ -374,8 +388,9 @@ rfc2388_handler(list_t *env)
 	/* initialize a 128K sliding buffer */
 	s_buffer_init(&sbuf, 1024 * 128);
 	sbuf.fh = STDIN;
-	if (getenv("CONTENT_LENGTH"))
+	if (getenv("CONTENT_LENGTH")) {
 		sbuf.maxread = strtoul(getenv("CONTENT_LENGTH"), NULL, 10);
+	}
 
 	/* initialize the buffer, and make sure it doesn't point to null */
 	haserl_buffer_init(&buf);
@@ -387,7 +402,7 @@ rfc2388_handler(list_t *env)
 
 	header_continuation = 0;
 
-	do{
+	do {
 		/* x is true if this token ends with a matchstr or is at the end of stream */
 		x = s_buffer_read(&sbuf, str);
 		content_length += sbuf.len;
@@ -396,8 +411,9 @@ rfc2388_handler(list_t *env)
 			free(boundary);
 			s_buffer_destroy(&sbuf);
 			buffer_destroy(&buf);
-			if (var.name)
+			if (var.name) {
 				mime_var_destroy(&var);
+			}
 			die_with_message("Attempted to send content larger than allowed limits.");
 		}
 
@@ -412,8 +428,9 @@ rfc2388_handler(list_t *env)
 			break;
 
 		case BOUNDARY:
-			if (!x)
+			if (!x) {
 				buffer_add(&buf, sbuf.segment, sbuf.len);
+			}
 			if (x) {
 				buffer_add(&buf, sbuf.segment, sbuf.len);
 				if (!memcmp(buf.data, boundary + 2, 2)) { /* "--" */
@@ -462,7 +479,7 @@ rfc2388_handler(list_t *env)
 
 			break;
 		}               /* end switch */
-	}while (!sbuf.eof);
+	} while (!sbuf.eof);
 	free(boundary);
 	s_buffer_destroy(&sbuf);
 	buffer_destroy(&buf);
