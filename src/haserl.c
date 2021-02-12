@@ -53,7 +53,6 @@
 
 #include "common.h"
 #include "h_error.h"
-#include "h_script.h"
 #include "sliding_buffer.h"
 #include "rfc2388.h"
 
@@ -85,14 +84,6 @@
 
 haserl_t global;
 
-/* declare the shell_ function pointers here */
-void (*shell_exec) (buffer_t *buf, char *str);
-void (*shell_echo) (buffer_t *buf, char *str, size_t len);
-void (*shell_eval) (buffer_t *buf, char *str, size_t len);
-void (*shell_setup) (char *, list_t *);
-void (*shell_doscript) (buffer_t *, char *);
-void (*shell_destroy) (void);
-
 /* global shell execution function pointers.   These point to the actual functions
  * that do the job, based on the language */
 
@@ -104,7 +95,6 @@ void (*shell_destroy) (void);
 struct option ga_long_options[] = {
 	{ "version",	    no_argument,       0, 'v' },
 	{ "help",	    no_argument,       0, 'h' },
-	{ "debug",	    no_argument,       0, 'd' },
 	{ "upload-limit",   required_argument, 0, 'u' },
 	{ "upload-dir",	    required_argument, 0, 'U' },
 	{ "upload-handler", required_argument, 0, 'H' },
@@ -115,7 +105,7 @@ struct option ga_long_options[] = {
 	{ 0,		    0,		       0, 0   }
 };
 
-const char *gs_short_options = "+vhdu:U:H:ans:S";
+const char *gs_short_options = "+vhu:U:H:ans:S";
 
 /*
  * Convert 2 char hex string into char it represents
@@ -161,7 +151,7 @@ xmalloc(size_t size)
 	void *buf;
 
 	if ((buf = malloc(size)) == NULL)
-		die_with_message(NULL, NULL, g_err_msg[E_MALLOC_FAIL]);
+		die_with_message(g_err_msg[E_MALLOC_FAIL]);
 	memset(buf, 0, size);
 	return buf;
 }
@@ -173,7 +163,7 @@ void *
 xrealloc(void *buf, size_t size)
 {
 	if ((buf = realloc(buf, size)) == NULL)
-		die_with_message(NULL, NULL, g_err_msg[E_MALLOC_FAIL]);
+		die_with_message(g_err_msg[E_MALLOC_FAIL]);
 	return buf;
 }
 
@@ -185,7 +175,7 @@ list_t *
 myputenv(list_t *cur, char *str, char *prefix)
 {
 	list_t *prev = NULL;
-	size_t keylen;
+	size_t keylen, prefixlen;
 	char *entry = NULL;
 	char *temp = NULL;
 	int array = 0;
@@ -206,8 +196,8 @@ myputenv(list_t *cur, char *str, char *prefix)
 
 	entry = xmalloc(strlen(str) + strlen(prefix) + 1);
 	entry[0] = '\0';
-	if (strlen(prefix))
-		strncat(entry, prefix, strlen(prefix));
+	if ((prefixlen = strlen(prefix)))
+		strncat(entry, prefix, prefixlen);
 
 	if (array == 1) {
 		strncat(entry, str, keylen);
@@ -438,8 +428,7 @@ ReadCGIPOSTValues(list_t *env)
 		x = s_buffer_read(&sbuf, matchstr);
 		content_length += sbuf.len;
 		if (content_length > max_len)
-			die_with_message(NULL, NULL,
-					 "Attempted to send content larger than allowed limits.");
+			die_with_message("Attempted to send content larger than allowed limits.");
 
 		if ((x == 0) || (token.data))
 			buffer_add(&token, (char *)sbuf.segment, sbuf.len);
@@ -487,9 +476,6 @@ parseCommandLine(int argc, char *argv[])
 	while ((c = getopt_long(argc, argv, gs_short_options,
 				ga_long_options, &option_index)) != -1) {
 		switch (c) {
-		case 'd':
-			global.debug = TRUE;
-			break;
 		case 's':
 			global.shell = optarg;
 			break;
@@ -553,39 +539,13 @@ assignGlobalStartupValues()
 	global.silent = FALSE;          /* We do print errors if we find them           */
 	global.uploaddir = TEMPDIR;     /* where to upload to                           */
 	global.uploadhandler = NULL;    /* the upload handler                           */
-	global.debug = FALSE;           /* Not in debug mode.                           */
 	global.acceptall = FALSE;       /* don't allow POST data for GET method         */
-	global.uploadlist = NULL;       /* we don't have any uploaded files             */
 	global.var_prefix = "FORM_";
 	global.get_prefix = "GET_";
 	global.post_prefix = "POST_";
 	global.cookie_prefix = "COOKIE_";
 	global.haserl_prefix = "HASERL_";
 	global.nul_prefix = "";
-}
-
-void
-unlink_uploadlist()
-{
-	token_t *me;
-
-	me = global.uploadlist;
-
-	while (me) {
-		unlink(me->buf);
-		free(me->buf);
-		me = me->next;
-	}
-}
-
-void
-cleanup(void)
-{
-	if (global.uploadlist) {
-		unlink_uploadlist();
-		free_token_list(global.uploadlist);
-		global.uploadlist = NULL;
-	}
 }
 
 /*-------------------------------------------------------------------------
@@ -596,13 +556,8 @@ cleanup(void)
 int
 main(int argc, char *argv[])
 {
-#ifndef JUST_LUACSHELL
-	token_t *tokenchain = NULL;
-	buffer_t script_text;
-#endif
-	script_t *scriptchain;
-
 	char *filename = NULL;
+	struct stat filestat;
 
 	argv_t *av = NULL;
 	char **av2 = argv;
@@ -613,13 +568,7 @@ main(int argc, char *argv[])
 
 	list_t *env = NULL;
 
-	if (atexit(cleanup) != 0)
-		die_with_message(NULL, NULL, "atexit() failed");
-
 	assignGlobalStartupValues();
-#ifndef JUST_LUACSHELL
-	haserl_buffer_init(&script_text);
-#endif
 
 	/* if more than argv[1] and argv[1] is not a file */
 	switch (argc) {
@@ -659,59 +608,43 @@ main(int argc, char *argv[])
 		if (optind < av2c)
 			filename = av2[optind];
 		else
-			die_with_message(NULL, NULL, "No script file specified");
+			die_with_message("No script file specified");
 
 		break;
 	}
 
-	scriptchain = load_script(filename, NULL);
-/* drop permissions */
-	BecomeUser(scriptchain->uid, scriptchain->gid);
+	/* drop permissions */
+	stat(filename, &filestat);
+	BecomeUser(filestat.st_uid, filestat.st_gid);
 
 	/* populate the function pointers based on the shell selected */
 	if (strcmp(global.shell, "lua") && strcmp(global.shell, "luac")) {
-		die_with_message(NULL, NULL, "Bash shell is not enabled.");
+		die_with_message("Bash shell is not enabled.");
 	} else {
-		shell_setup = &lua_common_setup;
-		shell_destroy = &lua_common_destroy;
 		global.var_prefix = "FORM.";
 		global.nul_prefix = "ENV.";
 		global.get_prefix = "GET.";
 		global.post_prefix = "POST.";
 		global.cookie_prefix = "COOKIE.";
 		global.haserl_prefix = "HASERL.";
-		if (global.shell[3] == 'c') /* luac only */
-#ifdef INCLUDE_LUACSHELL
-			shell_doscript = &luac_doscript;
-#else
-		{ die_with_message(NULL, NULL, "Compiled Lua shell is not enabled."); }
+		if (global.shell[3] == 'c') { /* luac only */
+#ifndef INCLUDE_LUACSHELL
+			die_with_message("Compiled Lua shell is not enabled.");
 #endif
-		else {
-#ifdef INCLUDE_LUASHELL
-			shell_exec = &lua_exec;
-			shell_echo = &lua_echo;
-			shell_eval = &lua_eval;
-			shell_doscript = &lua_doscript;
-#else
-			die_with_message(NULL, NULL, "Standard Lua shell is not enabled.");
+		} else {
+#ifndef INCLUDE_LUASHELL
+			die_with_message("Standard Lua shell is not enabled.");
 #endif
 		}
 	}
 
-/* Read the current environment into our chain */
+	/* Read the current environment into our chain */
 	env = wcversion(env);
 	readenv(env);
 	sessionid(env);
 	haserlflags(env);
 
-#ifndef JUST_LUACSHELL
-	if (strcmp(global.shell, "luac")) {
-		tokenchain = build_token_list(scriptchain, NULL);
-		preprocess_token_list(tokenchain);
-	}
-#endif
-
-/* Read the request data */
+	/* Read the request data */
 	if (global.acceptall != NONE) {
 		/* If we have a request method, and we were run as a #! style script */
 		CookieVars(env);
@@ -732,41 +665,15 @@ main(int argc, char *argv[])
 		}
 	}
 
-/* build a copy of the script to send to the shell */
-#ifndef JUST_LUACSHELL
-	if (strcmp(global.shell, "luac"))
-		process_token_list(&script_text, tokenchain);
-
-#endif
-
-	/* run the script */
-	if (global.debug == TRUE) {
-#ifndef JUST_LUACSHELL
-		if (getenv("REQUEST_METHOD"))
-			write(1, "Content-Type: text/plain\n\n", 26);
-		write(1, script_text.data, script_text.ptr - script_text.data);
-#else
-		die_with_message(NULL, NULL,
-				 "Debugging output doesn't work with the compiled Lua shell.");
-#endif
-	} else {
-		shell_setup(global.shell, env);
+	lua_common_setup(global.shell, env);
 #ifdef JUST_LUACSHELL
-		shell_doscript(NULL, scriptchain->name);
+	luac_doscript(filename);
 #else
-		shell_doscript(&script_text, scriptchain->name);
+	lua_doscript(filename);
 #endif
-		shell_destroy();
-	}
-
-#ifndef JUST_LUACSHELL
-	/* destroy the script */
-	buffer_destroy(&script_text);
-	free_token_list(tokenchain);
-#endif
+	lua_common_destroy();
 
 	free_list_chain(env);
-	free_script_list(scriptchain);
 
 	return 0;
 }

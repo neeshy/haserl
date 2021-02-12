@@ -33,8 +33,6 @@ typedef struct {
 	char *		cookie_prefix;  /* what name we give to COOKIE variables     */
 	char *		nul_prefix;     /* what name we give to environment variables*/
 	char *		haserl_prefix;  /* what name we give to HASERL variables     */
-	token_t *	uploadlist;     /* a linked list of pathspecs	             */
-	int		debug;          /* true if in "debug" mode                   */
 	int		acceptall;      /* true if we'll accept POST data on
 	                                 *      GETs and vice versa 		     */
 	int		silent;         /* true if we never print errors             */

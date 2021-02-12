@@ -30,7 +30,6 @@
 #include <stdarg.h>
 
 #include "common.h"
-#include "h_script.h"
 #include "haserl.h"
 #include "h_error.h"
 
@@ -60,11 +59,8 @@ die_with_error(char *msg)
  * there's a request method, then http headers are added.
  */
 void
-die_with_message(void *sp, char *where, const char *s, ...)
+die_with_message(const char *s, ...)
 {
-#ifndef JUST_LUACSHELL
-	script_t *script = sp;
-#endif
 	va_list p;
 	FILE *fo = stderr;
 
@@ -79,13 +75,6 @@ die_with_message(void *sp, char *where, const char *s, ...)
 		va_start(p, s);
 		vfprintf(fo, s, p);
 		va_end(p);
-#ifndef JUST_LUACSHELL
-		if (where && sp) {
-			fprintf(fo, " near line %d of %s\n",
-				count_lines(script->buf, script->size, where),
-				script->name);
-		}
-#endif
 		printf("\n");
 
 		if (getenv("REQUEST_METHOD"))

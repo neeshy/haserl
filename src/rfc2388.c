@@ -39,7 +39,6 @@
 
 #include "common.h"
 #include "h_error.h"
-#include "h_script.h"
 #include "sliding_buffer.h"
 #include "rfc2388.h"
 
@@ -50,9 +49,7 @@ empty_stdin(void)
 {
 	char c[2000];
 
-	while (read(STDIN_FILENO, &c, 2000)) {
-	}
-	;
+	while (read(STDIN_FILENO, &c, 2000));
 }
 
 void
@@ -203,7 +200,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 	pid = fork();
 	if (pid == -1) {
 		empty_stdin();
-		die_with_message(NULL, NULL, g_err_msg[E_SUBSHELL_FAIL]);
+		die_with_message(g_err_msg[E_SUBSHELL_FAIL]);
 	}
 
 	if (pid == 0) {
@@ -234,8 +231,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 		/* if we get here, we had a failure. Not much we can do.
 		 * We are the child, so we can't even warn the parent */
 		fh = open(fifo, O_RDONLY);
-		while (read(fh, &c, 1)) {
-		}
+		while (read(fh, &c, 1));
 		exit(-1);
 	} else {
 		/* I'm parent - ignore SIGPIPE from the child */
@@ -253,15 +249,13 @@ void
 mime_var_open_target(mime_var_t *obj)
 {
 	char *tmpname;
-	token_t *curtoken;
 
-	curtoken = global.uploadlist;
 	int ok;
 
 	/* if upload_limit is zero, we die right here */
 	if (global.uploadkb == 0) {
 		empty_stdin();
-		die_with_message(NULL, NULL, "File uploads are not allowed.");
+		die_with_message("File uploads are not allowed.");
 	}
 
 	ok = -1;
@@ -297,14 +291,8 @@ mime_var_open_target(mime_var_t *obj)
 
 	if (!ok) {
 		empty_stdin();
-		die_with_message(NULL, NULL, g_err_msg[E_FILE_OPEN_FAIL], tmpname);
+		die_with_message(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
 	}
-
-	curtoken =
-		push_token_on_list(curtoken, NULL, tmpname, strlen(tmpname) + 1);
-	if (global.uploadlist == NULL)
-		global.uploadlist = curtoken;
-
 }
 
 void
@@ -362,7 +350,7 @@ rfc2388_handler(list_t *env)
 		i--;
 	if (i == -1) {
 		empty_stdin();
-		die_with_message(NULL, NULL, "No Mime Boundary Information Found");
+		die_with_message("No Mime Boundary Information Found");
 	}
 
 	i = i + 9;
@@ -410,8 +398,7 @@ rfc2388_handler(list_t *env)
 			buffer_destroy(&buf);
 			if (var.name)
 				mime_var_destroy(&var);
-			die_with_message(NULL, NULL,
-					 "Attempted to send content larger than allowed limits.");
+			die_with_message("Attempted to send content larger than allowed limits.");
 		}
 
 		switch (state) {

@@ -78,8 +78,7 @@ lua_common_setup(char *shell, list_t *env)
 	if (luaL_loadbuffer
 		    (lua_vm, (const char *)&haserl_lualib, sizeof(haserl_lualib),
 		    "luascript.lua") || lua_pcall(lua_vm, 0, 0, 0)) {
-		die_with_message(NULL, NULL,
-				 "Error passing the lua library to the lua vm: %s",
+		die_with_message("Error passing the lua library to the lua vm: %s",
 				 lua_tostring(lua_vm, -1));
 	}
 

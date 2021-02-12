@@ -1,8 +1,8 @@
 --[[
 /* --------------------------------------------------------------------------
- * Copyright 2003-2011 (inclusive) Nathan Angelacos 
+ * Copyright 2003-2011 (inclusive) Nathan Angelacos
  *                   (nangel@users.sourceforge.net)
- * 
+ *
  *   This file is part of haserl.
  *
  *   Haserl is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ function haserl.getfield (f)
 	return v
 end
 
-function haserl.myputenv(key, value) 
+function haserl.myputenv(key, value)
 						-- convert key to dotted form
 	key = string.gsub(key, '[\\]\\[]', '.' )
 	key = string.gsub(key, '[\\.]+', '.' )

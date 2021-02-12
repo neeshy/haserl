@@ -216,7 +216,7 @@ buffer_add(buffer_t *buf, const void *data, unsigned long size)
 		index = buf->ptr - buf->data;
 		buf->data = realloc(buf->data, newsize);
 		if (buf->data == NULL)
-			die_with_message(NULL, NULL, "Memory allocation error");
+			die_with_message("Memory allocation error");
 		buf->limit = buf->data + newsize;
 		buf->ptr = buf->data + index;
 	}

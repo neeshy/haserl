@@ -32,24 +32,23 @@
 
 extern lua_State *lua_vm;
 
-/* tokenizer was not used, so script is NULL, but name is the filename to process */
-void
-luac_doscript(buffer_t *script, char *name)
-{
-	if (luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0))
-		die_with_message(NULL, NULL, "Cannot load lua and execute chunk: %s",
-				 lua_tostring(lua_vm, -1));
-}
-
 int
 h_luac_loadfile(lua_State *L)
 {
 	const char *filename = luaL_checkstring(L, 1);
 
 	if (luaL_loadfile(L, filename))
-		die_with_message(NULL, NULL, "Cannot load file '%s': %s", filename,
+		die_with_message("Cannot load file '%s': %s", filename,
 				 lua_tostring(L, -1));
 	/* no error: function is on the stack */
 
 	return 1;
+}
+
+void
+luac_doscript(char *name)
+{
+	if (luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0))
+		die_with_message("Cannot load lua and execute chunk: %s",
+				 lua_tostring(lua_vm, -1));
 }

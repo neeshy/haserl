@@ -30,6 +30,5 @@ extern char *g_err_msg[];
 /* h_error.c */
 void die_with_error(char *msg);
 void die_with_syntax(void *script, char *where, int error);
-void
-die_with_message(void *sp, char *where, const char *s, ...);
+void die_with_message(const char *s, ...);
 #endif /* !H_ERROR_H */
