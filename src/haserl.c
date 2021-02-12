@@ -47,10 +47,6 @@
 #include <string.h>
 #include <grp.h>
 
-#if HAVE_SIGNAL_H
-#include <signal.h>
-#endif
-
 #include "common.h"
 #include "h_error.h"
 #include "sliding_buffer.h"
