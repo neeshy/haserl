@@ -24,7 +24,7 @@
 enum error_types {
 	E_NO_ERROR, E_MALLOC_FAIL, E_FILE_OPEN_FAIL,
 	E_END_BEFORE_BEGIN, E_NO_END_MARKER,
-	E_NO_OP, E_SUBSHELL_FAIL, E_WHATEVER
+	E_NO_OP, E_SHELL_FAIL, E_WHATEVER
 };
 
 extern char *g_err_msg[];

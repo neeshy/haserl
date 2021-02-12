@@ -83,8 +83,8 @@
  * backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
-/* the subshell to start up */
-#undef SUBSHELL_CMD
+/* the default shell to start up */
+#undef DEFAULT_SHELL
 
 /* Version number of package */
 #undef VERSION

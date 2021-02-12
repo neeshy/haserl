@@ -77,9 +77,9 @@
 #define MAX_UPLOAD_KB 2048
 #endif
 
-/* Refuse to disable the subshell */
-#ifndef SUBSHELL_CMD
-#define SUBSHELL_CMD "lua"
+/* Refuse to disable the default shell */
+#ifndef DEFAULT_SHELL
+#define DEFAULT_SHELL "lua"
 #endif
 
 haserl_t global;
@@ -532,7 +532,7 @@ void
 assignGlobalStartupValues()
 {
 	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
-	global.shell = SUBSHELL_CMD;    /* The shell we use                           */
+	global.shell = DEFAULT_SHELL;    /* The shell we use                           */
 	global.silent = FALSE;          /* We do print errors if we find them         */
 	global.uploaddir = TEMPDIR;     /* where to upload to                         */
 	global.uploadhandler = NULL;    /* the upload handler                         */

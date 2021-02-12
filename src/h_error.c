@@ -40,7 +40,7 @@ char *g_err_msg[] = {
 	"%c&gt; before &lt;%c",
 	"Missing %c&gt;",
 	"Unknown operation",
-	"Unable to start subshell",
+	"Unable to start shell",
 	"Unspecified Error",
 };
 

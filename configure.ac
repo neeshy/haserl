@@ -91,20 +91,20 @@ if test x$luashell = xfalse; then
 	fi
 fi
 
-# What subshell should we use
-AC_ARG_ENABLE(subshell,
-	[  --enable-subshell=cmd - enable the subshell to use (default is /bin/sh)])
+# What default shell should we use
+AC_ARG_ENABLE(defaultshell,
+	[ --enable-defaultshell=cmd - enable the default shell to use (default is lua) ])
 
-# Handle "--disable-subshell"
-case $enable_subshell in
-	no )	enable_subshell=
+# Handle "--disable-defaultshell"
+case $enable_defaultshell in
+	no )	enable_defaultshell=
 		;;
-	"" )	enable_subshell="/bin/sh"
+	"" )	enable_defaultshell="lua"
 		;;
 	esac
 
-AC_DEFINE_UNQUOTED( [SUBSHELL_CMD], "$enable_subshell",
-	[the subshell to start up])
+AC_DEFINE_UNQUOTED( [DEFAULT_SHELL], "$enable_defaultshell",
+	[the default shell to start up])
 
 CFLAGS="$CFLAGS -Wall"
 
@@ -121,5 +121,4 @@ AC_MSG_RESULT([
 
 	Building haserl with luashell=$luashell
 	Building haserl with luacshell=$luacshell
-	libs: $LIBS
 ])

@@ -205,7 +205,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 	pid = fork();
 	if (pid == -1) {
 		empty_stdin();
-		die_with_message(g_err_msg[E_SUBSHELL_FAIL]);
+		die_with_message(g_err_msg[E_SHELL_FAIL]);
 	}
 
 	if (pid == 0) {
