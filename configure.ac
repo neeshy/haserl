@@ -45,7 +45,6 @@ dnl Checks for lua
 luashell=false
 luacshell=false
 ac_report_have_lua=disabled
-ac_report_bash_extensions=disabled
 
 AC_ARG_WITH([lua],
   AS_HELP_STRING([--with-lua], [Specify lua pkg-config name (default is 'lua')]))
@@ -93,23 +92,9 @@ if test \(x$luashell = xtrue -o x$luacshell = xtrue\) -a x$ac_report_have_lua = 
 	AC_MSG_ERROR([Lua is not enabled so you cannot build a Lua shell.])
 fi
 
-# the Linux shell is always available
-
-AC_ARG_ENABLE(bashshell,
-	AS_HELP_STRING([--enable-bashshell],[Includes the Bash or another Linux shell (default is yes)]),
-[case "${enableval}" in
-  yes) bashshell=true ;;
-  no)  bashshell=false ;;
-  *)   AC_MSG_ERROR(bad value ${enableval} for --enable-bashshell) ;;
-esac], [bashshell=true])
-AM_CONDITIONAL(INCLUDE_BASHSHELL, test x$bashshell = xtrue)
-if test x$bashshell = xtrue; then
-	AC_DEFINE(INCLUDE_BASHSHELL, , [Include Bash/Linux shell])
-fi
-
 # set additional macros
 
-if test x$luashell = xfalse -a x$bashshell = xfalse; then
+if test x$luashell = xfalse; then
 	if test x$luacshell = xtrue; then
 		AC_DEFINE(JUST_LUACSHELL, , [Include just the compiled Lua shell])
 	else
@@ -120,25 +105,6 @@ fi
 if test x$ac_report_have_lua = xenabled -a x$luashell = xfalse -a x$luacshell = xfalse; then
 	AC_MSG_ERROR([Cannot enable Lua if no Lua shell is included.])
 fi
-
-
-# Do we include scott's bash extensions
-AC_ARG_ENABLE(bash-extensions,
-	AS_HELP_STRING([--enable-bash-extensions],[Includes bash extensions to the haserl script language (default is no)]),
-[case "${enableval}" in
-  yes) bashextensions=true 
-	ac_report_bash_extensions=enabled 
-	;;
-  no)  bashextensions=false 
-	ac_report_bash_extensions=disabled
-	;;
-  *)   AC_MSG_ERROR(bad value ${enableval} for --enable-bash-extensions) ;;
-esac], [bashextensions=false])
-AM_CONDITIONAL(BASHEXTENSIONS, test x$bashextensions = xtrue)
-if test x$bashextensions = xtrue; then
-	AC_DEFINE(BASHEXTENSIONS, , [Include bash extensions])
-fi
-
 
 # What subshell should we use
 AC_ARG_ENABLE(subshell,
@@ -172,7 +138,6 @@ AC_MSG_RESULT([
 ** Configuration summary for $PACKAGE $VERSION:
 
 	Building haserl with with lua $ac_report_have_lua 
-	Building haserl with with bash-extensions $ac_report_bash_extensions
 	libs: $LIBS
 ])
 

@@ -19,10 +19,6 @@ LUASOURCE += h_luac.c h_luac.h
 endif
 endif
 
-if INCLUDE_BASHSHELL
-BASHSOURCE = h_bash.c h_bash.h
-endif
-
 if USE_LUA
 # lua2c_LIBS ?= -llua -ldl -lm
 lua2c_LDFLAGS ?= -Wl,-E
@@ -44,7 +40,7 @@ bin_PROGRAMS = haserl
 
 haserl_SOURCES = common.c common.h sliding_buffer.c sliding_buffer.h \
 		 h_error.c h_error.h h_script.c h_script.h rfc2388.c rfc2388.h \
-		 $(BASHSOURCE) $(LUASOURCE) haserl.c haserl.h
+		 $(LUASOURCE) haserl.c haserl.h
 haserl_CFLAGS = $(LUA_CFLAGS)
 haserl_LDADD = $(LUA_LIBS)
 

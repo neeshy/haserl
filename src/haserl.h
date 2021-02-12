@@ -73,24 +73,4 @@ extern void (*shell_setup)(char *, list_t *);
 extern void (*shell_doscript)(buffer_t *, char *);
 extern void (*shell_destroy) (void);
 
-#ifdef BASHEXTENSIONS
-extern void (*shell_if)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_elif)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_else)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_endif)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_case)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_when)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_otherwise)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_endcase)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_while)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_endwhile)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_until)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_enduntil)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_for)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_endfor)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_unless)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_elun)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_unelse)(buffer_t *buf, char *str, size_t len);
-extern void (*shell_endunless)(buffer_t *buf, char *str, size_t len);
-#endif
 #endif /* !_HASERL_H */

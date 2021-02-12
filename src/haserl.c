@@ -56,9 +56,6 @@
 #include "h_script.h"
 #include "sliding_buffer.h"
 #include "rfc2388.h"
-#ifdef INCLUDE_BASHSHELL
-#include "h_bash.h"
-#endif
 
 #ifdef USE_LUA
 #include <lua.h>
@@ -98,27 +95,6 @@ void (*shell_eval) (buffer_t *buf, char *str, size_t len);
 void (*shell_setup) (char *, list_t *);
 void (*shell_doscript) (buffer_t *, char *);
 void (*shell_destroy) (void);
-
-#ifdef BASHEXTENSIONS
-void (*shell_if) (buffer_t *buf, char *str, size_t len);
-void (*shell_elif) (buffer_t *buf, char *str, size_t len);
-void (*shell_else) (buffer_t *buf, char *str, size_t len);
-void (*shell_endif) (buffer_t *buf, char *str, size_t len);
-void (*shell_case) (buffer_t *buf, char *str, size_t len);
-void (*shell_when) (buffer_t *buf, char *str, size_t len);
-void (*shell_otherwise) (buffer_t *buf, char *str, size_t len);
-void (*shell_endcase) (buffer_t *buf, char *str, size_t len);
-void (*shell_while) (buffer_t *buf, char *str, size_t len);
-void (*shell_endwhile) (buffer_t *buf, char *str, size_t len);
-void (*shell_until) (buffer_t *buf, char *str, size_t len);
-void (*shell_enduntil) (buffer_t *buf, char *str, size_t len);
-void (*shell_for) (buffer_t *buf, char *str, size_t len);
-void (*shell_endfor) (buffer_t *buf, char *str, size_t len);
-void (*shell_unless) (buffer_t *buf, char *str, size_t len);
-void (*shell_elun) (buffer_t *buf, char *str, size_t len);
-void (*shell_unelse) (buffer_t *buf, char *str, size_t len);
-void (*shell_endunless) (buffer_t *buf, char *str, size_t len);
-#endif
 
 /* global shell execution function pointers.   These point to the actual functions
  * that do the job, based on the language */
@@ -677,9 +653,6 @@ main(int argc, char *argv[])
 #endif
 		     ")\n"
 #endif
-#ifdef BASHEXTENSIONS
-		     "Unsupported bash extensions supplied by simnux enabled\n"
-#endif
 		     );
 		return 0;
 		break;
@@ -718,39 +691,7 @@ main(int argc, char *argv[])
 
 	/* populate the function pointers based on the shell selected */
 	if (strcmp(global.shell, "lua") && strcmp(global.shell, "luac")) {
-		/* default to "bash" */
-#ifdef INCLUDE_BASHSHELL
-		shell_exec = &bash_exec;
-		shell_echo = &bash_echo;
-		shell_eval = &bash_eval;
-		shell_setup = &bash_setup;
-		shell_doscript = &bash_doscript;
-		shell_destroy = &bash_destroy;
-
-#ifdef BASHEXTENSIONS
-		shell_if = &bash_if;
-		shell_elif = &bash_elif;
-		shell_else = &bash_else;
-		shell_endif = &bash_endif;
-		shell_case = &bash_case;
-		shell_when = &bash_when;
-		shell_otherwise = &bash_otherwise;
-		shell_endcase = &bash_endcase;
-		shell_while = &bash_while;
-		shell_endwhile = &bash_endwhile;
-		shell_until = &bash_until;
-		shell_enduntil = &bash_enduntil;
-		shell_for = &bash_for;
-		shell_endfor = &bash_endfor;
-		shell_unless = &bash_unless;
-		shell_elun = &bash_elun;
-		shell_unelse = &bash_unelse;
-		shell_endunless = &bash_endunless;
-#endif
-
-#else
 		die_with_message(NULL, NULL, "Bash shell is not enabled.");
-#endif
 	} else {
 #ifdef USE_LUA
 		shell_setup = &lua_common_setup;

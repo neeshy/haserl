@@ -41,7 +41,6 @@
 #include "common.h"
 #include "h_error.h"
 #include "h_script.h"
-#include "h_bash.h"
 #include "sliding_buffer.h"
 #include "rfc2388.h"
 
