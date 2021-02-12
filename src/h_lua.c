@@ -45,7 +45,6 @@
 
 extern lua_State *lua_vm;
 
-/* attempts to open a file, tokenize and then process it as a haserl script */
 int
 h_lua_loadfile(lua_State *L)
 {
@@ -55,7 +54,8 @@ h_lua_loadfile(lua_State *L)
 		die_with_message("Cannot load file '%s': %s", filename,
 				 lua_tostring(L, -1));
 	}
-	return 1;             /* we return one value, the buffer, as a function */
+
+	return 1;
 }
 
 void

@@ -165,7 +165,7 @@ mime_var_putenv(list_t *env, mime_var_t *obj)
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "=", 1);
 		buffer_add(&buf, (char *)obj->value.data,
-			   strlen((char *)obj->value.data) + 1);
+		           strlen((char *)obj->value.data) + 1);
 		myputenv(env, (char *)buf.data, global.var_prefix);
 		myputenv(env, (char *)buf.data, global.post_prefix);
 		buffer_reset(&buf);
@@ -175,7 +175,7 @@ mime_var_putenv(list_t *env, mime_var_t *obj)
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_path=", 6);
 		buffer_add(&buf, (char *)obj->value.data,
-			   strlen((char *)obj->value.data) + 1);
+		           strlen((char *)obj->value.data) + 1);
 		myputenv(env, (char *)buf.data, global.haserl_prefix);
 		myputenv(env, (char *)buf.data, global.var_prefix);
 		myputenv(env, (char *)buf.data, global.post_prefix);
@@ -245,10 +245,8 @@ mime_exec(mime_var_t *obj, char *fifo)
 		new_action.sa_flags = 0;
 		sigaction(SIGPIPE, &new_action, NULL);
 	}
-
-	/* control should get to this point only in the parent.
-	 */
-}                               /* end mime_exec */
+	/* control should get to this point only in the parent.  */
+} /* end mime_exec */
 
 void
 mime_var_open_target(mime_var_t *obj)
@@ -329,10 +327,8 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 	}
 }
 
-/*
- * Read multipart/form-data input (RFC2388), typically used when
- * uploading a file.
- */
+/* Read multipart/form-data input (RFC2388), typically used when
+ * uploading a file. */
 int
 rfc2388_handler(list_t *env)
 {
@@ -398,7 +394,7 @@ rfc2388_handler(list_t *env)
 	buffer_reset(&buf);
 
 	state = DISCARD;
-	str = boundary + 2;     /* skip the leading crlf */
+	str = boundary + 2; /* skip the leading crlf */
 
 	header_continuation = 0;
 
@@ -478,7 +474,7 @@ rfc2388_handler(list_t *env)
 			}
 
 			break;
-		}               /* end switch */
+		} /* end switch */
 	} while (!sbuf.eof);
 	free(boundary);
 	s_buffer_destroy(&sbuf);

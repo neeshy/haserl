@@ -33,9 +33,7 @@
 #include "sliding_buffer.h"
 #include "h_error.h"
 
-/*
- * initialize a sliding buffer structure
- */
+/* initialize a sliding buffer structure */
 int
 s_buffer_init(sliding_buffer_t *sbuf, int size)
 {
@@ -44,7 +42,7 @@ s_buffer_init(sliding_buffer_t *sbuf, int size)
 	/* reduce maxsize by one, so that you can add a NULL to the end of any
 	 * returned token and not have a memory overwrite */
 	sbuf->maxsize -= 1;
-	sbuf->fh = 0;           /* use stdin by default */
+	sbuf->fh = 0; /* use stdin by default */
 	sbuf->eof = 0;
 	sbuf->len = 0;
 	sbuf->ptr = sbuf->buf;
@@ -54,36 +52,28 @@ s_buffer_init(sliding_buffer_t *sbuf, int size)
 	return sbuf->buf != NULL; /* return true if the alloc succeeded */
 }
 
-/*
- * destroy a sliding buffer structure
- */
+/* destroy a sliding buffer structure */
 void
 s_buffer_destroy(sliding_buffer_t *sbuf)
 {
 	free(sbuf->buf);
 }
 
-/*
- * read the next segment from a sliding buffer. returns !=0 if the
+/* read the next segment from a sliding buffer. returns !=0 if the
  * segment ends at a matchstr token, or if we are at the end of the string
- *  returns 0 if the segment does not end
- */
+ * returns 0 if the segment does not end */
 int
 s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 {
 	int len, pos;
 	int r;
 
-	/*
-	 * if eof and ptr ran off the buffer, then we are done
-	 */
+	/* if eof and ptr ran off the buffer, then we are done */
 	if ((sbuf->eof) && (sbuf->ptr > sbuf->buf)) {
 		return 0;
 	}
 
-	/*
-	 * if need to fill the buffer, do so
-	 */
+	/* if need to fill the buffer, do so */
 	if ((sbuf->bufsize == 0) ||
 	    (sbuf->ptr >= (sbuf->buf + sbuf->bufsize - strlen(matchstr)))) {
 		len = sbuf->bufsize - (sbuf->ptr - sbuf->buf);
@@ -93,8 +83,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 		sbuf->ptr = sbuf->buf;
 		sbuf->bufsize = len;
 		/* if the filedescriptor is invalid, we are obviously
-		 * at an end of file condition.
-		 */
+		 * at an end of file condition. */
 		if (fcntl(sbuf->fh, F_GETFL) == -1) {
 			r = 0;
 		} else {
@@ -104,9 +93,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			}
 			r = read(sbuf->fh, sbuf->buf + len, n);
 		}
-		/*
-		 * only report eof when we've done a read of 0.
-		 */
+		/* only report eof when we've done a read of 0. */
 		if (r == 0 || (r < 0 && errno != EINTR)) {
 			sbuf->eof = -1;
 		} else {
@@ -115,9 +102,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 		}
 	}
 
-	/*
-	 * look for the matchstr
-	 */
+	/* look for the matchstr */
 	pos = 0;
 	len = sbuf->bufsize - (int)(sbuf->ptr - sbuf->buf) - strlen(matchstr);
 	/* a malicious client can send a matchstr longer than the actual content body
@@ -131,9 +116,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			pos++;
 		}
 
-		/*
-		 * if we found it
-		 */
+		/* if we found it */
 		if (pos < len) {
 			sbuf->len = pos;
 			sbuf->segment = sbuf->ptr;
@@ -145,9 +128,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			len += strlen(matchstr);
 		}
 	}
-	/*
-	 * ran off the end, didn't find the matchstr
-	 */
+	/* ran off the end, didn't find the matchstr */
 	sbuf->segment = sbuf->ptr;
 	sbuf->len = len;
 	sbuf->ptr += sbuf->len;

@@ -58,7 +58,6 @@ void *xrealloc(void *buf, size_t size);
  * 	printf ("%03d: %s\n", count, argv[count].string);
  * 	}
  * free (argv);
- *
  */
 int
 argc_argv(char *instr, argv_t **argv, char *commentstr)
@@ -77,8 +76,6 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 	char quoted = 0;
 
 	while (pos < len) {
-		// printf ("%3d of %3d: %s\n", pos, len, instr);
-
 		/* Comments are really, really special */
 		if ((state == WHITESPACE) && (strchr(commentstr, *instr))) {
 			while ((*instr != '\n') && (*instr != '\0')) {
@@ -112,7 +109,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 			}
 			break;
 
-		/* backslash - if escaping a quote within a quote  */
+		/* backslash - if escaping a quote within a quote */
 		case '\\':
 			if ((quote) && (*(instr + 1) == quote)) {
 				memmove(instr, instr + 1, strlen(instr));
@@ -144,7 +141,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 			if (state == WHITESPACE) {
 				state = TOKENSTART;
 			}
-		}               /* end switch */
+		} /* end switch */
 
 		if (state == TOKENSTART) {
 			arg_count++;

@@ -44,13 +44,13 @@ luashell=true
 luacshell=false
 
 AC_ARG_WITH([lua],
-  AS_HELP_STRING([--with-lua], [Specify lua pkg-config name (default is 'lua')]))
+	AS_HELP_STRING([--with-lua], [Specify lua pkg-config name (default is 'lua')]))
 
 AS_IF([test "x$with_lua" = "xyes"], [with_lua=lua])
 AS_IF([test "x$with_lua" != "xno" -a "x$with_lua" != "x"], [
-  luashell=true
-  luacshell=true
-  PKG_CHECK_MODULES([LUA], [$with_lua])
+	luashell=true
+	luacshell=true
+	PKG_CHECK_MODULES([LUA], [$with_lua])
 ])
 
 # If Lua is enabled, the user can choose between two different shells
@@ -59,9 +59,9 @@ AS_IF([test "x$with_lua" != "xno" -a "x$with_lua" != "x"], [
 AC_ARG_ENABLE(luashell,
 	AS_HELP_STRING([--enable-luashell],[Includes the standard Lua shell - Haserl with embedded Lua (default is yes if Lua's enabled)]),
 [case "${enableval}" in
-  yes) luashell=true ;;
-  no)  luashell=false ;;
-  *)   AC_MSG_ERROR(bad value ${enableval} for --enable-luashell) ;;
+	yes) luashell=true ;;
+	no)  luashell=false ;;
+	*)   AC_MSG_ERROR(bad value ${enableval} for --enable-luashell) ;;
 esac], [])
 AM_CONDITIONAL(INCLUDE_LUASHELL, test x$luashell = xtrue)
 if test x$luashell = xtrue; then
@@ -72,9 +72,9 @@ fi
 AC_ARG_ENABLE(luacshell,
 	AS_HELP_STRING([--enable-luacshell],[Includes the compiled Lua shell - precompiled Haserl/Lua (default is yes if Lua's enabled)]),
 [case "${enableval}" in
-  yes) luacshell=true ;;
-  no)  luacshell=false ;;
-  *)   AC_MSG_ERROR(bad value ${enableval} for --enable-luacshell) ;;
+	yes) luacshell=true ;;
+	no)  luacshell=false ;;
+	*)   AC_MSG_ERROR(bad value ${enableval} for --enable-luacshell) ;;
 esac], [])
 AM_CONDITIONAL(INCLUDE_LUACSHELL, test x$luacshell = xtrue)
 if test x$luacshell = xtrue; then

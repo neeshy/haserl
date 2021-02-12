@@ -84,14 +84,11 @@
 
 haserl_t global;
 
-/* global shell execution function pointers.   These point to the actual functions
+/* global shell execution function pointers. These point to the actual functions
  * that do the job, based on the language */
 
-/*
- * Command line / Config file directives When adding a long option, make sure
- * to update the short_options as well
- */
-
+/* Command line / Config file directives When adding a long option, make sure
+ * to update the short_options as well */
 struct option ga_long_options[] = {
 	{ "version",        no_argument,       0, 'v' },
 	{ "help",           no_argument,       0, 'h' },
@@ -107,10 +104,8 @@ struct option ga_long_options[] = {
 
 const char *gs_short_options = "+vhu:U:H:ans:S";
 
-/*
- * Convert 2 char hex string into char it represents
- * (from http://www.jmarshall.com/easy/cgi)
- */
+/* Convert 2 char hex string into char it represents
+ * (from http://www.jmarshall.com/easy/cgi) */
 char
 x2c(char *what)
 {
@@ -122,9 +117,7 @@ x2c(char *what)
 	return digit;
 }
 
-/*
- * unsescape %xx to the characters they represent
- */
+/* unsescape %xx to the characters they represent */
 /* Modified by Juris Feb 2007 */
 void
 unescape_url(char *url)
@@ -144,9 +137,7 @@ unescape_url(char *url)
 	url[i] = '\0';
 }
 
-/*
- * allocate memory or die, busybox style.
- */
+/* allocate memory or die, busybox style. */
 void *
 xmalloc(size_t size)
 {
@@ -159,9 +150,7 @@ xmalloc(size_t size)
 	return buf;
 }
 
-/*
- * realloc memory, or die xmalloc style.
- */
+/* realloc memory, or die xmalloc style. */
 void *
 xrealloc(void *buf, size_t size)
 {
@@ -171,10 +160,8 @@ xrealloc(void *buf, size_t size)
 	return buf;
 }
 
-/*
- *   adds or replaces the "key=value" value in the env_list chain
- *   prefix is appended to the key (e.g. FORM_key=value)
- */
+/* adds or replaces the "key=value" value in the env_list chain
+ * prefix is appended to the key (e.g. FORM_key=value) */
 list_t *
 myputenv(list_t *cur, char *str, char *prefix)
 {
@@ -218,8 +205,7 @@ myputenv(list_t *cur, char *str, char *prefix)
 		if (memcmp(cur->buf, entry, len) == 0) {
 			if (array == 1) {
 				/* if an array, create a new string with this
-				 * value added to the end of the old value(s)
-				 */
+				 * value added to the end of the old value(s) */
 				temp = xmalloc(strlen(cur->buf) + strlen(entry) - len + 2);
 				memmove(temp, cur->buf, strlen(cur->buf) + 1);
 				strcat(temp, "\n");
@@ -234,12 +220,12 @@ myputenv(list_t *cur, char *str, char *prefix)
 			}
 			free(cur);
 			cur = prev;
-		}               /* end if found a matching key */
+		} /* end if found a matching key */
 		prev = cur;
 		if (cur) {
 			cur = (list_t *)cur->next;
 		}
-	}                           /* end if matching key */
+	} /* end if matching key */
 
 	/* add the value to the end of the chain  */
 	cur = xmalloc(sizeof(list_t));
@@ -265,9 +251,7 @@ free_list_chain(list_t *list)
 	}
 }
 
-/* readenv
- * reads the current environment and popluates our environment chain
- */
+/* reads the current environment and popluates our environment chain */
 void
 readenv(list_t *env)
 {
@@ -280,10 +264,8 @@ readenv(list_t *env)
 	}
 }
 
-/* CookieVars ()
- * if HTTP_COOKIE is passed as an environment variable,
- * attempt to parse its values into environment variables
- */
+/* if HTTP_COOKIE is passed as an environment variable,
+ * attempt to parse its values into environment variables */
 void
 CookieVars(list_t *env)
 {
@@ -296,7 +278,7 @@ CookieVars(list_t *env)
 		return;
 	}
 
-	/** split on; to extract name value pairs */
+	/* split on; to extract name value pairs */
 	token = strtok(qs, ";");
 	while (token) {
 		// skip leading spaces
@@ -310,9 +292,7 @@ CookieVars(list_t *env)
 	free(qs);
 }
 
-/* SessionID
- *  Makes a uniqe SESSIONID environment variable for this script
- */
+/* Makes a uniqe SESSIONID environment variable for this script */
 void
 sessionid(list_t *env)
 {
@@ -349,9 +329,7 @@ haserlflags(list_t *env)
 	myputenv(env, buf, global.haserl_prefix);
 }
 
-/*
- * Read cgi variables from query string, and put in environment
- */
+/* Read cgi variables from query string, and put in environment */
 int
 ReadCGIQueryString(list_t *env)
 {
@@ -373,7 +351,7 @@ ReadCGIQueryString(list_t *env)
 	}
 	;
 
-	/** split on & and ; to extract name value pairs */
+	/* split on & and ; to extract name value pairs */
 
 	token = strtok(qs, "&;");
 	while (token) {
@@ -386,9 +364,7 @@ ReadCGIQueryString(list_t *env)
 	return 0;
 }
 
-/*
- * Read cgi variables from stdin (for POST queries)
- */
+/* Read cgi variables from stdin (for POST queries) */
 int
 ReadCGIPOSTValues(list_t *env)
 {
@@ -490,8 +466,7 @@ parseCommandLine(int argc, char *argv[])
 	int option_index = 0;
 
 	/* set optopt and optind to 0 to reset getopt_long -
-	 * we may call it multiple times
-	 */
+	 * we may call it multiple times */
 	optopt = 0;
 	optind = 0;
 
@@ -552,18 +527,16 @@ BecomeUser(uid_t uid, gid_t gid)
 	return 0;
 }
 
-/*
- * Assign default values to the global structure
- */
+/* Assign default values to the global structure */
 void
 assignGlobalStartupValues()
 {
-	global.uploadkb = 0;            /* how big an upload do we allow (0 for none)   */
-	global.shell = SUBSHELL_CMD;    /* The shell we use                             */
-	global.silent = FALSE;          /* We do print errors if we find them           */
-	global.uploaddir = TEMPDIR;     /* where to upload to                           */
-	global.uploadhandler = NULL;    /* the upload handler                           */
-	global.acceptall = FALSE;       /* don't allow POST data for GET method         */
+	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
+	global.shell = SUBSHELL_CMD;    /* The shell we use                           */
+	global.silent = FALSE;          /* We do print errors if we find them         */
+	global.uploaddir = TEMPDIR;     /* where to upload to                         */
+	global.uploadhandler = NULL;    /* the upload handler                         */
+	global.acceptall = FALSE;       /* don't allow POST data for GET method       */
 	global.var_prefix = "FORM_";
 	global.get_prefix = "GET_";
 	global.post_prefix = "POST_";
@@ -572,11 +545,6 @@ assignGlobalStartupValues()
 	global.nul_prefix = "";
 }
 
-/*-------------------------------------------------------------------------
-*
-* Main
-*
-*------------------------------------------------------------------------*/
 int
 main(int argc, char *argv[])
 {
@@ -609,7 +577,7 @@ main(int argc, char *argv[])
 		     );
 		return 0;
 		break;
-	default:                /* more than one */
+	default: /* more than one */
 		/* split combined #! args - linux bundles them as one */
 		command = argc_argv(argv[1], &av, "");
 

@@ -41,7 +41,6 @@ h_luac_loadfile(lua_State *L)
 		die_with_message("Cannot load file '%s': %s", filename,
 				 lua_tostring(L, -1));
 	}
-	/* no error: function is on the stack */
 
 	return 1;
 }
