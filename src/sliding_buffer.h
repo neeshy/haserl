@@ -21,7 +21,6 @@
 #ifndef _SLIDING_BUF_H
 #define _SLIDING_BUF_H  1
 
-
 /* sliding buffer structure */
 typedef struct {
 	int		fh;                     /* the input filehandle for the buffer */
@@ -36,12 +35,9 @@ typedef struct {
 	int		eof;                    /* true if there is no more to read */
 } sliding_buffer_t;
 
-
-
 /* sliding_buffer.c */
 int s_buffer_init(sliding_buffer_t *sbuf, int size);
 void s_buffer_destroy(sliding_buffer_t *sbuf);
 int s_buffer_read(sliding_buffer_t *sbuf, char *matchstr);
-
 
 #endif /* !_SLIDING_BUF_H */

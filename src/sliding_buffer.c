@@ -63,7 +63,6 @@ s_buffer_destroy(sliding_buffer_t *sbuf)
 	free(sbuf->buf);
 }
 
-
 /*
  * read the next segment from a sliding buffer. returns !=0 if the
  * segment ends at a matchstr token, or if we are at the end of the string
@@ -138,7 +137,6 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			return -1;
 		}
 
-
 		if (sbuf->eof)
 			len += strlen(matchstr);
 
@@ -151,8 +149,6 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	sbuf->ptr += sbuf->len;
 	return (sbuf->eof) ? (-1) : (0);
 }
-
-
 
 #ifdef TEST_FRAMEWORK
 

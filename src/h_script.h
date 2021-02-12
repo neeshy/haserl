@@ -21,7 +21,6 @@
 #ifndef H_SCRIPT_H
 #define H_SCRIPT_H      1
 
-
 /* Everything we care to know about a script */
 typedef struct {
 	char *	name;           /* pointer to name of script 	*/
@@ -44,8 +43,6 @@ typedef struct {
 	char *		buf;            /* pointer to start of token	*/
 	void *		next;           /* the next token in the chain	*/
 } token_t;
-
-
 
 /* h_script.c */
 script_t *load_script(char *filename, script_t *scriptlist);

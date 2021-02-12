@@ -58,7 +58,6 @@ lua_common_putenv(char *str)
 		value = str + strlen(str);
 	}
 
-
 	lua_getglobal(lua_vm, "haserl");
 	lua_pushstring(lua_vm, "myputenv");
 	lua_gettable(lua_vm, -2);
@@ -89,7 +88,6 @@ lua_common_setup(char *shell, list_t *env)
 		lua_common_putenv(env->buf);
 		env = env->next;
 	}
-
 
 	/* register our open function in the haserl table */
 	lua_getglobal(lua_vm, "haserl");

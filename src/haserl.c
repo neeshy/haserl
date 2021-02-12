@@ -85,7 +85,6 @@
 
 haserl_t global;
 
-
 /* declare the shell_ function pointers here */
 void (*shell_exec) (buffer_t *buf, char *str);
 void (*shell_echo) (buffer_t *buf, char *str, size_t len);
@@ -153,9 +152,6 @@ unescape_url(char *url)
 	url[i] = '\0';
 }
 
-
-
-
 /*
  * allocate memory or die, busybox style.
  */
@@ -170,7 +166,6 @@ xmalloc(size_t size)
 	return buf;
 }
 
-
 /*
  * realloc memory, or die xmalloc style.
  */
@@ -181,7 +176,6 @@ xrealloc(void *buf, size_t size)
 		die_with_message(NULL, NULL, g_err_msg[E_MALLOC_FAIL]);
 	return buf;
 }
-
 
 /*
  *   adds or replaces the "key=value" value in the env_list chain
@@ -272,8 +266,6 @@ free_list_chain(list_t *list)
 	}
 }
 
-
-
 /* readenv
  * reads the current environment and popluates our environment chain
  */
@@ -288,7 +280,6 @@ readenv(list_t *env)
 		count++;
 	}
 }
-
 
 /* CookieVars ()
  * if HTTP_COOKIE is passed as an environment variable,
@@ -318,7 +309,6 @@ CookieVars(list_t *env)
 	free(qs);
 }
 
-
 /* SessionID
  *  Makes a uniqe SESSIONID environment variable for this script
  */
@@ -339,7 +329,6 @@ wcversion(list_t *env)
 	sprintf(version, "HASERLVER=%s", PACKAGE_VERSION);
 	return myputenv(env, version, global.nul_prefix);
 }
-
 
 void
 haserlflags(list_t *env)
@@ -393,7 +382,6 @@ ReadCGIQueryString(list_t *env)
 	return 0;
 }
 
-
 /*
  * Read cgi variables from stdin (for POST queries)
  */
@@ -432,7 +420,6 @@ ReadCGIPOSTValues(list_t *env)
 		matchstr = "&";
 	}
 
-
 	/* Allow 2MB content, unless they have a global upload set */
 	max_len = ((global.uploadkb == 0) ? 2048 : global.uploadkb) * 1024;
 
@@ -445,7 +432,6 @@ ReadCGIPOSTValues(list_t *env)
 
 	if (urldecoding == 0)
 		buffer_add(&token, "body=", 5);
-
 
 	do{
 		/* x is true if this token ends with a matchstr or is at the end of stream */
@@ -485,7 +471,6 @@ ReadCGIPOSTValues(list_t *env)
 	buffer_destroy(&token);
 	return 0;
 }
-
 
 int
 parseCommandLine(int argc, char *argv[])
@@ -578,7 +563,6 @@ assignGlobalStartupValues()
 	global.haserl_prefix = "HASERL_";
 	global.nul_prefix = "";
 }
-
 
 void
 unlink_uploadlist()
@@ -679,7 +663,6 @@ main(int argc, char *argv[])
 
 		break;
 	}
-
 
 	scriptchain = load_script(filename, NULL);
 /* drop permissions */

@@ -21,15 +21,12 @@
 #ifndef _COMMON_H
 #define _COMMON_H       1
 
-
 /* how many argv slots to allocate at once */
 #define ALLOC_CHUNK     10
-
 
 #define STDIN   0
 #define STDOUT  1
 #define STDERR  2
-
 
 #define TRUE  -1
 #define FALSE 0
@@ -53,7 +50,6 @@ typedef struct {
 	unsigned char * ptr;    /* where to write to next */
 	unsigned char * limit;  /* maximal allocated buffer pos */
 } buffer_t;
-
 
 /* common.c */
 

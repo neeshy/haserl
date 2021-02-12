@@ -18,7 +18,6 @@
 *
 * ------------------------------------------------------------------------ */
 
-
 #if HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -55,7 +54,6 @@ empty_stdin(void)
 	}
 	;
 }
-
 
 void
 mime_var_init(mime_var_t *obj)
@@ -202,8 +200,6 @@ mime_exec(mime_var_t *obj, char *fifo)
 	int fh;
 	struct sigaction new_action;
 
-
-
 	pid = fork();
 	if (pid == -1) {
 		empty_stdin();
@@ -268,7 +264,6 @@ mime_var_open_target(mime_var_t *obj)
 		die_with_message(NULL, NULL, "File uploads are not allowed.");
 	}
 
-
 	ok = -1;
 	tmpname = xmalloc(strlen(global.uploaddir) + 8);
 	strcpy(tmpname, global.uploaddir);
@@ -312,9 +307,6 @@ mime_var_open_target(mime_var_t *obj)
 
 }
 
-
-
-
 void
 mime_var_writer(mime_var_t *obj, char *str, int len)
 {
@@ -347,7 +339,6 @@ rfc2388_handler(list_t *env)
 {
 	enum mime_state_t
 	{ DISCARD, BOUNDARY, HEADER, CONTENT };
-
 
 	int state;
 	int i, x;
@@ -432,7 +423,6 @@ rfc2388_handler(list_t *env)
 				buffer_reset(&buf); /* reinitializes the buffer */
 			}
 			break;
-
 
 		case BOUNDARY:
 			if (!x)

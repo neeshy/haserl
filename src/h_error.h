@@ -18,11 +18,8 @@
 *
 * ------------------------------------------------------------------------ */
 
-
-
 #ifndef H_ERROR_H
 #define H_ERROR_H       1
-
 
 enum error_types { E_NO_ERROR, E_MALLOC_FAIL, E_FILE_OPEN_FAIL,
 		   E_END_BEFORE_BEGIN, E_NO_END_MARKER,

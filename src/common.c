@@ -30,10 +30,8 @@
 #include "common.h"
 #include "h_error.h"
 
-
 /* we define this here, but should use the header files instead. */
 void *xrealloc(void *buf, size_t size);
-
 
 /*
  * split a string into an argv[] array, and return the number of elements.
@@ -126,7 +124,6 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 			}
 			break;
 
-
 		/* whitepsace */
 		case ' ':
 		case '\t':
@@ -204,7 +201,6 @@ buffer_reset(buffer_t *buf)
 		buf->ptr = NULL;
 }
 
-
 void
 buffer_add(buffer_t *buf, const void *data, unsigned long size)
 {
@@ -241,7 +237,6 @@ uppercase(char *instr)
 	}
 }
 
-
 /* lowercase an entire string, using tolower */
 void
 lowercase(char *instr)
@@ -261,7 +256,6 @@ skip_whitespace(char *instr)
 	return instr;
 }
 
-
 /* return ptr to first whitespace character */
 char *
 find_whitespace(char *instr)
@@ -270,8 +264,6 @@ find_whitespace(char *instr)
 		instr++;
 	return instr;
 }
-
-
 
 /* Counts the number of newlines in a buffer */
 int
@@ -297,13 +289,11 @@ main(){
 	argv_t *argv;
 	char string[2000];
 
-
 	strcpy(string,
 	       "\\This\\ string will be  '' \"separated into\"  \"'\\\"'\" ' 16 ' elements.\n"
 	       "' including a multi-line\n"
 	       "element' with a comment.  # This should not be parsed\n"
 	       ";Nor should this\n" "The End.");
-
 
 	argc = argc_argv(string, &argv, "#;");
 	printf("%s\n", string);

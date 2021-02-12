@@ -21,7 +21,6 @@
 #ifndef _HASERL_H
 #define _HASERL_H       1
 
-
 /* Just a silly construct to contain global variables    */
 typedef struct {
 	unsigned long	uploadkb;       /* how big an upload do we allow (0 for none)*/
@@ -64,7 +63,6 @@ int BecomeUser(uid_t uid, gid_t gid);
 void assignGlobalStartupValues(void);
 void unlink_uploadlist(void);
 int main(int argc, char *argv[]);
-
 
 extern void (*shell_exec)(buffer_t *buf, char *str);
 extern void (*shell_echo)(buffer_t *buf, char *str, size_t len);

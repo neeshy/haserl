@@ -7,7 +7,6 @@ datarootdir=@datarootdir@
 # Not strictly required, but we explicitly do not distribute the generated inc file
 nodist_haserl_SOURCES = haserl_lualib.inc
 
-
 noinst_PROGRAMS = lua2c
 LUASOURCE = h_lua_common.c h_lua_common.h
 if INCLUDE_LUASHELL

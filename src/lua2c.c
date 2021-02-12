@@ -42,7 +42,6 @@
 
 lua_State *lua_vm = NULL;
 
-
 static void
 loadit(char *filename)
 {
@@ -71,7 +70,6 @@ writer(lua_State *L, const void *p, size_t size, void *u)
 	return 0;
 }
 
-
 static void
 dumpit()
 {
@@ -82,7 +80,6 @@ dumpit()
 #endif
 }
 
-
 int
 main(int argc, char *argv[])
 {
@@ -92,7 +89,6 @@ main(int argc, char *argv[])
 	}
 
 	loadit(argv[2]);
-
 
 	printf
 		("/* This file was automatically generated from %s. DO NOT EDIT */\n\n",

@@ -30,7 +30,6 @@ typedef struct {
 	int		fh;             /* the output file handle	*/
 } mime_var_t;
 
-
 /* rfc2388.c */
 void empty_stdin(void);
 void mime_var_init(mime_var_t *obj);
@@ -42,6 +41,5 @@ void mime_exec(mime_var_t *obj, char *fifo);
 void mime_var_open_target(mime_var_t *obj);
 void mime_var_writer(mime_var_t *obj, char *str, int len);
 int rfc2388_handler(list_t *env);
-
 
 #endif /* _RFC2388_H */

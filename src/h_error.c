@@ -45,8 +45,6 @@ char *g_err_msg[] = {
 	"Unspecified Error",
 };
 
-
-
 /*
  * abort the program
  */
@@ -56,7 +54,6 @@ die_with_error(char *msg)
 	fprintf(stderr, "Error: %s\n", msg);
 	exit(-1);
 }
-
 
 /* print an error message and die.  If sp or where are non-null pointers, then
  * a line is added saying where in the script buffer the error occured.  If

@@ -29,5 +29,4 @@ void lua_eval(buffer_t *buf, char *str, size_t len);
 void lua_doscript(buffer_t *script, char *name);
 int h_lua_loadfile(lua_State *L);
 
-
 #endif

@@ -323,7 +323,6 @@ preprocess_token_list(token_t *tokenlist)
 	}
 }
 
-
 token_t *
 process_token_list(buffer_t *buf, token_t *token)
 {

@@ -58,7 +58,6 @@ h_lua_loadfile(lua_State *L)
 	/* get the filename */
 	const char *filename = luaL_checkstring(L, 1);
 
-
 	scriptchain = load_script((char *)filename, NULL);
 	tokenchain = build_token_list(scriptchain, NULL);
 	preprocess_token_list(tokenchain);
@@ -102,7 +101,6 @@ lua_doscript(buffer_t *script, char *name)
 	}
 }
 
-
 /* Run the echo command in a subshell */
 void
 lua_echo(buffer_t *buf, char *str, size_t len)
@@ -131,7 +129,6 @@ lua_echo(buffer_t *buf, char *str, size_t len)
 	buffer_add(buf, quote, strlen(quote));
 	buffer_add(buf, ")\n", 2);
 }
-
 
 /* do an evaluation */
 void
