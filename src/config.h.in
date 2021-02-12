@@ -84,9 +84,6 @@
 /* the subshell to start up */
 #undef SUBSHELL_CMD
 
-/* Lua enabled */
-#undef USE_LUA
-
 /* Version number of package */
 #undef VERSION
 

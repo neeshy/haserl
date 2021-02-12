@@ -57,12 +57,10 @@
 #include "sliding_buffer.h"
 #include "rfc2388.h"
 
-#ifdef USE_LUA
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 #include "h_lua_common.h"
-#endif
 #ifdef INCLUDE_LUASHELL
 #include "h_lua.h"
 #endif
@@ -646,13 +644,11 @@ main(int argc, char *argv[])
 		puts("This is " PACKAGE_NAME " version " PACKAGE_VERSION "\n"
 		     "This program runs as a cgi interpeter, not interactively\n"
 		     "Please see:  http://haserl.sourceforge.net\n"
-#ifdef USE_LUA
 		     "This version includes Lua (precompiled"
 #ifdef INCLUDE_LUASHELL
 		     " and interpreted"
 #endif
 		     ")\n"
-#endif
 		     );
 		return 0;
 		break;
@@ -693,7 +689,6 @@ main(int argc, char *argv[])
 	if (strcmp(global.shell, "lua") && strcmp(global.shell, "luac")) {
 		die_with_message(NULL, NULL, "Bash shell is not enabled.");
 	} else {
-#ifdef USE_LUA
 		shell_setup = &lua_common_setup;
 		shell_destroy = &lua_common_destroy;
 		global.var_prefix = "FORM.";
@@ -718,9 +713,6 @@ main(int argc, char *argv[])
 			die_with_message(NULL, NULL, "Standard Lua shell is not enabled.");
 #endif
 		}
-#else
-		die_with_message(NULL, NULL, "Lua shells are not enabled.");
-#endif
 	}
 
 /* Read the current environment into our chain */

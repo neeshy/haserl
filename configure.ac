@@ -42,9 +42,8 @@ AC_DEFINE([_GNU_SOURCE], [], [Enable GNU Extensions])
 dnl **************************************************************
 dnl Checks for lua
 
-luashell=false
+luashell=true
 luacshell=false
-ac_report_have_lua=disabled
 
 AC_ARG_WITH([lua],
   AS_HELP_STRING([--with-lua], [Specify lua pkg-config name (default is 'lua')]))
@@ -53,12 +52,8 @@ AS_IF([test "x$with_lua" = "xyes"], [with_lua=lua])
 AS_IF([test "x$with_lua" != "xno" -a "x$with_lua" != "x"], [
   luashell=true
   luacshell=true
-  ac_report_have_lua=enabled
-  AC_DEFINE(USE_LUA, , [Lua enabled])
   PKG_CHECK_MODULES([LUA], [$with_lua])
 ])
-
-AM_CONDITIONAL(USE_LUA, test x$ac_report_have_lua = xenabled)
 
 # If Lua is enabled, the user can choose between two different shells
 
@@ -88,10 +83,6 @@ if test x$luacshell = xtrue; then
 	AC_DEFINE(INCLUDE_LUACSHELL, , [Include shell for precompiled Haserl/Lua])
 fi
 
-if test \(x$luashell = xtrue -o x$luacshell = xtrue\) -a x$ac_report_have_lua = xdisabled; then
-	AC_MSG_ERROR([Lua is not enabled so you cannot build a Lua shell.])
-fi
-
 # set additional macros
 
 if test x$luashell = xfalse; then
@@ -100,10 +91,6 @@ if test x$luashell = xfalse; then
 	else
 		AC_MSG_ERROR([All shells disabled.])
 	fi
-fi
-
-if test x$ac_report_have_lua = xenabled -a x$luashell = xfalse -a x$luacshell = xfalse; then
-	AC_MSG_ERROR([Cannot enable Lua if no Lua shell is included.])
 fi
 
 # What subshell should we use
@@ -137,7 +124,8 @@ dnl  report configuration
 AC_MSG_RESULT([
 ** Configuration summary for $PACKAGE $VERSION:
 
-	Building haserl with with lua $ac_report_have_lua 
+	Building haserl with luashell=$luashell
+	Building haserl with luacshell=$luacshell
 	libs: $LIBS
 ])
 

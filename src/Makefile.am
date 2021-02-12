@@ -8,7 +8,6 @@ datarootdir=@datarootdir@
 nodist_haserl_SOURCES = haserl_lualib.inc
 
 
-if USE_LUA
 noinst_PROGRAMS = lua2c
 LUASOURCE = h_lua_common.c h_lua_common.h
 if INCLUDE_LUASHELL
@@ -17,9 +16,7 @@ endif
 if INCLUDE_LUACSHELL
 LUASOURCE += h_luac.c h_luac.h
 endif
-endif
 
-if USE_LUA
 # lua2c_LIBS ?= -llua -ldl -lm
 lua2c_LDFLAGS ?= -Wl,-E
 lua2c:	lua2c.c
@@ -33,8 +30,6 @@ haserl_lualib.inc : haserl_lualib.lua lua2c
 	fi
 
 h_lua_common.c : haserl_lualib.inc
-
-endif
 
 bin_PROGRAMS = haserl
 
