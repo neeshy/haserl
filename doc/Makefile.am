@@ -5,5 +5,3 @@ docdir=$(datadir)/$(PACKAGE)
 datarootdir=@datarootdir@
 
 man_MANS = haserl.1 
-
-

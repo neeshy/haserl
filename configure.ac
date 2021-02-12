@@ -17,7 +17,6 @@ if test -z "$CFLAGS_FOR_BUILD"; then
 	CFLAGS_FOR_BUILD="$CFLAGS"
 fi
 
-
 AC_SUBST(CC_FOR_BUILD)
 AC_SUBST(CFLAGS_FOR_BUILD)
 
@@ -37,7 +36,6 @@ AC_FUNC_MEMCMP
 AC_CHECK_FUNCS([memset putenv strcasecmp strdup strncasecmp strstr])
 
 AC_DEFINE([_GNU_SOURCE], [], [Enable GNU Extensions])
-
 
 dnl **************************************************************
 dnl Checks for lua
@@ -115,9 +113,6 @@ AC_CONFIG_FILES([Makefile
 		doc/Makefile
 		])
 
-
-
-
 AC_OUTPUT 
 
 dnl  report configuration
@@ -128,5 +123,3 @@ AC_MSG_RESULT([
 	Building haserl with luacshell=$luacshell
 	libs: $LIBS
 ])
-
-
