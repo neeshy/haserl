@@ -52,6 +52,7 @@ typedef struct {
 } buffer_t;
 
 /* common.c */
+void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
 int argc_argv(char *instr, argv_t **argv, char *commentstr);
 void buffer_init(buffer_t *buf);

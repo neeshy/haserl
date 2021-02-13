@@ -109,19 +109,6 @@ unescape_url(char *url)
 	url[i] = '\0';
 }
 
-/* allocate memory or die, busybox style. */
-void *
-xmalloc(size_t size)
-{
-	void *buf;
-
-	if ((buf = malloc(size)) == NULL) {
-		die(g_err_msg[E_MALLOC_FAIL]);
-	}
-	memset(buf, 0, size);
-	return buf;
-}
-
 /* adds or replaces the "key=value" value in the env_list chain
  * prefix is appended to the key (e.g. FORM_key=value) */
 list_t *

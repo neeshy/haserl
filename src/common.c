@@ -27,6 +27,19 @@
 #include "common.h"
 #include "h_error.h"
 
+/* allocate memory or die, busybox style. */
+void *
+xmalloc(size_t size)
+{
+	void *buf;
+
+	if ((buf = malloc(size)) == NULL) {
+		die(g_err_msg[E_MALLOC_FAIL]);
+	}
+	memset(buf, 0, size);
+	return buf;
+}
+
 /* realloc memory, or die xmalloc style. */
 void *
 xrealloc(void *buf, size_t size)
