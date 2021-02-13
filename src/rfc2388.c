@@ -144,7 +144,7 @@ mime_tag_add(mime_var_t *obj, char *str)
 }
 
 void
-mime_var_putenv(list_t *env, mime_var_t *obj)
+mime_var_putenv(list_t **env, mime_var_t *obj)
 {
 	buffer_t buf;
 
@@ -321,7 +321,7 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 /* Read multipart/form-data input (RFC2388), typically used when
  * uploading a file. */
 int
-rfc2388_handler(list_t *env)
+rfc2388_handler(list_t **env)
 {
 	enum mime_state_t { DISCARD, BOUNDARY, HEADER, CONTENT };
 

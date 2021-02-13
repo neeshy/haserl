@@ -111,9 +111,10 @@ unescape_url(char *url)
 
 /* adds or replaces the "key=value" value in the env_list chain
  * prefix is appended to the key (e.g. FORM_key=value) */
-list_t *
-myputenv(list_t *cur, char *str, char *prefix)
+void
+myputenv(list_t **env, char *str, char *prefix)
 {
+	list_t *cur = *env;
 	list_t *prev = NULL;
 	size_t keylen;
 	char *entry = NULL;
@@ -124,7 +125,7 @@ myputenv(list_t *cur, char *str, char *prefix)
 	temp = memchr(str, '=', strlen(str));
 	/* if we don't have an equal sign, exit early */
 	if (temp == 0) {
-		return cur;
+		return;
 	}
 
 	keylen = (size_t)(temp - str);
@@ -149,6 +150,7 @@ myputenv(list_t *cur, char *str, char *prefix)
 	/* does the value already exist? */
 	len = keylen + strlen(prefix) + 1;
 	while (cur != NULL) {
+		/* if found a matching key */
 		if (memcmp(cur->buf, entry, len) == 0) {
 			if (array == 1) {
 				/* if an array, create a new string with this
@@ -160,33 +162,40 @@ myputenv(list_t *cur, char *str, char *prefix)
 				free(entry);
 				entry = temp;
 			}
+
 			/* delete the old entry */
 			free(cur->buf);
-			if (prev != NULL) {
+			if (prev) {
 				prev->next = cur->next;
 			}
+
 			free(cur);
 			cur = prev;
-		} /* end if found a matching key */
-		prev = cur;
-		if (cur) {
+
+			if (prev) {
+				cur = (list_t *)cur->next;
+			}
+		} else {
+			prev = cur;
 			cur = (list_t *)cur->next;
 		}
-	} /* end if matching key */
+	}
 
 	/* add the value to the end of the chain */
 	cur = xmalloc(sizeof(list_t));
 	cur->buf = entry;
-	if (prev != NULL) {
+	if (prev) {
 		prev->next = cur;
+	} else {
+		*env = cur;
 	}
 
-	return cur;
+	return;
 }
 
 /* free list_t chain */
 void
-free_list_chain(list_t *list)
+free_list(list_t *list)
 {
 	list_t *next;
 
@@ -200,7 +209,7 @@ free_list_chain(list_t *list)
 
 /* reads the current environment and popluates our environment chain */
 void
-readenv(list_t *env)
+readenv(list_t **env)
 {
 	extern char **environ;
 	char **e = environ;
@@ -214,7 +223,7 @@ readenv(list_t *env)
 /* if HTTP_COOKIE is passed as an environment variable,
  * attempt to parse its values into environment variables */
 void
-CookieVars(list_t *env)
+CookieVars(list_t **env)
 {
 	char *qs;
 	char *token;
@@ -240,7 +249,7 @@ CookieVars(list_t *env)
 }
 
 void
-haserlflags(list_t *env)
+haserlflags(list_t **env)
 {
 	char buf[256];
 
@@ -261,7 +270,7 @@ haserlflags(list_t *env)
 
 /* Read cgi variables from query string, and put in environment */
 int
-ReadCGIQueryString(list_t *env)
+ReadCGIQueryString(list_t **env)
 {
 	char *qs;
 	char *token;
@@ -279,7 +288,6 @@ ReadCGIQueryString(list_t *env)
 			qs[i] = ' ';
 		}
 	}
-	;
 
 	/* split on & and ; to extract name value pairs */
 
@@ -296,7 +304,7 @@ ReadCGIQueryString(list_t *env)
 
 /* Read cgi variables from stdin (for POST queries) */
 int
-ReadCGIPOSTValues(list_t *env)
+ReadCGIPOSTValues(list_t **env)
 {
 	size_t content_length = 0;
 	size_t max_len;
@@ -542,28 +550,28 @@ main(int argc, char *argv[])
 	global.haserl_prefix = "HASERL.";
 
 	/* Read the current environment into our chain */
-	readenv(env);
-	haserlflags(env);
+	readenv(&env);
+	haserlflags(&env);
 
 	/* Read the request data */
 	if (global.acceptall != NONE) {
 		/* If we have a request method, and we were run as a #! style script */
-		CookieVars(env);
+		CookieVars(&env);
 		if (getenv("REQUEST_METHOD")) {
 			if ((strcasecmp(getenv("REQUEST_METHOD"), "GET") == 0) ||
 			    (strcasecmp(getenv("REQUEST_METHOD"), "DELETE") == 0)) {
 				if (global.acceptall == TRUE) {
-					ReadCGIPOSTValues(env);
+					ReadCGIPOSTValues(&env);
 				}
-				ReadCGIQueryString(env);
+				ReadCGIQueryString(&env);
 			}
 
 			if ((strcasecmp(getenv("REQUEST_METHOD"), "POST") == 0) ||
 			    (strcasecmp(getenv("REQUEST_METHOD"), "PUT") == 0)) {
 				if (global.acceptall == TRUE) {
-					ReadCGIQueryString(env);
+					ReadCGIQueryString(&env);
 				}
-				ReadCGIPOSTValues(env);
+				ReadCGIPOSTValues(&env);
 			}
 		}
 	}
@@ -572,7 +580,7 @@ main(int argc, char *argv[])
 	lua_doscript(filename);
 	lua_destroy();
 
-	free_list_chain(env);
+	free_list(env);
 
 	return 0;
 }
