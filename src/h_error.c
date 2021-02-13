@@ -51,18 +51,18 @@ die(const char *s, ...)
 	if (global.silent == FALSE) {
 		if (getenv("REQUEST_METHOD")) {
 			fo = stdout;
-			fprintf(fo, "HTTP/1.0 500 Server Error\n"
-				"Content-Type: text/html\n\n"
-				"<html><body><b><font color=#CC0000>" PACKAGE
-				" CGI Error</font></b><br><pre>\n");
+			fprintf(fo, "HTTP/1.0 500 Server Error\r\n"
+				"Content-Type: text/html\r\n\r\n"
+				"<html><body><b><font color='#C00'>" PACKAGE
+				" CGI Error</font></b><br><pre>\r\n");
 		}
 		va_start(p, s);
 		vfprintf(fo, s, p);
 		va_end(p);
-		printf("\n");
+		printf("\r\n");
 
 		if (getenv("REQUEST_METHOD")) {
-			fprintf(fo, "</pre></body></html>\n");
+			fprintf(fo, "</pre></body></html>");
 		}
 	}
 	exit(-1);

@@ -94,12 +94,12 @@ const char *gs_short_options = "+vhu:U:H:anS";
  *
  * int argc, count; argv_t *argv; char string[2000];
  *
- * strcpy (string, "This\\ string will be \"separated into\" '6' elements.", "");
- * argc = argc_argv (string, &argv);
+ * strcpy(string, "This\\ string will be \"separated into\" '6' elements.", "");
+ * argc = argc_argv(string, &argv);
  * for (count = 0; count < argc; count++) {
  * 	printf ("%03d: %s\n", count, argv[count].string);
- * 	}
- * free (argv);
+ * }
+ * free(argv);
  */
 int
 argc_argv(char *instr, argv_t **argv, char *commentstr)
