@@ -115,7 +115,7 @@ list_t *
 myputenv(list_t *cur, char *str, char *prefix)
 {
 	list_t *prev = NULL;
-	size_t keylen, prefixlen;
+	size_t keylen;
 	char *entry = NULL;
 	char *temp = NULL;
 	int array = 0;
@@ -137,9 +137,7 @@ myputenv(list_t *cur, char *str, char *prefix)
 
 	entry = xmalloc(strlen(str) + strlen(prefix) + 1);
 	entry[0] = '\0';
-	if ((prefixlen = strlen(prefix))) {
-		strncat(entry, prefix, prefixlen);
-	}
+	strcat(entry, prefix);
 
 	if (array == 1) {
 		strncat(entry, str, keylen);
@@ -205,11 +203,11 @@ void
 readenv(list_t *env)
 {
 	extern char **environ;
-	int count = 0;
+	char **e = environ;
 
-	while (environ[count] != NULL) {
-		myputenv(env, environ[count], global.nul_prefix);
-		count++;
+	while (*e != NULL) {
+		myputenv(env, *e, global.nul_prefix);
+		e++;
 	}
 }
 
@@ -241,37 +239,23 @@ CookieVars(list_t *env)
 	free(qs);
 }
 
-/* Makes a uniqe SESSIONID environment variable for this script */
-void
-sessionid(list_t *env)
-{
-	char session[29];
-
-	sprintf(session, "SESSIONID=%x%x", getpid(), (int)time(NULL));
-	myputenv(env, session, global.nul_prefix);
-}
-
-list_t *
-wcversion(list_t *env)
-{
-	char version[200];
-
-	sprintf(version, "HASERLVER=%s", VERSION);
-	return myputenv(env, version, global.nul_prefix);
-}
-
 void
 haserlflags(list_t *env)
 {
-	char buf[200];
+	char buf[256];
 
-	snprintf(buf, 200, "UPLOAD_DIR=%s", global.uploaddir);
+	myputenv(env, "HASERLVER=" VERSION, global.nul_prefix);
+
+	snprintf(buf, 256, "SESSIONID=%x%x", getpid(), (int)time(NULL));
+	myputenv(env, buf, global.nul_prefix);
+
+	snprintf(buf, 256, "UPLOAD_DIR=%s", global.uploaddir);
 	myputenv(env, buf, global.haserl_prefix);
 
-	snprintf(buf, 200, "UPLOAD_LIMIT=%lu", global.uploadkb);
+	snprintf(buf, 256, "UPLOAD_LIMIT=%lu", global.uploadkb);
 	myputenv(env, buf, global.haserl_prefix);
 
-	snprintf(buf, 200, "ACCEPT_ALL=%d", global.acceptall);
+	snprintf(buf, 256, "ACCEPT_ALL=%d", global.acceptall);
 	myputenv(env, buf, global.haserl_prefix);
 }
 
@@ -406,7 +390,7 @@ ReadCGIPOSTValues(list_t *env)
 }
 
 int
-parseCommandLine(int argc, char *argv[])
+ParseCommandLine(int argc, char *argv[])
 {
 	int c;
 	int option_index = 0;
@@ -443,7 +427,7 @@ parseCommandLine(int argc, char *argv[])
 			break;
 		case 'v':
 		case 'h':
-			printf("This is " PACKAGE " version " VERSION ""
+			printf("This is " PACKAGE " version " VERSION
 			       " (http://haserl.sourceforge.net)\n");
 			exit(0);
 			break;
@@ -472,7 +456,7 @@ BecomeUser(uid_t uid, gid_t gid)
 
 /* Assign default values to the global structure */
 void
-assignGlobalStartupValues()
+AssignGlobalStartupValues()
 {
 	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
 	global.silent = FALSE;          /* We do print errors if we find them         */
@@ -502,7 +486,7 @@ main(int argc, char *argv[])
 
 	list_t *env = NULL;
 
-	assignGlobalStartupValues();
+	AssignGlobalStartupValues();
 
 	/* if more than argv[1] and argv[1] is not a file */
 	switch (argc) {
@@ -511,8 +495,7 @@ main(int argc, char *argv[])
 		puts("This is " PACKAGE " version " VERSION "\n"
 		     "This program runs as a cgi interpeter, not interactively\n"
 		     "Please see:  http://haserl.sourceforge.net\n"
-		     "This version includes Lua (precompiled and interpreted)\n"
-		     );
+		     "This version includes Lua (precompiled and interpreted)\n");
 		return 0;
 		break;
 	default: /* more than one */
@@ -532,7 +515,7 @@ main(int argc, char *argv[])
 			}
 		}
 
-		parseCommandLine(av2c, av2);
+		ParseCommandLine(av2c, av2);
 		free(av);
 		if (av2 != argv) {
 			free(av2);
@@ -559,9 +542,7 @@ main(int argc, char *argv[])
 	global.haserl_prefix = "HASERL.";
 
 	/* Read the current environment into our chain */
-	env = wcversion(env);
 	readenv(env);
-	sessionid(env);
 	haserlflags(env);
 
 	/* Read the request data */

@@ -72,7 +72,7 @@ void
 lua_doscript(char *name)
 {
 	if (luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0)) {
-		die("Failed to load lua and execute chunk: %s", lua_tostring(lua_vm, -1));
+		die("%s", lua_tostring(lua_vm, -1));
 	}
 }
 

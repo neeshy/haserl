@@ -53,18 +53,15 @@ void unescape_url(char *url);
 list_t *myputenv(list_t *cur, char *str, char *prefix);
 void free_list_chain(list_t *);
 void readenv(list_t *env);
-void CookieVars(list_t *env);
-void sessionid(list_t *env);
-list_t *wcversion(list_t *env);
 void haserlflags(list_t *env);
+void CookieVars(list_t *env);
 int ReadCGIQueryString(list_t *env);
 int ReadCGIPOSTValues(list_t *env);
 int LineToStr(char *string, size_t max);
 int ReadMimeEncodedInput(list_t *env);
 void PrintParseError(char *error, int linenum);
-int parseCommandLine(int argc, char *argv[]);
+int ParseCommandLine(int argc, char *argv[]);
 int BecomeUser(uid_t uid, gid_t gid);
-void assignGlobalStartupValues(void);
-void unlink_uploadlist(void);
+void AssignGlobalStartupValues(void);
 
 #endif /* _HASERL_H */
