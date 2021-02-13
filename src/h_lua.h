@@ -21,9 +21,9 @@
 #ifndef _H_LUA_H
 #define _H_LUA_H
 
-#include <lua.h>
-
+int lua_loadfile(lua_State *L);
 void lua_doscript(char *name);
-int h_lua_loadfile(lua_State *L);
+void lua_setup(list_t *env);
+void lua_destroy(void);
 
 #endif /* _H_LUA_H */

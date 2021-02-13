@@ -51,13 +51,7 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
-#include "h_lua_common.h"
-#ifdef INCLUDE_LUASHELL
 #include "h_lua.h"
-#endif
-#ifdef INCLUDE_LUACSHELL
-#include "h_luac.h"
-#endif
 
 #include "haserl.h"
 
@@ -67,11 +61,6 @@
 
 #ifndef MAX_UPLOAD_KB
 #define MAX_UPLOAD_KB 2048
-#endif
-
-/* Refuse to disable the default shell */
-#ifndef DEFAULT_SHELL
-#define DEFAULT_SHELL "lua"
 #endif
 
 haserl_t global;
@@ -89,12 +78,11 @@ struct option ga_long_options[] = {
 	{ "upload-handler", required_argument, 0, 'H' },
 	{ "accept-all",     no_argument,       0, 'a' },
 	{ "accept-none",    no_argument,       0, 'n' },
-	{ "shell",          required_argument, 0, 's' },
 	{ "silent",         no_argument,       0, 'S' },
 	{ 0,                0,                 0, 0   }
 };
 
-const char *gs_short_options = "+vhu:U:H:ans:S";
+const char *gs_short_options = "+vhu:U:H:anS";
 
 /* Convert 2 char hex string into char it represents
  * (from http://www.jmarshall.com/easy/cgi) */
@@ -316,9 +304,6 @@ haserlflags(list_t *env)
 
 	snprintf(buf, 200, "ACCEPT_ALL=%d", global.acceptall);
 	myputenv(env, buf, global.haserl_prefix);
-
-	snprintf(buf, 200, "SHELL=%s", global.shell);
-	myputenv(env, buf, global.haserl_prefix);
 }
 
 /* Read cgi variables from query string, and put in environment */
@@ -465,9 +450,6 @@ parseCommandLine(int argc, char *argv[])
 	while ((c = getopt_long(argc, argv, gs_short_options,
 				ga_long_options, &option_index)) != -1) {
 		switch (c) {
-		case 's':
-			global.shell = optarg;
-			break;
 		case 'S':
 			global.silent = TRUE;
 			break;
@@ -524,7 +506,6 @@ void
 assignGlobalStartupValues()
 {
 	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
-	global.shell = DEFAULT_SHELL;    /* The shell we use                           */
 	global.silent = FALSE;          /* We do print errors if we find them         */
 	global.uploaddir = TEMPDIR;     /* where to upload to                         */
 	global.uploadhandler = NULL;    /* the upload handler                         */
@@ -542,7 +523,6 @@ main(int argc, char *argv[])
 {
 	char *filename = NULL;
 	struct stat filestat;
-	void (*doscript)(char *);
 
 	argv_t *av = NULL;
 	char **av2 = argv;
@@ -562,11 +542,7 @@ main(int argc, char *argv[])
 		puts("This is " PACKAGE " version " VERSION "\n"
 		     "This program runs as a cgi interpeter, not interactively\n"
 		     "Please see:  http://haserl.sourceforge.net\n"
-		     "This version includes Lua (precompiled"
-#ifdef INCLUDE_LUASHELL
-		     " and interpreted"
-#endif
-		     ")\n"
+		     "This version includes Lua (precompiled and interpreted)\n"
 		     );
 		return 0;
 		break;
@@ -606,30 +582,12 @@ main(int argc, char *argv[])
 	stat(filename, &filestat);
 	BecomeUser(filestat.st_uid, filestat.st_gid);
 
-	/* populate the function pointers based on the shell selected */
-	if (strcmp(global.shell, "lua") && strcmp(global.shell, "luac")) {
-		die("Invalid shell specified.");
-	} else {
-		global.var_prefix = "FORM.";
-		global.nul_prefix = "ENV.";
-		global.get_prefix = "GET.";
-		global.post_prefix = "POST.";
-		global.cookie_prefix = "COOKIE.";
-		global.haserl_prefix = "HASERL.";
-		if (global.shell[3] == 'c') { /* luac only */
-#ifdef INCLUDE_LUACSHELL
-			doscript = luac_doscript;
-#else
-			die("Compiled Lua shell is not enabled.");
-#endif
-		} else {
-#ifdef INCLUDE_LUASHELL
-			doscript = lua_doscript;
-#else
-			die("Standard Lua shell is not enabled.");
-#endif
-		}
-	}
+	global.var_prefix = "FORM.";
+	global.nul_prefix = "ENV.";
+	global.get_prefix = "GET.";
+	global.post_prefix = "POST.";
+	global.cookie_prefix = "COOKIE.";
+	global.haserl_prefix = "HASERL.";
 
 	/* Read the current environment into our chain */
 	env = wcversion(env);
@@ -660,9 +618,9 @@ main(int argc, char *argv[])
 		}
 	}
 
-	lua_common_setup(global.shell, env);
-	doscript(filename);
-	lua_common_destroy();
+	lua_setup(env);
+	lua_doscript(filename);
+	lua_destroy();
 
 	free_list_chain(env);
 
