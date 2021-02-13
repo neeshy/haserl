@@ -253,7 +253,7 @@ CookieVars(list_t *env)
 	/* split on; to extract name value pairs */
 	token = strtok(qs, ";");
 	while (token) {
-		// skip leading spaces
+		/* skip leading spaces */
 		while (token[0] == ' ') {
 			token++;
 		}

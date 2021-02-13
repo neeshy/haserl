@@ -265,8 +265,7 @@ mime_var_open_target(mime_var_t *obj)
 	}
 
 	/* reuse the name as a fifo if we have a handler. We do this
-	 * because tempnam uses TEMPDIR if defined, among other bugs
-	 */
+	 * because tempnam uses TEMPDIR if defined, among other bugs */
 	if ((ok) && global.uploadhandler) {
 		/* I have a handler */
 		close(obj->fh);
@@ -275,8 +274,7 @@ mime_var_open_target(mime_var_t *obj)
 			ok = 0;
 		}
 		/* you must open the fifo for reading before writing
-		 * on non linux systems
-		 */
+		 * on non linux systems */
 		if (ok) {
 			mime_exec(obj, tmpname);
 			obj->fh = open(tmpname, O_WRONLY);
@@ -446,7 +444,7 @@ rfc2388_handler(list_t *env)
 				}
 				header_continuation = 0;
 			} else {
-				// expect more data
+				/* expect more data */
 				header_continuation = 1;
 			}
 			break;

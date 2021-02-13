@@ -102,8 +102,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	pos = 0;
 	len = sbuf->bufsize - (int)(sbuf->ptr - sbuf->buf) - strlen(matchstr);
 	/* a malicious client can send a matchstr longer than the actual content body
-	 * do not allow reads beyond the buffer limits
-	 */
+	 * do not allow reads beyond the buffer limits */
 	len = (len < 0) ? 0 : len;
 
 	/* if have a matchstr, look for it, otherwise return the chunk */
