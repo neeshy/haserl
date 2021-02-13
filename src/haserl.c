@@ -57,9 +57,6 @@
 
 haserl_t global;
 
-/* global shell execution function pointers. These point to the actual functions
- * that do the job, based on the language */
-
 /* Command line / Config file directives When adding a long option, make sure
  * to update the short_options as well */
 struct option ga_long_options[] = {
@@ -487,23 +484,6 @@ BecomeUser(uid_t uid, gid_t gid)
 	return 0;
 }
 
-/* Assign default values to the global structure */
-void
-AssignGlobalStartupValues()
-{
-	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
-	global.silent = FALSE;          /* We do print errors if we find them         */
-	global.uploaddir = TEMPDIR;     /* where to upload to                         */
-	global.uploadhandler = NULL;    /* the upload handler                         */
-	global.acceptall = FALSE;       /* don't allow POST data for GET method       */
-	global.var_prefix = "FORM_";
-	global.get_prefix = "GET_";
-	global.post_prefix = "POST_";
-	global.cookie_prefix = "COOKIE_";
-	global.haserl_prefix = "HASERL_";
-	global.nul_prefix = "";
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -519,7 +499,18 @@ main(int argc, char *argv[])
 
 	list_t *env = NULL;
 
-	AssignGlobalStartupValues();
+	/* Assign default values to the global structure */
+	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
+	global.silent = FALSE;          /* We do print errors if we find them         */
+	global.uploaddir = TEMPDIR;     /* where to upload to                         */
+	global.uploadhandler = NULL;    /* the upload handler                         */
+	global.acceptall = FALSE;       /* don't allow POST data for GET method       */
+	global.nul_prefix = "ENV.";
+	global.var_prefix = "FORM.";
+	global.get_prefix = "GET.";
+	global.post_prefix = "POST.";
+	global.cookie_prefix = "COOKIE.";
+	global.haserl_prefix = "HASERL.";
 
 	/* if more than argv[1] and argv[1] is not a file */
 	switch (argc) {
@@ -566,13 +557,6 @@ main(int argc, char *argv[])
 	/* drop permissions */
 	stat(filename, &filestat);
 	BecomeUser(filestat.st_uid, filestat.st_gid);
-
-	global.var_prefix = "FORM.";
-	global.nul_prefix = "ENV.";
-	global.get_prefix = "GET.";
-	global.post_prefix = "POST.";
-	global.cookie_prefix = "COOKIE.";
-	global.haserl_prefix = "HASERL.";
 
 	/* Read the current environment into our chain */
 	readenv(&env);

@@ -36,6 +36,5 @@ int ReadMimeEncodedInput(list_t **env);
 void PrintParseError(char *error, int linenum);
 int ParseCommandLine(int argc, char *argv[]);
 int BecomeUser(uid_t uid, gid_t gid);
-void AssignGlobalStartupValues(void);
 
 #endif /* _HASERL_H */

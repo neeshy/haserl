@@ -58,11 +58,11 @@ typedef struct {
 	char          *shell;          /* The shell we use                           */
 	char          *uploaddir;      /* where we upload to                         */
 	char          *uploadhandler;  /* a handler for uploads                      */
+	char          *nul_prefix;     /* what name we give to environment variables */
 	char          *var_prefix;     /* what name we give to FORM variables        */
 	char          *get_prefix;     /* what name we give to GET variables         */
 	char          *post_prefix;    /* what name we give to POST variables        */
 	char          *cookie_prefix;  /* what name we give to COOKIE variables      */
-	char          *nul_prefix;     /* what name we give to environment variables */
 	char          *haserl_prefix;  /* what name we give to HASERL variables      */
 	int            acceptall;      /* true if we'll accept POST data on
 	                                * GETs and vice versa                        */
