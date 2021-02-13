@@ -30,10 +30,6 @@
  *
  * ------------------------------------------------------------------------- */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
@@ -303,7 +299,7 @@ wcversion(list_t *env)
 {
 	char version[200];
 
-	sprintf(version, "HASERLVER=%s", PACKAGE_VERSION);
+	sprintf(version, "HASERLVER=%s", VERSION);
 	return myputenv(env, version, global.nul_prefix);
 }
 
@@ -496,7 +492,7 @@ parseCommandLine(int argc, char *argv[])
 			break;
 		case 'v':
 		case 'h':
-			printf("This is " PACKAGE_NAME " version " PACKAGE_VERSION ""
+			printf("This is " PACKAGE " version " VERSION ""
 			       " (http://haserl.sourceforge.net)\n");
 			exit(0);
 			break;
@@ -563,7 +559,7 @@ main(int argc, char *argv[])
 	switch (argc) {
 	case 1:
 		/* we were run, instead of called as a shell script */
-		puts("This is " PACKAGE_NAME " version " PACKAGE_VERSION "\n"
+		puts("This is " PACKAGE " version " VERSION "\n"
 		     "This program runs as a cgi interpeter, not interactively\n"
 		     "Please see:  http://haserl.sourceforge.net\n"
 		     "This version includes Lua (precompiled"

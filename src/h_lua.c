@@ -18,10 +18,6 @@
  *
  * ------------------------------------------------------------------------ */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>

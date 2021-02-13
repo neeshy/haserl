@@ -18,10 +18,6 @@
  *
  * ------------------------------------------------------------------------ */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
@@ -32,10 +28,7 @@
 #include <sys/fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-
-#if HAVE_SIGNAL_H
 #include <signal.h>
-#endif
 
 #include "common.h"
 #include "h_error.h"

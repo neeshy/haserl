@@ -18,10 +18,6 @@
  *
  * ------------------------------------------------------------------------ */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <string.h>
 
 #include <lua.h>
@@ -94,8 +90,10 @@ lua_common_setup(char *shell, list_t *env)
 	lua_pushcfunction(lua_vm, shell[3] == 'c' ? h_luac_loadfile : h_lua_loadfile);
 #elif defined(INCLUDE_LUASHELL)
 	lua_pushcfunction(lua_vm, h_lua_loadfile);
-#else /* INCLUDE_LUACSHELL */
+#elif defined(INCLUDE_LUACSHELL)
 	lua_pushcfunction(lua_vm, h_luac_loadfile);
+#else
+#error "No lua shell defined"
 #endif
 	lua_settable(lua_vm, -3);
 }

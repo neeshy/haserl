@@ -26,10 +26,6 @@
  * luac -s -o foo haserl_lualib.lua
  * lua2c haserl_lualib foo >haserl_lualib.inc */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -18,10 +18,6 @@
  *
  * ------------------------------------------------------------------------ */
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -58,7 +54,7 @@ die(const char *s, ...)
 			fo = stdout;
 			fprintf(fo, "HTTP/1.0 500 Server Error\n"
 				"Content-Type: text/html\n\n"
-				"<html><body><b><font color=#CC0000>" PACKAGE_NAME
+				"<html><body><b><font color=#CC0000>" PACKAGE
 				" CGI Error</font></b><br><pre>\n");
 		}
 		va_start(p, s);
