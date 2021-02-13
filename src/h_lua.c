@@ -35,7 +35,7 @@ h_lua_loadfile(lua_State *L)
 
 	if (luaL_loadfile(L, filename)) {
 		die("Cannot load file '%s': %s", filename,
-		                 lua_tostring(L, -1));
+		    lua_tostring(L, -1));
 	}
 
 	return 1;
@@ -44,9 +44,8 @@ h_lua_loadfile(lua_State *L)
 void
 lua_doscript(char *name)
 {
-	int status = luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0);
-
-	if (status && !lua_isnil(lua_vm, -1)) {
+	if ((luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0)) &&
+	    !lua_isnil(lua_vm, -1)) {
 		const char *msg = lua_tostring(lua_vm, -1);
 		if (msg == NULL) {
 			msg = "(error object is not a string)";
