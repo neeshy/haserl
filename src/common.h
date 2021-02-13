@@ -54,7 +54,7 @@ typedef struct {
 /* common.c */
 void *xrealloc(void *buf, size_t size);
 int argc_argv(char *instr, argv_t **argv, char *commentstr);
-void haserl_buffer_init(buffer_t *buf);
+void buffer_init(buffer_t *buf);
 void buffer_reset(buffer_t *buf);
 void buffer_destroy(buffer_t *buf);
 void buffer_add(buffer_t *buf, const void *data, unsigned long size);

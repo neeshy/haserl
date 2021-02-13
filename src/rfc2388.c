@@ -52,7 +52,7 @@ mime_var_init(mime_var_t *obj)
 	obj->filename = NULL;
 	obj->type = NULL;
 	obj->tempname = NULL;
-	haserl_buffer_init(&(obj->value));
+	buffer_init(&(obj->value));
 	obj->fh = 0;
 }
 
@@ -148,7 +148,7 @@ mime_var_putenv(list_t *env, mime_var_t *obj)
 {
 	buffer_t buf;
 
-	haserl_buffer_init(&buf);
+	buffer_init(&buf);
 	if (obj->name) {
 		/* For file uploads, this creates FORM_foo=tempfile_pathspec.
 		 * That name can be overwritten by a subsequent foo=/etc/passwd,
@@ -379,7 +379,7 @@ rfc2388_handler(list_t *env)
 	}
 
 	/* initialize the buffer, and make sure it doesn't point to null */
-	haserl_buffer_init(&buf);
+	buffer_init(&buf);
 	buffer_add(&buf, "", 1);
 	buffer_reset(&buf);
 

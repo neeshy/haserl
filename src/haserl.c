@@ -369,7 +369,7 @@ ReadCGIPOSTValues(list_t *env)
 	if (getenv(CONTENT_LENGTH)) {
 		sbuf.maxread = strtoul(getenv(CONTENT_LENGTH), NULL, 10);
 	}
-	haserl_buffer_init(&token);
+	buffer_init(&token);
 
 	if (urldecoding == 0) {
 		buffer_add(&token, "body=", 5);

@@ -176,7 +176,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 /* Expandable Buffer is a reimplementation based on buffer.c in GCC
  * originally by Per Bother */
 void
-haserl_buffer_init(buffer_t *buf)
+buffer_init(buffer_t *buf)
 {
 	buf->data = NULL;
 	buf->ptr = NULL;
@@ -189,7 +189,7 @@ buffer_destroy(buffer_t *buf)
 	if (buf->data) {
 		free(buf->data);
 	}
-	haserl_buffer_init(buf);
+	buffer_init(buf);
 }
 
 /* don't reallocate - just forget about the current contents */
