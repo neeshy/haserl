@@ -53,7 +53,6 @@ lua_putenv(char *str)
 	lua_pushstring(lua_vm, str);
 	lua_pushstring(lua_vm, value);
 	lua_call(lua_vm, 2, 0);
-	return;
 }
 
 int
