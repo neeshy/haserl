@@ -21,39 +21,13 @@
 #ifndef _HASERL_H
 #define _HASERL_H
 
-#ifndef TEMPDIR
-#define TEMPDIR "/tmp"
-#endif
+/* how many argv slots to allocate at once */
+#define ALLOC_CHUNK 10
 
-#ifndef MAX_UPLOAD_KB
-#define MAX_UPLOAD_KB 2048
-#endif
-
-/* Just a silly construct to contain global variables */
-typedef struct {
-	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none) */
-	char          *shell;          /* The shell we use                           */
-	char          *uploaddir;      /* where we upload to                         */
-	char          *uploadhandler;  /* a handler for uploads                      */
-	char          *var_prefix;     /* what name we give to FORM variables        */
-	char          *get_prefix;     /* what name we give to GET variables         */
-	char          *post_prefix;    /* what name we give to POST variables        */
-	char          *cookie_prefix;  /* what name we give to COOKIE variables      */
-	char          *nul_prefix;     /* what name we give to environment variables */
-	char          *haserl_prefix;  /* what name we give to HASERL variables      */
-	int            acceptall;      /* true if we'll accept POST data on
-	                                * GETs and vice versa                        */
-	int            silent;         /* true if we never print errors              */
-} haserl_t;
-
-extern haserl_t global;
-
+int argc_argv(char *instr, argv_t **argv, char *commentstr);
 char x2c(char *what);
 void unescape_url(char *url);
-void myputenv(list_t **cur, char *str, char *prefix);
-void free_list(list_t *);
-void readenv(list_t **env);
-void haserlflags(list_t **env);
+void haserl_flags(list_t **env);
 void CookieVars(list_t **env);
 int ReadCGIQueryString(list_t **env);
 int ReadCGIPOSTValues(list_t **env);

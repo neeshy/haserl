@@ -35,14 +35,12 @@
 #include "sliding_buffer.h"
 #include "rfc2388.h"
 
-#include "haserl.h"
-
 void
 empty_stdin(void)
 {
 	char c[2000];
 
-	while (read(STDIN_FILENO, &c, 2000));
+	while (read(0, &c, 2000));
 }
 
 void
@@ -373,7 +371,7 @@ rfc2388_handler(list_t **env)
 
 	/* initialize a 128K sliding buffer */
 	s_buffer_init(&sbuf, 1024 * 128);
-	sbuf.fh = STDIN;
+	sbuf.fh = 0;
 	if (getenv("CONTENT_LENGTH")) {
 		sbuf.maxread = strtoul(getenv("CONTENT_LENGTH"), NULL, 10);
 	}

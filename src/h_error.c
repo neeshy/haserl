@@ -26,7 +26,6 @@
 #include <stdarg.h>
 
 #include "common.h"
-#include "haserl.h"
 #include "h_error.h"
 
 char *g_err_msg[] = {

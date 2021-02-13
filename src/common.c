@@ -50,140 +50,113 @@ xrealloc(void *buf, size_t size)
 	return buf;
 }
 
-/*
- * split a string into an argv[] array, and return the number of elements.
- * Warning:  Overwrites instr with nulls (to make ASCIIZ strings) and mallocs
- * space for the argv array. The argv array will point to the offsets in
- * instr where the elements occur. The calling function must free the argv
- * array, and should do so before freeing instr memory.
- *
- * If comment points to a non-null string, then any character in the string
- * will mark the beginning of a comment until the end-of-line:
- *
- * comment="#;"
- * foo bar     # This is a comment
- * foo baz     ; This is a comment as well
- *
- * Example of use:
- *
- * int argc, count; argv_t *argv; char string[2000];
- *
- * strcpy (string, "This\\ string will be \"separated into\" '6' elements.", "");
- * argc = argc_argv (string, &argv);
- * for (count = 0; count < argc; count++) {
- * 	printf ("%03d: %s\n", count, argv[count].string);
- * 	}
- * free (argv);
- */
-int
-argc_argv(char *instr, argv_t **argv, char *commentstr)
+/* adds or replaces the "key=value" value in the env_list chain
+ * prefix is appended to the key (e.g. FORM_key=value) */
+void
+myputenv(list_t **env, char *str, char *prefix)
 {
-	char quote = '\0';
-	int arg_count = 0;
-	enum state_t {
-		WHITESPACE, WORDSPACE, TOKENSTART
-	} state = WHITESPACE;
-	argv_t *argv_array = NULL;
-	int argc_slots = 0;
-	size_t len, pos;
+	list_t *cur = *env;
+	list_t *prev = NULL;
+	size_t keylen;
+	char *entry = NULL;
+	char *temp = NULL;
+	int array = 0;
+	int len;
 
-	len = strlen(instr);
-	pos = 0;
-	char quoted = 0;
-
-	while (pos < len) {
-		/* Comments are really, really special */
-		if ((state == WHITESPACE) && (strchr(commentstr, *instr))) {
-			while ((*instr != '\n') && (*instr != '\0')) {
-				instr++;
-				pos++;
-			}
-		}
-
-		switch (*instr) {
-		/* quoting */
-		case '"':
-		case '\'':
-			/* Begin quoting */
-			if (state == WHITESPACE) {
-				quote = *instr;
-				state = TOKENSTART;
-				quoted = -1;
-				if (*(instr + 1) == quote) { /* special case for NULL quote */
-					*instr = '\0';
-				} else {
-					instr++;
-					pos++;
-				}
-			} else { /* WORDSPACE, so quotes end or quotes within quotes */
-				/* Is it the same kind of quote? */
-				if ((*instr == quote) && quoted) {
-					quote = '\0';
-					*instr = '\0';
-					state = WHITESPACE;
-				}
-			}
-			break;
-
-		/* backslash - if escaping a quote within a quote */
-		case '\\':
-			if ((quote) && (*(instr + 1) == quote)) {
-				memmove(instr, instr + 1, strlen(instr));
-				len--;
-			}
-			/* otherwise, its just a normal character */
-			else {
-				if (state == WHITESPACE) {
-					state = TOKENSTART;
-				}
-			}
-			break;
-
-		/* whitepsace */
-		case ' ':
-		case '\t':
-		case '\r':
-		case '\n':
-			if ((state == WORDSPACE) && (quote == '\0')) {
-				state = WHITESPACE;
-				*instr = '\0';
-			}
-			break;
-
-		case '\0':
-			break;
-
-		default:
-			if (state == WHITESPACE) {
-				state = TOKENSTART;
-			}
-		} /* end switch */
-
-		if (state == TOKENSTART) {
-			arg_count++;
-			if (arg_count > argc_slots) {
-				argc_slots += ALLOC_CHUNK;
-				argv_array = xrealloc(argv_array, sizeof(argv_t) * (argc_slots + ALLOC_CHUNK));
-			}
-
-			if (argv_array == NULL) {
-				return -1;
-			}
-			argv_array[arg_count - 1].string = instr;
-			argv_array[arg_count - 1].quoted = quoted;
-			state = WORDSPACE;
-			quoted = 0;
-		}
-
-		instr++;
-		pos++;
+	temp = memchr(str, '=', strlen(str));
+	/* if we don't have an equal sign, exit early */
+	if (temp == 0) {
+		return;
 	}
 
-	if (arg_count == 0) return 0;
+	keylen = (size_t)(temp - str);
 
-	argv_array[arg_count].string = NULL;
-	*argv = argv_array;
-	return arg_count;
+	/* is this an array */
+	if (memcmp(str + keylen - 2, "[]", 2) == 0) {
+		keylen = keylen - 2;
+		array = 1;
+	}
+
+	entry = xmalloc(strlen(str) + strlen(prefix) + 1);
+	entry[0] = '\0';
+	strcat(entry, prefix);
+
+	if (array == 1) {
+		strncat(entry, str, keylen);
+		strcat(entry, str + keylen + 2);
+	} else {
+		strcat(entry, str);
+	}
+
+	/* does the value already exist? */
+	len = keylen + strlen(prefix) + 1;
+	while (cur != NULL) {
+		/* if found a matching key */
+		if (memcmp(cur->buf, entry, len) == 0) {
+			if (array == 1) {
+				/* if an array, create a new string with this
+				 * value added to the end of the old value(s) */
+				temp = xmalloc(strlen(cur->buf) + strlen(entry) - len + 2);
+				memmove(temp, cur->buf, strlen(cur->buf) + 1);
+				strcat(temp, "\n");
+				strcat(temp, str + keylen + 3);
+				free(entry);
+				entry = temp;
+			}
+
+			/* delete the old entry */
+			free(cur->buf);
+			if (prev) {
+				prev->next = cur->next;
+			}
+
+			free(cur);
+			cur = prev;
+
+			if (prev) {
+				cur = (list_t *)cur->next;
+			}
+		} else {
+			prev = cur;
+			cur = (list_t *)cur->next;
+		}
+	}
+
+	/* add the value to the end of the chain */
+	cur = xmalloc(sizeof(list_t));
+	cur->buf = entry;
+	if (prev) {
+		prev->next = cur;
+	} else {
+		*env = cur;
+	}
+}
+
+/* reads the current environment and popluates our environment chain */
+void
+readenv(list_t **env)
+{
+	extern char **environ;
+	char **e = environ;
+
+	while (*e != NULL) {
+		myputenv(env, *e, global.nul_prefix);
+		e++;
+	}
+}
+
+/* free list_t */
+void
+free_list(list_t *list)
+{
+	list_t *next;
+
+	while (list) {
+		next = list->next;
+		free(list->buf);
+		free(list);
+		list = next;
+	}
 }
 
 /* Expandable Buffer is a reimplementation based on buffer.c in GCC
