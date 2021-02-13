@@ -22,12 +22,12 @@
 
 haserl, FORM, ENV, COOKIE, HASERL, GET, POST = {}, {}, {}, {}, {}, {}, {}
 
-function haserl.setfield (f, v)
+function haserl.setfield(f, v)
 	-- From programming in Lua 1st Ed.
 	-- start with the table of globals
 	local t = _G   
 	for w, d in string.gmatch(f, '([%w_%-]+)(.?)') do
-		if (tonumber(w)) then
+		if tonumber(w) then
 			w = tonumber(w)
 		end
 		if d == '.' then                -- not last field?
@@ -39,7 +39,7 @@ function haserl.setfield (f, v)
 	end
 end
 
-function haserl.getfield (f)
+function haserl.getfield(f)
 	-- start with the table of globals
 	local v = _G
 	for w in string.gmatch(f, '[%w_]+') do
@@ -53,5 +53,5 @@ function haserl.myputenv(key, value)
 	key = string.gsub(key, '[\\]\\[]', '.' )
 	key = string.gsub(key, '[\\.]+', '.' )
 	-- and create a table if necessary
-	haserl.setfield (key, value)
+	haserl.setfield(key, value)
 end
