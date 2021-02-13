@@ -3,7 +3,7 @@ VERSION ?= 0.9.35
 CPPFLAGS ?= -D_GNU_SOURCE -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\"
 DESTDIR ?= /usr/local
 
-WITH_LUA ?= lua
+WITH_LUA ?= luajit
 CFLAGS += $(shell pkg-config --cflags -- $(WITH_LUA))
 LIBS += $(shell pkg-config --libs -- $(WITH_LUA))
 
