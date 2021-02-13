@@ -196,11 +196,7 @@ buffer_destroy(buffer_t *buf)
 void
 buffer_reset(buffer_t *buf)
 {
-	if (buf->data) {
-		buf->ptr = buf->data;
-	} else {
-		buf->ptr = NULL;
-	}
+	buf->ptr = buf->data;
 }
 
 void
