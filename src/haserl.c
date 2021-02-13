@@ -55,14 +55,6 @@
 
 #include "haserl.h"
 
-#ifndef TEMPDIR
-#define TEMPDIR "/tmp"
-#endif
-
-#ifndef MAX_UPLOAD_KB
-#define MAX_UPLOAD_KB 2048
-#endif
-
 haserl_t global;
 
 /* global shell execution function pointers. These point to the actual functions
@@ -379,7 +371,7 @@ ReadCGIPOSTValues(list_t *env)
 	}
 
 	/* Allow 2MB content, unless they have a global upload set */
-	max_len = ((global.uploadkb == 0) ? 2048 : global.uploadkb) * 1024;
+	max_len = ((global.uploadkb == 0) ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
 
 	s_buffer_init(&sbuf, 32768);
 	sbuf.fh = STDIN;

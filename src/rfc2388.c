@@ -370,7 +370,7 @@ rfc2388_handler(list_t *env)
 	}
 
 	/* Allow 2MB content, unless they have a global upload set */
-	max_len = ((global.uploadkb == 0) ? 2048 : global.uploadkb) * 1024;
+	max_len = ((global.uploadkb == 0) ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
 	content_length = 0;
 
 	/* initialize a 128K sliding buffer */

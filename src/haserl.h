@@ -21,6 +21,14 @@
 #ifndef _HASERL_H
 #define _HASERL_H
 
+#ifndef TEMPDIR
+#define TEMPDIR "/tmp"
+#endif
+
+#ifndef MAX_UPLOAD_KB
+#define MAX_UPLOAD_KB 2048
+#endif
+
 /* Just a silly construct to contain global variables */
 typedef struct {
 	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none) */
