@@ -83,12 +83,8 @@ fi
 
 # set additional macros
 
-if test x$luashell = xfalse; then
-	if test x$luacshell = xtrue; then
-		AC_DEFINE(JUST_LUACSHELL, , [Include just the compiled Lua shell])
-	else
-		AC_MSG_ERROR([All shells disabled.])
-	fi
+if test x$luashell = xfalse -a x$luacshell = xfalse; then
+	AC_MSG_ERROR([All shells disabled.])
 fi
 
 # What default shell should we use

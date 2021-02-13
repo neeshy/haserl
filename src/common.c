@@ -216,7 +216,7 @@ buffer_add(buffer_t *buf, const void *data, unsigned long size)
 		index = buf->ptr - buf->data;
 		buf->data = realloc(buf->data, newsize);
 		if (buf->data == NULL) {
-			die_with_message("Memory allocation error");
+			die("Memory allocation error");
 		}
 		buf->limit = buf->data + newsize;
 		buf->ptr = buf->data + index;
@@ -225,96 +225,3 @@ buffer_add(buffer_t *buf, const void *data, unsigned long size)
 	memcpy(buf->ptr, data, size);
 	buf->ptr += size;
 }
-
-#ifndef JUST_LUACSHELL
-
-/* uppercase an entire string, using toupper */
-void
-uppercase(char *instr)
-{
-	while (*instr != '\0') {
-		*instr = toupper(*instr);
-		instr++;
-	}
-}
-
-/* lowercase an entire string, using tolower */
-void
-lowercase(char *instr)
-{
-	while (*instr != '\0') {
-		*instr = tolower(*instr);
-		instr++;
-	}
-}
-
-/* return ptr to first non-whitespace character */
-char *
-skip_whitespace(char *instr)
-{
-	while (isspace(*instr) && *instr) {
-		instr++;
-	}
-	return instr;
-}
-
-/* return ptr to first whitespace character */
-char *
-find_whitespace(char *instr)
-{
-	while (!isspace(*instr) && *instr) {
-		instr++;
-	}
-	return instr;
-}
-
-/* Counts the number of newlines in a buffer */
-int
-count_lines(char *instr, size_t len, char *where)
-{
-	size_t line = 1;
-
-	while ((where > instr) && (len)) {
-		if (*instr == '\n') {
-			line++;
-		}
-		len--;
-		instr++;
-	}
-	return line;
-}
-
-#endif
-
-#ifdef TEST_FRAMEWORK
-
-main(){
-	int argc, count;
-	argv_t *argv;
-	char string[2000];
-
-	strcpy(string,
-	       "\\This\\ string will be  '' \"separated into\"  \"'\\\"'\" ' 16 ' elements.\n"
-	       "' including a multi-line\n"
-	       "element' with a comment. # This should not be parsed\n"
-	       ";Nor should this\n" "The End.");
-
-	argc = argc_argv(string, &argv, "#;");
-	printf("%s\n", string);
-
-	for (count = 0; count < argc; count++) {
-		printf("%03d: [%s] ", count, argv[count].string, "");
-		if (argv[count].quoted) {
-			printf("(it was quoted)");
-		}
-		printf("\n");
-	}
-	if (argc != 15) {
-		puts("Test FAILED");
-	} else {
-		puts("Test PASSED");
-	}
-	free(argv);
-}
-
-#endif

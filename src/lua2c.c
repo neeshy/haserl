@@ -30,10 +30,8 @@
 #include <config.h>
 #endif
 
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include <lua.h>
 #include <lauxlib.h>
@@ -90,9 +88,8 @@ main(int argc, char *argv[])
 
 	loadit(argv[2]);
 
-	printf
-		("/* This file was automatically generated from %s. DO NOT EDIT */\n\n",
-		argv[2]);
+	printf("/* This file was automatically generated from %s. DO NOT EDIT */\n\n",
+	       argv[2]);
 	printf("static const unsigned char %s[] = { \n  ", argv[1]);
 	dumpit();
 	printf("\n};\n");

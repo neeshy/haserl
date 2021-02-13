@@ -51,7 +51,7 @@ lua_common_putenv(char *str)
 
 	value = memchr(str, '=', strlen(str));
 	if (value) {
-		*value = (char)'\0';
+		*value = '\0';
 		value++;
 	} else {
 		value = str + strlen(str);
@@ -74,11 +74,11 @@ lua_common_setup(char *shell, list_t *env)
 	luaL_openlibs(lua_vm);
 
 	/* and load our haserl library */
-	if (luaL_loadbuffer
-		    (lua_vm, (const char *)&haserl_lualib, sizeof(haserl_lualib),
-		    "luascript.lua") || lua_pcall(lua_vm, 0, 0, 0)) {
-		die_with_message("Error passing the lua library to the lua vm: %s",
-				 lua_tostring(lua_vm, -1));
+	if (luaL_loadbuffer(lua_vm,
+	                    (const char *)&haserl_lualib, sizeof(haserl_lualib),
+	                    "luascript.lua") || lua_pcall(lua_vm, 0, 0, 0)) {
+		die("Error passing the lua library to the lua vm: %s",
+		    lua_tostring(lua_vm, -1));
 	}
 
 	/* and put the vars in the vm */
@@ -91,8 +91,7 @@ lua_common_setup(char *shell, list_t *env)
 	lua_getglobal(lua_vm, "haserl");
 	lua_pushstring(lua_vm, "loadfile");
 #if defined(INCLUDE_LUASHELL) && defined(INCLUDE_LUACSHELL)
-	lua_pushcfunction(lua_vm,
-			  shell[3] == 'c' ? h_luac_loadfile : h_lua_loadfile);
+	lua_pushcfunction(lua_vm, shell[3] == 'c' ? h_luac_loadfile : h_lua_loadfile);
 #elif defined(INCLUDE_LUASHELL)
 	lua_pushcfunction(lua_vm, h_lua_loadfile);
 #else /* INCLUDE_LUACSHELL */

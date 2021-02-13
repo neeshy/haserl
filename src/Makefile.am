@@ -1,5 +1,3 @@
-PACKAGE=@PACKAGE_TARNAME@
-
 EXTRA_DIST = haserl_lualib.lua lua2c.c
 
 datarootdir=@datarootdir@

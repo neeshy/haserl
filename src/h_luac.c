@@ -38,7 +38,7 @@ h_luac_loadfile(lua_State *L)
 	const char *filename = luaL_checkstring(L, 1);
 
 	if (luaL_loadfile(L, filename)) {
-		die_with_message("Cannot load file '%s': %s", filename,
+		die("Cannot load file '%s': %s", filename,
 		                 lua_tostring(L, -1));
 	}
 
@@ -49,7 +49,7 @@ void
 luac_doscript(char *name)
 {
 	if (luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0)) {
-		die_with_message("Cannot load lua and execute chunk: %s",
+		die("Cannot load lua and execute chunk: %s",
 		                 lua_tostring(lua_vm, -1));
 	}
 }

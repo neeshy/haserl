@@ -23,23 +23,25 @@
 haserl, FORM, ENV, COOKIE, HASERL, GET, POST = {}, {}, {}, {}, {}, {}, {}
 
 function haserl.setfield (f, v)
-						-- From programming in Lua 1st Ed.
-	local t = _G    			-- start with the table of globals
+	-- From programming in Lua 1st Ed.
+	-- start with the table of globals
+	local t = _G   
 	for w, d in string.gmatch(f, '([%w_%-]+)(.?)') do
 		if (tonumber(w)) then
 			w = tonumber(w)
 		end
-		if d == '.' then		-- not last field?
-			t[w] = t[w] or {}	-- create table if absent
-			t = t[w]		-- get the table
-		else				-- last field
-			t[w] = v		-- do the assignment
+		if d == '.' then                -- not last field?
+			t[w] = t[w] or {}       -- create table if absent
+			t = t[w]                -- get the table
+		else                            -- last field
+			t[w] = v                -- do the assignment
 		end
 	end
 end
 
 function haserl.getfield (f)
-	local v = _G				-- start with the table of globals
+	-- start with the table of globals
+	local v = _G
 	for w in string.gmatch(f, '[%w_]+') do
 		v = v[w]
 	end
@@ -47,10 +49,9 @@ function haserl.getfield (f)
 end
 
 function haserl.myputenv(key, value)
-						-- convert key to dotted form
+	-- convert key to dotted form
 	key = string.gsub(key, '[\\]\\[]', '.' )
 	key = string.gsub(key, '[\\.]+', '.' )
-						-- and create a table if necessary
+	-- and create a table if necessary
 	haserl.setfield (key, value)
 end
-

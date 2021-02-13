@@ -44,19 +44,11 @@ char *g_err_msg[] = {
 	"Unspecified Error",
 };
 
-/* abort the program */
-void
-die_with_error(char *msg)
-{
-	fprintf(stderr, "Error: %s\n", msg);
-	exit(-1);
-}
-
 /* print an error message and die. If sp or where are non-null pointers, then
  * a line is added saying where in the script buffer the error occured. If
  * there's a request method, then http headers are added. */
 void
-die_with_message(const char *s, ...)
+die(const char *s, ...)
 {
 	va_list p;
 	FILE *fo = stderr;

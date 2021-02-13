@@ -134,24 +134,3 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	sbuf->ptr += sbuf->len;
 	return (sbuf->eof) ? (-1) : (0);
 }
-
-#ifdef TEST_FRAMEWORK
-
-main() {
-	int x;
-	sliding_buffer_t sb;
-	char foo[200];
-
-	s_buffer_init(&sb, 32);
-
-	do {
-		x = s_buffer_read(&sb, "&");
-		sprintf(foo, "%03d- %03d - %03d", x, sb.eof, sb.len);
-		write(1, foo, strlen(foo));
-		write(1, sb.segment, sb.len);
-		write(1, "\n", 1);
-	} while ((!sb.eof));
-	s_buffer_destroy(&sb);
-}
-
-#endif

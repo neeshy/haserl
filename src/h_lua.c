@@ -22,26 +22,13 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <getopt.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
 #include "common.h"
-#include "h_error.h"
 #include "h_lua.h"
-#include "haserl.h"
+#include "h_error.h"
 
 extern lua_State *lua_vm;
 
@@ -51,7 +38,7 @@ h_lua_loadfile(lua_State *L)
 	const char *filename = luaL_checkstring(L, 1);
 
 	if (luaL_loadfile(L, filename)) {
-		die_with_message("Cannot load file '%s': %s", filename,
+		die("Cannot load file '%s': %s", filename,
 		                 lua_tostring(L, -1));
 	}
 
@@ -68,6 +55,6 @@ lua_doscript(char *name)
 		if (msg == NULL) {
 			msg = "(error object is not a string)";
 		}
-		die_with_message("%s", msg);
+		die("%s", msg);
 	}
 }

@@ -140,7 +140,7 @@ xmalloc(size_t size)
 	void *buf;
 
 	if ((buf = malloc(size)) == NULL) {
-		die_with_message(g_err_msg[E_MALLOC_FAIL]);
+		die(g_err_msg[E_MALLOC_FAIL]);
 	}
 	memset(buf, 0, size);
 	return buf;
@@ -151,7 +151,7 @@ void *
 xrealloc(void *buf, size_t size)
 {
 	if ((buf = realloc(buf, size)) == NULL) {
-		die_with_message(g_err_msg[E_MALLOC_FAIL]);
+		die(g_err_msg[E_MALLOC_FAIL]);
 	}
 	return buf;
 }
@@ -417,7 +417,7 @@ ReadCGIPOSTValues(list_t *env)
 		x = s_buffer_read(&sbuf, matchstr);
 		content_length += sbuf.len;
 		if (content_length > max_len) {
-			die_with_message("Attempted to send content larger than allowed limits.");
+			die("Attempted to send content larger than allowed limits.");
 		}
 
 		if ((x == 0) || (token.data)) {
@@ -546,6 +546,7 @@ main(int argc, char *argv[])
 {
 	char *filename = NULL;
 	struct stat filestat;
+	void (*doscript)(char *);
 
 	argv_t *av = NULL;
 	char **av2 = argv;
@@ -599,7 +600,7 @@ main(int argc, char *argv[])
 		if (optind < av2c) {
 			filename = av2[optind];
 		} else {
-			die_with_message("No script file specified");
+			die("No script file specified");
 		}
 
 		break;
@@ -611,7 +612,7 @@ main(int argc, char *argv[])
 
 	/* populate the function pointers based on the shell selected */
 	if (strcmp(global.shell, "lua") && strcmp(global.shell, "luac")) {
-		die_with_message("Invalid shell specified.");
+		die("Invalid shell specified.");
 	} else {
 		global.var_prefix = "FORM.";
 		global.nul_prefix = "ENV.";
@@ -620,12 +621,16 @@ main(int argc, char *argv[])
 		global.cookie_prefix = "COOKIE.";
 		global.haserl_prefix = "HASERL.";
 		if (global.shell[3] == 'c') { /* luac only */
-#ifndef INCLUDE_LUACSHELL
-			die_with_message("Compiled Lua shell is not enabled.");
+#ifdef INCLUDE_LUACSHELL
+			doscript = luac_doscript;
+#else
+			die("Compiled Lua shell is not enabled.");
 #endif
 		} else {
-#ifndef INCLUDE_LUASHELL
-			die_with_message("Standard Lua shell is not enabled.");
+#ifdef INCLUDE_LUASHELL
+			doscript = lua_doscript;
+#else
+			die("Standard Lua shell is not enabled.");
 #endif
 		}
 	}
@@ -660,11 +665,7 @@ main(int argc, char *argv[])
 	}
 
 	lua_common_setup(global.shell, env);
-#ifdef JUST_LUACSHELL
-	luac_doscript(filename);
-#else
-	lua_doscript(filename);
-#endif
+	doscript(filename);
 	lua_common_destroy();
 
 	free_list_chain(env);

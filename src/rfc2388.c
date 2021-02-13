@@ -205,7 +205,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 	pid = fork();
 	if (pid == -1) {
 		empty_stdin();
-		die_with_message(g_err_msg[E_SHELL_FAIL]);
+		die(g_err_msg[E_SHELL_FAIL]);
 	}
 
 	if (pid == 0) {
@@ -258,7 +258,7 @@ mime_var_open_target(mime_var_t *obj)
 	/* if upload_limit is zero, we die right here */
 	if (global.uploadkb == 0) {
 		empty_stdin();
-		die_with_message("File uploads are not allowed.");
+		die("File uploads are not allowed.");
 	}
 
 	ok = -1;
@@ -297,7 +297,7 @@ mime_var_open_target(mime_var_t *obj)
 
 	if (!ok) {
 		empty_stdin();
-		die_with_message(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
+		die(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
 	}
 }
 
@@ -332,8 +332,7 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 int
 rfc2388_handler(list_t *env)
 {
-	enum mime_state_t
-	{ DISCARD, BOUNDARY, HEADER, CONTENT };
+	enum mime_state_t { DISCARD, BOUNDARY, HEADER, CONTENT };
 
 	int state;
 	int i, x;
@@ -358,7 +357,7 @@ rfc2388_handler(list_t *env)
 	}
 	if (i == -1) {
 		empty_stdin();
-		die_with_message("No Mime Boundary Information Found");
+		die("No Mime Boundary Information Found");
 	}
 
 	i = i + 9;
@@ -410,7 +409,7 @@ rfc2388_handler(list_t *env)
 			if (var.name) {
 				mime_var_destroy(&var);
 			}
-			die_with_message("Attempted to send content larger than allowed limits.");
+			die("Attempted to send content larger than allowed limits.");
 		}
 
 		switch (state) {
@@ -424,11 +423,8 @@ rfc2388_handler(list_t *env)
 			break;
 
 		case BOUNDARY:
-			if (!x) {
-				buffer_add(&buf, sbuf.segment, sbuf.len);
-			}
+			buffer_add(&buf, sbuf.segment, sbuf.len);
 			if (x) {
-				buffer_add(&buf, sbuf.segment, sbuf.len);
 				if (!memcmp(buf.data, boundary + 2, 2)) { /* "--" */
 					/* all done... what does that mean? */
 					str = boundary + 2;

@@ -60,6 +60,5 @@ int parseCommandLine(int argc, char *argv[]);
 int BecomeUser(uid_t uid, gid_t gid);
 void assignGlobalStartupValues(void);
 void unlink_uploadlist(void);
-int main(int argc, char *argv[]);
 
 #endif /* _HASERL_H */

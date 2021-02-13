@@ -30,8 +30,6 @@ enum error_types {
 extern char *g_err_msg[];
 
 /* h_error.c */
-void die_with_error(char *msg);
-void die_with_syntax(void *script, char *where, int error);
-void die_with_message(const char *s, ...);
+void die(const char *s, ...);
 
 #endif /* _H_ERROR_H */
