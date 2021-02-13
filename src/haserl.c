@@ -122,16 +122,6 @@ xmalloc(size_t size)
 	return buf;
 }
 
-/* realloc memory, or die xmalloc style. */
-void *
-xrealloc(void *buf, size_t size)
-{
-	if ((buf = realloc(buf, size)) == NULL) {
-		die(g_err_msg[E_MALLOC_FAIL]);
-	}
-	return buf;
-}
-
 /* adds or replaces the "key=value" value in the env_list chain
  * prefix is appended to the key (e.g. FORM_key=value) */
 list_t *

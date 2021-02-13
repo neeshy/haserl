@@ -51,7 +51,6 @@ extern haserl_t global;
 char x2c(char *what);
 void unescape_url(char *url);
 void *xmalloc(size_t size);
-void *xrealloc(void *buf, size_t size);
 list_t *myputenv(list_t *cur, char *str, char *prefix);
 void free_list_chain(list_t *);
 void readenv(list_t *env);

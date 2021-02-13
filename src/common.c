@@ -27,8 +27,15 @@
 #include "common.h"
 #include "h_error.h"
 
-/* we define this here, but should use the header files instead. */
-void *xrealloc(void *buf, size_t size);
+/* realloc memory, or die xmalloc style. */
+void *
+xrealloc(void *buf, size_t size)
+{
+	if ((buf = realloc(buf, size)) == NULL) {
+		die(g_err_msg[E_MALLOC_FAIL]);
+	}
+	return buf;
+}
 
 /*
  * split a string into an argv[] array, and return the number of elements.
