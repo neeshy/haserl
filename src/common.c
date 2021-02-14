@@ -108,17 +108,15 @@ myputenv(list_t **env, char *str, char *prefix)
 			free(cur->buf);
 			if (prev) {
 				prev->next = cur->next;
-			}
-
-			free(cur);
-			cur = prev;
-
-			if (prev) {
-				cur = (list_t *)cur->next;
+				free(cur);
+				cur = prev->next;
+			} else {
+				free(cur);
+				cur = NULL;
 			}
 		} else {
 			prev = cur;
-			cur = (list_t *)cur->next;
+			cur = cur->next;
 		}
 	}
 
