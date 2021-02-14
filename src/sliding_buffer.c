@@ -127,5 +127,5 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	sbuf->segment = sbuf->ptr;
 	sbuf->len = len;
 	sbuf->ptr += sbuf->len;
-	return (sbuf->eof) ? (-1) : (0);
+	return sbuf->eof ? -1 : 0;
 }

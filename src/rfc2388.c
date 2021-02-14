@@ -155,29 +155,29 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 		buffer_add(&(obj->value), "", 1);
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "=", 1);
-		buffer_add(&buf, (char *)obj->value.data,
-		           strlen((char *)obj->value.data) + 1);
-		myputenv(env, (char *)buf.data, global.var_prefix);
-		myputenv(env, (char *)buf.data, global.post_prefix);
+		buffer_add(&buf, obj->value.data,
+		           strlen(obj->value.data) + 1);
+		myputenv(env, buf.data, global.var_prefix);
+		myputenv(env, buf.data, global.post_prefix);
 		buffer_reset(&buf);
 	}
 	if (obj->filename) {
 		/* This creates HASERL_foo_path=tempfile_pathspec. */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_path=", 6);
-		buffer_add(&buf, (char *)obj->value.data,
-		           strlen((char *)obj->value.data) + 1);
-		myputenv(env, (char *)buf.data, global.haserl_prefix);
-		myputenv(env, (char *)buf.data, global.var_prefix);
-		myputenv(env, (char *)buf.data, global.post_prefix);
+		buffer_add(&buf, obj->value.data,
+		           strlen(obj->value.data) + 1);
+		myputenv(env, buf.data, global.haserl_prefix);
+		myputenv(env, buf.data, global.var_prefix);
+		myputenv(env, buf.data, global.post_prefix);
 		buffer_reset(&buf);
 
 		/* this saves the name of the file the client supplied */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_name=", 6);
 		buffer_add(&buf, obj->filename, strlen(obj->filename) + 1);
-		myputenv(env, (char *)buf.data, global.var_prefix);
-		myputenv(env, (char *)buf.data, global.post_prefix);
+		myputenv(env, buf.data, global.var_prefix);
+		myputenv(env, buf.data, global.post_prefix);
 		buffer_reset(&buf);
 	}
 	buffer_destroy(&buf);
@@ -437,7 +437,7 @@ rfc2388_handler(list_t **env)
 					str = boundary;
 				} else {
 					buffer_add(&buf, "", 1);
-					mime_tag_add(&var, (char *)buf.data);
+					mime_tag_add(&var, buf.data);
 					buffer_reset(&buf);
 				}
 				header_continuation = 0;
@@ -449,7 +449,7 @@ rfc2388_handler(list_t **env)
 
 		case CONTENT:
 			/* write to writer process, regardless */
-			mime_var_writer(&var, (char *)sbuf.segment, sbuf.len);
+			mime_var_writer(&var, sbuf.segment, sbuf.len);
 			if (x) {
 				buffer_reset(&buf);
 				mime_var_putenv(env, &var);

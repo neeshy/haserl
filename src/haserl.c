@@ -385,7 +385,7 @@ ReadCGIPOSTValues(list_t **env)
 		}
 
 		if ((x == 0) || (token.data)) {
-			buffer_add(&token, (char *)sbuf.segment, sbuf.len);
+			buffer_add(&token, sbuf.segment, sbuf.len);
 		}
 
 		if (x) {
@@ -399,16 +399,16 @@ ReadCGIPOSTValues(list_t **env)
 
 			if (urldecoding) {
 				/* change plusses into spaces */
-				j = strlen((char *)data);
+				j = strlen(data);
 				for (i = 0; i <= j; i++) {
 					if (data[i] == '+') {
 						data[i] = ' ';
 					}
 				}
-				unescape_url((char *)data);
+				unescape_url(data);
 			}
-			myputenv(env, (char *)data, global.var_prefix);
-			myputenv(env, (char *)data, global.post_prefix);
+			myputenv(env, data, global.var_prefix);
+			myputenv(env, data, global.post_prefix);
 			if (token.data) {
 				buffer_reset(&token);
 			}

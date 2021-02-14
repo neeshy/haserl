@@ -54,7 +54,7 @@ writer(lua_State *L, const void *p, size_t size, void *u)
 	int i;
 
 	for (i = 0; i < size; i++) {
-		if ((count) && (count % 16) == 0) {
+		if (count && (count % 16) == 0) {
 			printf("\n  ");
 		}
 		printf("%3d,", *((unsigned char *)(p + i)));
