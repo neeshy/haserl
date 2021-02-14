@@ -27,25 +27,25 @@
 #include <fcntl.h>
 
 #include "sliding_buffer.h"
+#include "common.h"
 #include "h_error.h"
 
 /* initialize a sliding buffer structure */
-int
+void
 s_buffer_init(sliding_buffer_t *sbuf, int size)
 {
 	sbuf->maxsize = size;
-	sbuf->buf = malloc(sbuf->maxsize);
+	sbuf->buf = xmalloc(sbuf->maxsize);
+	sbuf->ptr = sbuf->buf;
 	/* reduce maxsize by one, so that you can add a NULL to the end of any
 	 * returned token and not have a memory overwrite */
 	sbuf->maxsize -= 1;
 	sbuf->fh = 0; /* use stdin by default */
 	sbuf->eof = 0;
 	sbuf->len = 0;
-	sbuf->ptr = sbuf->buf;
 	sbuf->bufsize = 0;
 	sbuf->maxread = 0;
 	sbuf->nrread = 0;
-	return sbuf->buf != NULL; /* return true if the alloc succeeded */
 }
 
 /* destroy a sliding buffer structure */

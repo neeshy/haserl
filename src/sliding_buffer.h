@@ -36,7 +36,7 @@ typedef struct {
 } sliding_buffer_t;
 
 /* sliding_buffer.c */
-int s_buffer_init(sliding_buffer_t *sbuf, int size);
+void s_buffer_init(sliding_buffer_t *sbuf, int size);
 void s_buffer_destroy(sliding_buffer_t *sbuf);
 int s_buffer_read(sliding_buffer_t *sbuf, char *matchstr);
 
