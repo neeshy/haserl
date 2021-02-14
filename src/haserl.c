@@ -431,7 +431,7 @@ ParseCommandLine(int argc, char *argv[])
 	optind = 0;
 
 	while ((c = getopt_long(argc, argv, gs_short_options,
-				ga_long_options, &option_index)) != -1) {
+	                        ga_long_options, &option_index)) != -1) {
 		switch (c) {
 		case 'S':
 			global.silent = TRUE;
