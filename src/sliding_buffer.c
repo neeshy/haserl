@@ -34,18 +34,19 @@
 void
 s_buffer_init(sliding_buffer_t *sbuf, int size)
 {
+	sbuf->fh = 0; /* use stdin by default */
 	sbuf->maxsize = size;
 	sbuf->buf = xmalloc(sbuf->maxsize);
 	sbuf->ptr = sbuf->buf;
+	sbuf->segment = NULL;
 	/* reduce maxsize by one, so that you can add a NULL to the end of any
 	 * returned token and not have a memory overwrite */
 	sbuf->maxsize -= 1;
-	sbuf->fh = 0; /* use stdin by default */
-	sbuf->eof = 0;
 	sbuf->len = 0;
 	sbuf->bufsize = 0;
 	sbuf->maxread = 0;
 	sbuf->nrread = 0;
+	sbuf->eof = 0;
 }
 
 /* destroy a sliding buffer structure */
