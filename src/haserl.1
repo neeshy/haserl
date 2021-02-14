@@ -294,7 +294,7 @@ io.write(string.format("<form action='%s' method='GET'>", ENV.SCRIPT_NAME))
 -- Do some basic validation of FORM.textfield
 -- To prevent common web attacks
 io.write(string.format("<input type=text name=textfield Value='%s' cols=20>",
-         FORM.textfield:gsub("[^%w ]", ""):gsub("%l", string.upper)))
+         FORM.textfield:gsub("[^%w ]", ""):gsub("%l+", string.upper)))
 io.write("<input type=submit value=GO>")
 .sp
 io.write("</form>")
@@ -321,7 +321,7 @@ if HASERL.uploadfile_path then
 	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", FORM.uploadfile_name))
 	io.write(string.format("temporarily stored on the server as <i>%s</i>.", HASERL.uploadfile_path))
 	local file = io.open(HASERL.uploadfile_path, "r")
-        if file then
+	if file then
 		local size = file:seek("end")
 		file:close()
 		io.write(string.format("The file was %d bytes long.</p>", size))
