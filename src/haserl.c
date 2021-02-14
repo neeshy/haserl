@@ -291,7 +291,7 @@ haserl_flags(list_t **env)
 }
 
 /* Read cgi variables from query string, and put in environment */
-int
+void
 ReadCGIQueryString(list_t **env)
 {
 	char *qs;
@@ -301,7 +301,7 @@ ReadCGIQueryString(list_t **env)
 	if (getenv("QUERY_STRING") != NULL) {
 		qs = strdup(getenv("QUERY_STRING"));
 	} else {
-		return 0;
+		return;
 	}
 
 	/* change plusses into spaces */
@@ -321,11 +321,10 @@ ReadCGIQueryString(list_t **env)
 		token = strtok(NULL, "&;");
 	}
 	free(qs);
-	return 0;
 }
 
 /* Read cgi variables from stdin (for POST queries) */
-int
+void
 ReadCGIPOSTValues(list_t **env)
 {
 	size_t content_length = 0;
@@ -342,7 +341,7 @@ ReadCGIPOSTValues(list_t **env)
 
 	if ((getenv(CONTENT_LENGTH) == NULL) ||
 	    (strtoul(getenv(CONTENT_LENGTH), NULL, 10) == 0)) {
-		return 0;
+		return;
 	}
 
 	content_type = getenv(CONTENT_TYPE);
@@ -350,8 +349,8 @@ ReadCGIPOSTValues(list_t **env)
 	if ((content_type != NULL) &&
 	    (strncasecmp(content_type, "multipart/form-data", 19)) == 0) {
 		/* This is a mime request, we need to go to the mime handler */
-		i = rfc2388_handler(env);
-		return i;
+		rfc2388_handler(env);
+		return;
 	}
 
 	/* at this point its either urlencoded or some other blob */
@@ -416,7 +415,6 @@ ReadCGIPOSTValues(list_t **env)
 	} while (!sbuf.eof);
 	s_buffer_destroy(&sbuf);
 	buffer_destroy(&token);
-	return 0;
 }
 
 int
@@ -462,7 +460,7 @@ ParseCommandLine(int argc, char *argv[])
 	return optind;
 }
 
-int
+void
 BecomeUser(uid_t uid, gid_t gid)
 {
 	/* This silently fails if it doesn't work */
@@ -476,8 +474,6 @@ BecomeUser(uid_t uid, gid_t gid)
 
 	setuid(uid);
 	setuid(getuid());
-
-	return 0;
 }
 
 int

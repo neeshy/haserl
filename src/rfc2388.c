@@ -318,7 +318,7 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 
 /* Read multipart/form-data input (RFC2388), typically used when
  * uploading a file. */
-int
+void
 rfc2388_handler(list_t **env)
 {
 	enum mime_state_t { DISCARD, BOUNDARY, HEADER, CONTENT };
@@ -464,5 +464,4 @@ rfc2388_handler(list_t **env)
 	free(boundary);
 	s_buffer_destroy(&sbuf);
 	buffer_destroy(&buf);
-	return 0;
 }

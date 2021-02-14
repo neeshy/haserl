@@ -29,12 +29,12 @@ char x2c(char *what);
 void unescape_url(char *url);
 void haserl_flags(list_t **env);
 void CookieVars(list_t **env);
-int ReadCGIQueryString(list_t **env);
-int ReadCGIPOSTValues(list_t **env);
+void ReadCGIQueryString(list_t **env);
+void ReadCGIPOSTValues(list_t **env);
 int LineToStr(char *string, size_t max);
 int ReadMimeEncodedInput(list_t **env);
 void PrintParseError(char *error, int linenum);
 int ParseCommandLine(int argc, char *argv[]);
-int BecomeUser(uid_t uid, gid_t gid);
+void BecomeUser(uid_t uid, gid_t gid);
 
 #endif /* _HASERL_H */

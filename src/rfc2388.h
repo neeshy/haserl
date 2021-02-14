@@ -40,6 +40,6 @@ void mime_var_putenv(list_t **env, mime_var_t *obj);
 void mime_exec(mime_var_t *obj, char *fifo);
 void mime_var_open_target(mime_var_t *obj);
 void mime_var_writer(mime_var_t *obj, char *str, int len);
-int rfc2388_handler(list_t **env);
+void rfc2388_handler(list_t **env);
 
 #endif /* _RFC2388_H */
