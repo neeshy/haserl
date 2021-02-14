@@ -437,11 +437,7 @@ ParseCommandLine(int argc, char *argv[])
 			global.silent = TRUE;
 			break;
 		case 'u':
-			if (optarg) {
-				global.uploadkb = atoi(optarg);
-			} else {
-				global.uploadkb = MAX_UPLOAD_KB;
-			}
+			global.uploadkb = atoi(optarg);
 			break;
 		case 'a':
 			global.acceptall = TRUE;
