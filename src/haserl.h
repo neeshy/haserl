@@ -31,9 +31,6 @@ void haserl_flags(list_t **env);
 void CookieVars(list_t **env);
 void ReadCGIQueryString(list_t **env);
 void ReadCGIPOSTValues(list_t **env);
-int LineToStr(char *string, size_t max);
-int ReadMimeEncodedInput(list_t **env);
-void PrintParseError(char *error, int linenum);
 int ParseCommandLine(int argc, char *argv[]);
 void BecomeUser(uid_t uid, gid_t gid);
 
