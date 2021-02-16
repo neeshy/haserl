@@ -376,7 +376,7 @@ ReadCGIPOSTValues(list_t **env)
 		x = s_buffer_read(&sbuf, matchstr);
 		content_length += sbuf.len;
 		if (content_length > max_len) {
-			die("Attempted to send content larger than allowed limits.");
+			die(g_err_msg[E_OVER_LIMIT]);
 		}
 
 		if ((x == 0) || (token.data)) {
@@ -536,7 +536,7 @@ main(int argc, char *argv[])
 		if (optind < av2c) {
 			filename = av2[optind];
 		} else {
-			die("No script file specified");
+			die(g_err_msg[E_NO_SCRIPT_FILE]);
 		}
 
 		break;

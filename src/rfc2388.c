@@ -246,7 +246,7 @@ mime_var_open_target(mime_var_t *obj)
 	/* if upload_limit is zero, we die right here */
 	if (global.uploadkb == 0) {
 		empty_stdin();
-		die("File uploads are not allowed.");
+		die(g_err_msg[E_FILE_UPLOAD]);
 	}
 
 	ok = -1;
@@ -343,7 +343,7 @@ rfc2388_handler(list_t **env)
 	}
 	if (i == -1) {
 		empty_stdin();
-		die("No Mime Boundary Information Found");
+		die(g_err_msg[E_MIME_BOUNDARY]);
 	}
 
 	i = i + 9;
@@ -395,7 +395,7 @@ rfc2388_handler(list_t **env)
 			if (var.name) {
 				mime_var_destroy(&var);
 			}
-			die("Attempted to send content larger than allowed limits.");
+			die(g_err_msg[E_OVER_LIMIT]);
 		}
 
 		switch (state) {

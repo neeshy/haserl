@@ -29,10 +29,12 @@ char *g_err_msg[] = {
 	"",
 	"Memory Allocation Failure",
 	"Unable to open file %s",
-	"%c&gt; before &lt;%c",
-	"Missing %c&gt;",
-	"Unknown operation",
 	"Unable to start shell",
+	"No script file specified",
+	"Attempted to send content larger than allowed limits",
+	"File uploads are not allowed",
+	"No Mime Boundary Information Found",
+	"Unknown operation",
 	"Unspecified Error",
 };
 
