@@ -18,11 +18,8 @@
  *
  * ------------------------------------------------------------------------ */
 
-#include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "common.h"
 #include "h_error.h"

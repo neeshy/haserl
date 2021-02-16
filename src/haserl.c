@@ -34,11 +34,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <getopt.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
-#include <sys/fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <grp.h>
