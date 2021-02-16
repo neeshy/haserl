@@ -235,7 +235,7 @@ unescape_url(char *url)
 		url[i] = x2c(&url[j + 1]);
 		j += 2;
 	}
-	url[i] = '\0';
+	url[i] = 0;
 }
 
 /* if HTTP_COOKIE is passed as an environment variable,
@@ -385,7 +385,7 @@ ReadCGIPOSTValues(list_t **env)
 
 		if (x) {
 			data = sbuf.segment;
-			sbuf.segment[sbuf.len] = '\0';
+			sbuf.segment[sbuf.len] = 0;
 			if (token.data) {
 				/* add the ASCIIZ */
 				buffer_add(&token, sbuf.segment + sbuf.len, 1);

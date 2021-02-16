@@ -92,10 +92,7 @@ mime_substr(char *start, int len)
 {
 	char *ptr;
 
-	if (!start) {
-		return NULL;
-	}
-	if (len < 0) {
+	if (!start || len < 0) {
 		return NULL;
 	}
 	ptr = xmalloc(len + 2);
@@ -359,7 +356,7 @@ rfc2388_handler(list_t **env)
 		while ((boundary[i]) && (boundary[i] != '"')) {
 			i++;
 		}
-		boundary[i] = '\0';
+		boundary[i] = 0;
 	}
 
 	/* Allow 2MB content, unless they have a global upload set */
@@ -454,8 +451,8 @@ rfc2388_handler(list_t **env)
 				state = BOUNDARY;
 				str = crlf;
 			}
-
 			break;
+
 		} /* end switch */
 	} while (!sbuf.eof);
 	free(boundary);

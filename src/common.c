@@ -75,7 +75,7 @@ myputenv(list_t **env, char *str, char *prefix)
 	}
 
 	entry = xmalloc(strlen(str) + strlen(prefix) + 1);
-	entry[0] = '\0';
+	entry[0] = 0;
 	strcat(entry, prefix);
 
 	if (array == 1) {
