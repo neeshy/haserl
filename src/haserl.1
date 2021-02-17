@@ -48,10 +48,8 @@ section under the long option name for a complete description.
 The program normally accepts POST data only when the REQUEST_METHOD is POST and only accepts
 data on the URL data when the REQUEST_METHOD is GET. This option allows both POST and
 URL data to be accepted regardless of the REQUEST_METHOD. When this option is set,
-the REQUEST_METHOD takes precedence (e.g. if the method is POST, FORM.variables are taken
-from COOKIE data, GET data, and POST data, in that order. If the method is GET, FORM.variables
-are taken from COOKIE data, POST data, and GET data.) The default is not to accept all
-input methods - just the COOKIE data and the REQUEST_METHOD.
+the REQUEST_METHOD takes precedence The default is not to accept all input
+methods - just the COOKIE data and the REQUEST_METHOD.
 
 .TP
 .BI \-\-accept\-none
@@ -68,7 +66,7 @@ suppresses the error message, so that the use of haserl is not advertised.
 .BI \-\-upload\-dir= "dirspec "
 Defaults to "/tmp". All uploaded files are created with temporary filename in this
 directory
-.BR HASERL.xxx_path " contains the name of the temporary file. " FORM.xxx_name
+.BR HASERL.xxx_path " contains the name of the temporary file. " POST.xxx_name
 contains the original name of the file, as specified by the client.
 
 .TP
@@ -129,12 +127,6 @@ interpreter will decode data sent via the HTTP_COOKIE environment variable, and 
 and store them as elements in tables that can be accessed by haserl.
 The name of the variable follows the name given in the source.
 
-For the FORM method, elements are stored in the
-.IR FORM
-variable. For example, if the client sends "foo=bar", then:
-.BR FORM.foo
-== "bar"
-
 For the HTTP_COOKIE method, elements are also stored in the
 .IR COOKIE
 variable. For example, if HTTP_COOKIE includes "foo=bar", then:
@@ -164,7 +156,7 @@ files are uploaded from a web client using <input type=file>.
 When a file is uploaded to the web server, it is stored in the
 .I upload-dir
 directory.
-.BR FORM.variable_name " contains the name of the file uploaded "
+.BR POST.variable_name " contains the name of the file uploaded "
 (as specified by the client.)
 .BR HASERL.variable_path " contains the name of the file in "
 .I upload-dir
@@ -181,15 +173,14 @@ or rename it somewhere in the script.
 .B " "
 Note that the filename is stored in
 .BI HASERL .variable_path
-This is because the FORM, GET, and POST variables are modifiable by the client,
+This is because the GET, and POST variables are modifiable by the client,
 and a malicious client can set a second variable with the name
 .IR variable_path=/etc/passwd .
 Earlier versions did not store the pathspec in
 .B HASERL
 namespace.
 .I To maintain backward compailibility, the name of the temporary file
-.I is also stored in
-.BI FORM.variable " and "
+.I is also stored in the
 .BI POST.variable ". This is considered unsafe and should not be used."
 
 .P
@@ -215,14 +206,14 @@ the GET or POST data, so in the event of two variables of the same name, the
 GET or POST data overwrites the cookie information.
 
 .P
-When multiple instances of the same variable are sent from different sources, the 
-.BI FORM.variable
+When multiple instances of the same variable are sent from different sources, the
+.BI POST.variable
 will be set according to the order in which variables are processed.
 .I HTTP_COOKIE
 is always processed first, followed by the REQUEST_METHOD. If the accept-all
 option has been set, then HTTP_COOKIE is processed first, followed by the
 method not specified by REQUEST_METHOD, followed by the REQUEST_METHOD. The
-last instance of the variable will be used to set FORM.variable. Note that the
+last instance of the variable will be used to set POST.variable. Note that the
 variables are also separately creates as COOKIE_variable, GET_variable and
 POST.variable. This allows the use of overlapping names from each source.
 
@@ -231,11 +222,11 @@ When multiple instances of the same variable are sent from the same source,
 only the last one is saved. To keep all copies (for multi-selects, for
 instance), add "[]" to the end of the
 variable name. All results will be returned, separated by newlines. For example,
-host=Enoch&host=Esther&host=Joshua results in 
-.B FORM.host
+host=Enoch&host=Esther&host=Joshua results in
+.B POST.host
 == "Joshua".
-host[]=Enoch&host[]Esther&host[]=Joshua results in 
-.B FORM.host
+host[]=Enoch&host[]Esther&host[]=Joshua results in
+.B POST.host
 == "Enoch\\nEsther\\nJoshua"
 
 .SH EXAMPLES
@@ -246,24 +237,6 @@ The examples below are simplified to show how to use
 You should be familiar with basic web scripting security before using
 .I haserl
 (or any scripting language) in a production environment.
-
-.TP
-.B Simple Command
-.nf
-#!/usr/local/bin/haserl
-io.write("Content-Type: text/plain\\r\\n\\r\\n")
-.sp
--- This is a sample "env" script
-for k, v in pairs(ENV) do
-	io.write(k, "=", v, "\\r\\n")
-end
-.fi
-
-Prints the environment as a mime-type "text/plain" document. This is the
-.I haserl
-version of the common
-.I printenv
-cgi.
 
 .TP
 .B Looping with dynamic output
@@ -289,12 +262,12 @@ io.write("Content-Type: text/html\\r\\n\\r\\n")
 .sp
 io.write("<html><body>")
 io.write("<h1>Sample Form</h1>")
-io.write(string.format("<form action='%s' method='GET'>", ENV.SCRIPT_NAME))
+io.write(string.format("<form action='%s' method='GET'>", os.getenv("SCRIPT_NAME")))
 .sp
--- Do some basic validation of FORM.textfield
+-- Do some basic validation of POST.textfield
 -- To prevent common web attacks
 io.write(string.format("<input type=text name=textfield Value='%s' cols=20>",
-         FORM.textfield:gsub("[^%w ]", ""):gsub("%l+", string.upper)))
+         POST.textfield:gsub("[^%w ]", ""):gsub("%l+", string.upper)))
 io.write("<input type=submit value=GO>")
 .sp
 io.write("</form>")
@@ -302,8 +275,9 @@ io.write("</body></html>")
 
 .fi
 
-Prints a form. If the client enters text in the form, the CGI is reloaded (defined by
-.IR ENV.SCRIPT_NAME )
+Prints a form. If the client enters text in the form, the CGI is reloaded (defined by the
+.IR SCRIPT_NAME
+environment variable)
 and the textfield is sanitized to prevent web attacks, then the form is redisplayed with the text the user entered. The text is uppercased.
 
 .TP
@@ -313,12 +287,12 @@ and the textfield is sanitized to prevent web attacks, then the form is redispla
 io.write("Content-Type: text/html\\r\\n\\r\\n")
 .sp
 io.write("<html><body>")
-io.write(string.format("<form action='%s' method=POST enctype='multipart/form-data'>", ENV.SCRIPT_NAME))
+io.write(string.format("<form action='%s' method=POST enctype='multipart/form-data'>", os.getenv("SCRIPT_NAME")))
 io.write("<input type=file name=uploadfile>")
 io.write("<input type=submit value=GO>")
 io.write("<br>")
 if HASERL.uploadfile_path then
-	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", FORM.uploadfile_name))
+	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", POST.uploadfile_name))
 	io.write(string.format("temporarily stored on the server as <i>%s</i>.", HASERL.uploadfile_path))
 	local file = io.open(HASERL.uploadfile_path, "r")
 	if file then
@@ -404,8 +378,7 @@ combined into argv[1], and the script name is argv[2].
 
 .SH LUA
 
-The environment variables (SCRIPT_NAME, SERVER_NAME, etc) are placed in the ENV table, and the form variables are
-placed in the FORM table.
+The form variables are placed in the POST table.
 
 haserl lua scripts can use the function
 .BI haserl.loadfile( filename )
@@ -463,7 +436,7 @@ Given the file test.lua:
 .RS
 .nf
 io.write("Content-Type: text/plain\\r\\n\\r\\n")
-io.write("Your UUID for this run is: " .. ENV.SESSIONID)
+io.write("Your UUID for this run is: " .. os.getenv("SESSIONID"))
 .fi
 .RE
 
@@ -483,8 +456,8 @@ exec haserl test.luac
 .SH BUGS
 When files are uploaded using RFC-2388, a temporary file is created. The name of the file
 is stored in
-.BR FORM.variable_name ", " POST.variable_name ", and " HASERL.variable_name ". Only " HASERL.variable_name
-should be used - the others can be overwritten by a malicious client.
+.BR POST.variable_name ", and " HASERL.variable_name ". Only " HASERL.variable_name
+should be used - the other can be overwritten by a malicious client.
 
 .SH NAME
 The name "haserl" comes from the Bavarian word for "bunny." At first glance it

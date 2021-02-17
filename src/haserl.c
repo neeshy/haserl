@@ -259,7 +259,6 @@ CookieVars(list_t **env)
 		while (token[0] == ' ') {
 			token++;
 		}
-		myputenv(env, token, global.var_prefix);
 		myputenv(env, token, global.cookie_prefix);
 		token = strtok(NULL, ";");
 	}
@@ -271,19 +270,19 @@ haserl_flags(list_t **env)
 {
 	char buf[256];
 
-	myputenv(env, "HASERLVER=" VERSION, global.nul_prefix);
+	putenv("HASERLVER=" VERSION);
 
 	snprintf(buf, 256, "SESSIONID=%x%x", getpid(), (int)time(NULL));
-	myputenv(env, buf, global.nul_prefix);
+	putenv(buf);
 
-	snprintf(buf, 256, "UPLOAD_DIR=%s", global.uploaddir);
-	myputenv(env, buf, global.haserl_prefix);
+	snprintf(buf, 256, "HASERL_UPLOAD_DIR=%s", global.uploaddir);
+	putenv(buf);
 
-	snprintf(buf, 256, "UPLOAD_LIMIT=%lu", global.uploadkb);
-	myputenv(env, buf, global.haserl_prefix);
+	snprintf(buf, 256, "HASERL_UPLOAD_LIMIT=%lu", global.uploadkb);
+	putenv(buf);
 
-	snprintf(buf, 256, "ACCEPT_ALL=%d", global.acceptall);
-	myputenv(env, buf, global.haserl_prefix);
+	snprintf(buf, 256, "HASERL_ACCEPT_ALL=%d", global.acceptall);
+	putenv(buf);
 }
 
 /* Read cgi variables from query string, and put in environment */
@@ -312,7 +311,6 @@ ReadCGIQueryString(list_t **env)
 	token = strtok(qs, "&;");
 	while (token) {
 		unescape_url(token);
-		myputenv(env, token, global.var_prefix);
 		myputenv(env, token, global.get_prefix);
 		token = strtok(NULL, "&;");
 	}
@@ -402,7 +400,6 @@ ReadCGIPOSTValues(list_t **env)
 				}
 				unescape_url(data);
 			}
-			myputenv(env, data, global.var_prefix);
 			myputenv(env, data, global.post_prefix);
 			if (token.data) {
 				buffer_reset(&token);
@@ -493,8 +490,6 @@ main(int argc, char *argv[])
 	global.uploaddir = TEMPDIR;     /* where to upload to                         */
 	global.uploadhandler = NULL;    /* the upload handler                         */
 	global.acceptall = FALSE;       /* don't allow POST data for GET method       */
-	global.nul_prefix = "ENV.";
-	global.var_prefix = "FORM.";
 	global.get_prefix = "GET.";
 	global.post_prefix = "POST.";
 	global.cookie_prefix = "COOKIE.";
@@ -547,7 +542,6 @@ main(int argc, char *argv[])
 	BecomeUser(filestat.st_uid, filestat.st_gid);
 
 	/* Read the current environment into our chain */
-	readenv(&env);
 	haserl_flags(&env);
 
 	/* Read the request data */

@@ -20,7 +20,7 @@
  * ------------------------------------------------------------------------ */
 ]]--
 
-haserl, FORM, ENV, COOKIE, HASERL, GET, POST = {}, {}, {}, {}, {}, {}, {}
+haserl, COOKIE, HASERL, GET, POST = {}, {}, {}, {}, {}, {}, {}
 
 function haserl.setfield(f, v)
 	-- From programming in Lua 1st Ed.

@@ -151,7 +151,6 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 		buffer_add(&buf, "=", 1);
 		buffer_add(&buf, obj->value.data,
 		           strlen(obj->value.data) + 1);
-		myputenv(env, buf.data, global.var_prefix);
 		myputenv(env, buf.data, global.post_prefix);
 		buffer_reset(&buf);
 	}
@@ -162,15 +161,12 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 		buffer_add(&buf, obj->value.data,
 		           strlen(obj->value.data) + 1);
 		myputenv(env, buf.data, global.haserl_prefix);
-		myputenv(env, buf.data, global.var_prefix);
-		myputenv(env, buf.data, global.post_prefix);
 		buffer_reset(&buf);
 
 		/* this saves the name of the file the client supplied */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_name=", 6);
 		buffer_add(&buf, obj->filename, strlen(obj->filename) + 1);
-		myputenv(env, buf.data, global.var_prefix);
 		myputenv(env, buf.data, global.post_prefix);
 		buffer_reset(&buf);
 	}
@@ -195,8 +191,6 @@ mime_exec(mime_var_t *obj, char *fifo)
 
 	if (pid == 0) {
 		/* store the content type, filename, and form name */
-		/* we do not use global.var_prefix because it could be lua or shell
-		 * or something else, and we are only shell here */
 		if (obj->type) {
 			type = xmalloc(13 + strlen(obj->type) + 1);
 			sprintf(type, "CONTENT_TYPE=%s", obj->type);

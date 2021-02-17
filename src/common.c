@@ -127,19 +127,6 @@ myputenv(list_t **env, char *str, char *prefix)
 	}
 }
 
-/* reads the current environment and popluates our environment chain */
-void
-readenv(list_t **env)
-{
-	extern char **environ;
-	char **e = environ;
-
-	while (*e != NULL) {
-		myputenv(env, *e, global.nul_prefix);
-		e++;
-	}
-}
-
 /* free list_t */
 void
 free_list(list_t *list)
