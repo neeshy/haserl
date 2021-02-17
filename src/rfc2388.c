@@ -231,7 +231,6 @@ void
 mime_var_open_target(mime_var_t *obj)
 {
 	char *tmpname;
-
 	int ok;
 
 	/* if upload_limit is zero, we die right here */
@@ -240,15 +239,11 @@ mime_var_open_target(mime_var_t *obj)
 		die(g_err_msg[E_FILE_UPLOAD]);
 	}
 
-	ok = -1;
 	tmpname = xmalloc(strlen(global.uploaddir) + 8);
 	strcpy(tmpname, global.uploaddir);
 	strcat(tmpname, "/XXXXXX");
 	obj->fh = mkstemp(tmpname);
-
-	if (obj->fh == -1) {
-		ok = 0;
-	}
+	ok = obj->fh != -1;
 
 	/* reuse the name as a fifo if we have a handler. We do this
 	 * because tempnam uses TEMPDIR if defined, among other bugs */
@@ -256,17 +251,14 @@ mime_var_open_target(mime_var_t *obj)
 		/* I have a handler */
 		close(obj->fh);
 		unlink(tmpname);
-		if (mkfifo(tmpname, 0600)) {
-			ok = 0;
-		}
+		ok = !mkfifo(tmpname, 0600);
+
 		/* you must open the fifo for reading before writing
 		 * on non linux systems */
 		if (ok) {
 			mime_exec(obj, tmpname);
 			obj->fh = open(tmpname, O_WRONLY);
-		}
-		if (obj->fh == -1) {
-			ok = 0;
+			ok = obj->fh != -1;
 		}
 	} else {
 		buffer_add(&obj->value, tmpname, strlen(tmpname));
