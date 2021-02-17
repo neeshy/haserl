@@ -47,7 +47,7 @@ mime_var_init(mime_var_t *obj)
 	obj->filename = NULL;
 	obj->type = NULL;
 	obj->tempname = NULL;
-	buffer_init(&(obj->value));
+	buffer_init(&obj->value);
 	obj->fh = 0;
 }
 
@@ -73,7 +73,7 @@ mime_var_destroy(mime_var_t *obj)
 		free(obj->tempname);
 		obj->tempname = NULL;
 	}
-	buffer_destroy(&(obj->value));
+	buffer_destroy(&obj->value);
 	if (obj->fh) {
 		close(abs(obj->fh));
 		if (global.uploadhandler) {
@@ -111,7 +111,7 @@ mime_tag_add(mime_var_t *obj, char *str)
 	if (a) {
 		a += strlen(tag[0]);
 		b = strchr(a, '"');
-		if ((!obj->name) && (b)) {
+		if (!obj->name && b) {
 			obj->name = mime_substr(a, b - a);
 		}
 	}
@@ -120,7 +120,7 @@ mime_tag_add(mime_var_t *obj, char *str)
 	if (a) {
 		a += strlen(tag[1]);
 		b = strchr(a, '"');
-		if ((!obj->filename) && (b)) {
+		if (!obj->filename && b) {
 			obj->filename = mime_substr(a, b - a);
 		}
 	}
@@ -146,7 +146,7 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 		 * That name can be overwritten by a subsequent foo=/etc/passwd,
 		 * for instance. This code block is depricated for FILE uploads
 		 * only. (it is still valid for non-form uploads */
-		buffer_add(&(obj->value), "", 1);
+		buffer_add(&obj->value, "", 1);
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "=", 1);
 		buffer_add(&buf, obj->value.data,
@@ -189,7 +189,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 		die(g_err_msg[E_SHELL_FAIL]);
 	}
 
-	if (pid == 0) {
+	if (!pid) {
 		/* store the content type, filename, and form name */
 		if (obj->type) {
 			type = xmalloc(13 + strlen(obj->type) + 1);
@@ -235,7 +235,7 @@ mime_var_open_target(mime_var_t *obj)
 	int ok;
 
 	/* if upload_limit is zero, we die right here */
-	if (global.uploadkb == 0) {
+	if (!global.uploadkb) {
 		empty_stdin();
 		die(g_err_msg[E_FILE_UPLOAD]);
 	}
@@ -252,7 +252,7 @@ mime_var_open_target(mime_var_t *obj)
 
 	/* reuse the name as a fifo if we have a handler. We do this
 	 * because tempnam uses TEMPDIR if defined, among other bugs */
-	if ((ok) && global.uploadhandler) {
+	if (ok && global.uploadhandler) {
 		/* I have a handler */
 		close(obj->fh);
 		unlink(tmpname);
@@ -269,7 +269,7 @@ mime_var_open_target(mime_var_t *obj)
 			ok = 0;
 		}
 	} else {
-		buffer_add(&(obj->value), tmpname, strlen(tmpname));
+		buffer_add(&obj->value, tmpname, strlen(tmpname));
 	}
 
 	if (!ok) {
@@ -285,11 +285,11 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 
 	/* if not a file upload, then just a normal variable */
 	if (!obj->filename) {
-		buffer_add(&(obj->value), str, len);
+		buffer_add(&obj->value, str, len);
 	}
 
 	/* if a file upload, but don't have an open filehandle, open one */
-	if ((!obj->fh) && (obj->filename)) {
+	if (!obj->fh && obj->filename) {
 		mime_var_open_target(obj);
 	}
 
@@ -329,7 +329,7 @@ rfc2388_handler(list_t **env)
 	/* get the boundary info */
 	str = getenv("CONTENT_TYPE");
 	i = strlen(str) - 9;
-	while ((i >= 0) && (memcmp("boundary=", str + i, 9))) {
+	while (i >= 0 && memcmp("boundary=", str + i, 9)) {
 		i--;
 	}
 	if (i == -1) {
@@ -346,15 +346,15 @@ rfc2388_handler(list_t **env)
 	memcpy(boundary, crlf, 2);
 	memcpy(boundary + 2, "--", 2);
 	memcpy(boundary + 4, str + i, strlen(str + i) + 1);
-	if ((i > 0) && (str[i - 1] == '"')) {
-		while ((boundary[i]) && (boundary[i] != '"')) {
+	if (i > 0 && str[i - 1] == '"') {
+		while (boundary[i] && boundary[i] != '"') {
 			i++;
 		}
 		boundary[i] = 0;
 	}
 
 	/* Allow 2MB content, unless they have a global upload set */
-	max_len = ((global.uploadkb == 0) ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
+	max_len = (!global.uploadkb ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
 	content_length = 0;
 
 	/* initialize a 128K sliding buffer */
@@ -419,7 +419,7 @@ rfc2388_handler(list_t **env)
 		case HEADER:
 			buffer_add(&buf, sbuf.segment, sbuf.len);
 			if (x) {
-				if (sbuf.len == 0 && header_continuation == 0) { /* blank line */
+				if (!sbuf.len && !header_continuation) { /* blank line */
 					buffer_reset(&buf);
 					state = CONTENT;
 					str = boundary;

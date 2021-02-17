@@ -112,8 +112,8 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 
 	while (pos < len) {
 		/* Comments are really, really special */
-		if ((state == WHITESPACE) && (strchr(commentstr, *instr))) {
-			while ((*instr != '\n') && (*instr != '\0')) {
+		if (state == WHITESPACE && strchr(commentstr, *instr)) {
+			while (*instr != '\n' && *instr != '\0') {
 				instr++;
 				pos++;
 			}
@@ -136,7 +136,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 				}
 			} else { /* WORDSPACE, so quotes end or quotes within quotes */
 				/* Is it the same kind of quote? */
-				if ((*instr == quote) && quoted) {
+				if (*instr == quote && quoted) {
 					quote = '\0';
 					*instr = '\0';
 					state = WHITESPACE;
@@ -146,7 +146,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 
 		/* backslash - if escaping a quote within a quote */
 		case '\\':
-			if ((quote) && (*(instr + 1) == quote)) {
+			if (quote && *(instr + 1) == quote) {
 				memmove(instr, instr + 1, strlen(instr));
 				len--;
 			}
@@ -163,7 +163,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 		case '\t':
 		case '\r':
 		case '\n':
-			if ((state == WORDSPACE) && (quote == '\0')) {
+			if (state == WORDSPACE && quote == '\0') {
 				state = WHITESPACE;
 				*instr = '\0';
 			}
@@ -185,7 +185,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 				argv_array = xrealloc(argv_array, sizeof(argv_t) * (argc_slots + ALLOC_CHUNK));
 			}
 
-			if (argv_array == NULL) {
+			if (!argv_array) {
 				return -1;
 			}
 			argv_array[arg_count - 1].string = instr;
@@ -198,7 +198,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 		pos++;
 	}
 
-	if (arg_count == 0) return 0;
+	if (!arg_count) return 0;
 
 	argv_array[arg_count].string = NULL;
 	*argv = argv_array;
@@ -246,7 +246,7 @@ CookieVars(list_t **env)
 	char *qs;
 	char *token;
 
-	if (getenv("HTTP_COOKIE") != NULL) {
+	if (getenv("HTTP_COOKIE")) {
 		qs = strdup(getenv("HTTP_COOKIE"));
 	} else {
 		return;
@@ -293,7 +293,7 @@ ReadCGIQueryString(list_t **env)
 	char *token;
 	int i;
 
-	if (getenv("QUERY_STRING") != NULL) {
+	if (getenv("QUERY_STRING")) {
 		qs = strdup(getenv("QUERY_STRING"));
 	} else {
 		return;
@@ -333,29 +333,29 @@ ReadCGIPOSTValues(list_t **env)
 	const char *CONTENT_TYPE = "CONTENT_TYPE";
 	char *content_type = NULL;
 
-	if ((getenv(CONTENT_LENGTH) == NULL) ||
-	    (strtoul(getenv(CONTENT_LENGTH), NULL, 10) == 0)) {
+	if (!getenv(CONTENT_LENGTH) ||
+	    !strtoul(getenv(CONTENT_LENGTH), NULL, 10)) {
 		return;
 	}
 
 	content_type = getenv(CONTENT_TYPE);
 
-	if ((content_type != NULL) &&
-	    (strncasecmp(content_type, "multipart/form-data", 19)) == 0) {
+	if (content_type &&
+	    !strncasecmp(content_type, "multipart/form-data", 19)) {
 		/* This is a mime request, we need to go to the mime handler */
 		rfc2388_handler(env);
 		return;
 	}
 
 	/* at this point its either urlencoded or some other blob */
-	if ((content_type == NULL) ||
-	    (strncasecmp(getenv(CONTENT_TYPE), "application/x-www-form-urlencoded", 33) == 0)) {
+	if (!content_type ||
+	    !strncasecmp(getenv(CONTENT_TYPE), "application/x-www-form-urlencoded", 33)) {
 		urldecoding = 1;
 		matchstr = "&";
 	}
 
 	/* Allow 2MB content, unless they have a global upload set */
-	max_len = ((global.uploadkb == 0) ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
+	max_len = (!global.uploadkb ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
 
 	s_buffer_init(&sbuf, 32768);
 	sbuf.fh = 0;
@@ -365,7 +365,7 @@ ReadCGIPOSTValues(list_t **env)
 	}
 	buffer_init(&token);
 
-	if (urldecoding == 0) {
+	if (!urldecoding) {
 		buffer_add(&token, "body=", 5);
 	}
 
@@ -377,7 +377,7 @@ ReadCGIPOSTValues(list_t **env)
 			die(g_err_msg[E_OVER_LIMIT]);
 		}
 
-		if ((x == 0) || (token.data)) {
+		if (!x || token.data) {
 			buffer_add(&token, sbuf.segment, sbuf.len);
 		}
 
@@ -458,7 +458,7 @@ BecomeUser(uid_t uid, gid_t gid)
 {
 	/* This silently fails if it doesn't work */
 	/* Following is from Timo Teras */
-	if (getuid() == 0) {
+	if (!getuid()) {
 		setgroups(1, &gid);
 	}
 
@@ -549,16 +549,16 @@ main(int argc, char *argv[])
 		/* If we have a request method, and we were run as a #! style script */
 		CookieVars(&env);
 		if (getenv("REQUEST_METHOD")) {
-			if ((strcasecmp(getenv("REQUEST_METHOD"), "GET") == 0) ||
-			    (strcasecmp(getenv("REQUEST_METHOD"), "DELETE") == 0)) {
+			if (!strcasecmp(getenv("REQUEST_METHOD"), "GET") ||
+			    !strcasecmp(getenv("REQUEST_METHOD"), "DELETE")) {
 				if (global.acceptall == TRUE) {
 					ReadCGIPOSTValues(&env);
 				}
 				ReadCGIQueryString(&env);
 			}
 
-			if ((strcasecmp(getenv("REQUEST_METHOD"), "POST") == 0) ||
-			    (strcasecmp(getenv("REQUEST_METHOD"), "PUT") == 0)) {
+			if (!strcasecmp(getenv("REQUEST_METHOD"), "POST") ||
+			    !strcasecmp(getenv("REQUEST_METHOD"), "PUT")) {
 				if (global.acceptall == TRUE) {
 					ReadCGIQueryString(&env);
 				}

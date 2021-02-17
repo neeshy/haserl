@@ -64,13 +64,13 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 	int r;
 
 	/* if eof and ptr ran off the buffer, then we are done */
-	if ((sbuf->eof) && (sbuf->ptr > sbuf->buf)) {
+	if (sbuf->eof && sbuf->ptr > sbuf->buf) {
 		return 0;
 	}
 
 	/* if need to fill the buffer, do so */
-	if ((sbuf->bufsize == 0) ||
-	    (sbuf->ptr >= (sbuf->buf + sbuf->bufsize - strlen(matchstr)))) {
+	if (!sbuf->bufsize ||
+	    sbuf->ptr >= (sbuf->buf + sbuf->bufsize - strlen(matchstr))) {
 		len = sbuf->bufsize - (sbuf->ptr - sbuf->buf);
 		if (len) {
 			memmove(sbuf->buf, sbuf->ptr, len);
@@ -89,7 +89,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 			r = read(sbuf->fh, sbuf->buf + len, n);
 		}
 		/* only report eof when we've done a read of 0. */
-		if (r == 0 || (r < 0 && errno != EINTR)) {
+		if (!r || (r < 0 && errno != EINTR)) {
 			sbuf->eof = -1;
 		} else {
 			sbuf->bufsize += (r > 0) ? r : 0;
@@ -106,7 +106,7 @@ s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
 
 	/* if have a matchstr, look for it, otherwise return the chunk */
 	if (strlen(matchstr) > 0) {
-		while (memcmp(matchstr, sbuf->ptr + pos, strlen(matchstr)) && (pos < len)) {
+		while (memcmp(matchstr, sbuf->ptr + pos, strlen(matchstr)) && pos < len) {
 			pos++;
 		}
 

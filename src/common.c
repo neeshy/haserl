@@ -30,7 +30,7 @@ xmalloc(size_t size)
 {
 	void *buf;
 
-	if ((buf = malloc(size)) == NULL) {
+	if (!(buf = malloc(size))) {
 		die(g_err_msg[E_MALLOC_FAIL]);
 	}
 	memset(buf, 0, size);
@@ -41,7 +41,7 @@ xmalloc(size_t size)
 void *
 xrealloc(void *buf, size_t size)
 {
-	if ((buf = realloc(buf, size)) == NULL) {
+	if (!(buf = realloc(buf, size))) {
 		die(g_err_msg[E_MALLOC_FAIL]);
 	}
 	return buf;
@@ -62,14 +62,14 @@ myputenv(list_t **env, char *str, char *prefix)
 
 	temp = memchr(str, '=', strlen(str));
 	/* if we don't have an equal sign, exit early */
-	if (temp == 0) {
+	if (!temp) {
 		return;
 	}
 
 	keylen = (size_t)(temp - str);
 
 	/* is this an array */
-	if (memcmp(str + keylen - 2, "[]", 2) == 0) {
+	if (!memcmp(str + keylen - 2, "[]", 2)) {
 		keylen = keylen - 2;
 		array = 1;
 	}
@@ -78,7 +78,7 @@ myputenv(list_t **env, char *str, char *prefix)
 	entry[0] = 0;
 	strcat(entry, prefix);
 
-	if (array == 1) {
+	if (array) {
 		strncat(entry, str, keylen);
 		strcat(entry, str + keylen + 2);
 	} else {
@@ -87,10 +87,10 @@ myputenv(list_t **env, char *str, char *prefix)
 
 	/* does the value already exist? */
 	len = keylen + strlen(prefix) + 1;
-	while (cur != NULL) {
+	while (cur) {
 		/* if found a matching key */
-		if (memcmp(cur->buf, entry, len) == 0) {
-			if (array == 1) {
+		if (!memcmp(cur->buf, entry, len)) {
+			if (array) {
 				/* if an array, create a new string with this
 				 * value added to the end of the old value(s) */
 				temp = xmalloc(strlen(cur->buf) + strlen(entry) - len + 2);
@@ -174,7 +174,7 @@ buffer_add(buffer_t *buf, const void *data, unsigned long size)
 	unsigned long index;
 
 	/* if we need to grow the buffer, do so now */
-	if ((buf->ptr + size) >= buf->limit) {
+	if (buf->ptr + size >= buf->limit) {
 		index = (buf->limit - buf->data);
 		newsize = index;
 		while (newsize <= index + size) {
