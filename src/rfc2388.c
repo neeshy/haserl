@@ -134,7 +134,7 @@ mime_tag_add(mime_var_t *obj, char *str)
 }
 
 void
-mime_var_putenv(list_t **env, mime_var_t *obj)
+mime_var_putenv(mime_var_t *obj)
 {
 	buffer_t buf;
 
@@ -149,7 +149,7 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 		buffer_add(&buf, "=", 1);
 		buffer_add(&buf, obj->value.data,
 		           strlen(obj->value.data) + 1);
-		myputenv(env, buf.data, global.post_prefix);
+		myputenv(&global.post, buf.data);
 		buffer_reset(&buf);
 	}
 	if (obj->filename) {
@@ -158,14 +158,14 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 		buffer_add(&buf, "_path=", 6);
 		buffer_add(&buf, obj->value.data,
 		           strlen(obj->value.data) + 1);
-		myputenv(env, buf.data, global.haserl_prefix);
+		myputenv(&global.haserl, buf.data);
 		buffer_reset(&buf);
 
 		/* this saves the name of the file the client supplied */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_name=", 6);
 		buffer_add(&buf, obj->filename, strlen(obj->filename) + 1);
-		myputenv(env, buf.data, global.post_prefix);
+		myputenv(&global.post, buf.data);
 		buffer_reset(&buf);
 	}
 	buffer_destroy(&buf);
@@ -312,7 +312,7 @@ mime_var_writer(mime_var_t *obj, char *str, int len)
 /* Read multipart/form-data input (RFC2388), typically used when
  * uploading a file. */
 void
-rfc2388_handler(list_t **env)
+rfc2388_handler(void)
 {
 	enum mime_state_t { DISCARD, BOUNDARY, HEADER, CONTENT };
 
@@ -445,7 +445,7 @@ rfc2388_handler(list_t **env)
 			mime_var_writer(&var, sbuf.segment, sbuf.len);
 			if (x) {
 				buffer_reset(&buf);
-				mime_var_putenv(env, &var);
+				mime_var_putenv(&var);
 				mime_var_destroy(&var);
 				state = BOUNDARY;
 				str = crlf;

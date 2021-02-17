@@ -27,10 +27,10 @@
 int argc_argv(char *instr, argv_t **argv, char *commentstr);
 char x2c(char *what);
 void unescape_url(char *url);
-void haserl_flags(list_t **env);
-void CookieVars(list_t **env);
-void ReadCGIQueryString(list_t **env);
-void ReadCGIPOSTValues(list_t **env);
+void haserl_flags(void);
+void CookieVars(void);
+void ReadCGIQueryString(void);
+void ReadCGIPOSTValues(void);
 int ParseCommandLine(int argc, char *argv[]);
 void BecomeUser(uid_t uid, gid_t gid);
 

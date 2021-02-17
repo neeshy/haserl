@@ -55,13 +55,12 @@ typedef struct {
 /* Just a silly construct to contain global variables */
 typedef struct {
 	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none) */
-	char          *shell;          /* The shell we use                           */
 	char          *uploaddir;      /* where we upload to                         */
 	char          *uploadhandler;  /* a handler for uploads                      */
-	char          *get_prefix;     /* what name we give to GET variables         */
-	char          *post_prefix;    /* what name we give to POST variables        */
-	char          *cookie_prefix;  /* what name we give to COOKIE variables      */
-	char          *haserl_prefix;  /* what name we give to HASERL variables      */
+	list_t        *get;            /* name-value pairs for GET requests          */
+	list_t        *post;           /* name-value pairs for POST requests         */
+	list_t        *cookie;         /* name-value pairs for cookie headers        */
+	list_t        *haserl;         /* name-value pairs for the HASERL namespace  */
 	int            acceptall;      /* true if we'll accept POST data on
 	                                * GETs and vice versa                        */
 	int            silent;         /* true if we never print errors              */
@@ -72,7 +71,7 @@ extern haserl_t global;
 /* common.c */
 void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
-void myputenv(list_t **cur, char *str, char *prefix);
+void myputenv(list_t **cur, char *str);
 void free_list(list_t *);
 void buffer_init(buffer_t *buf);
 void buffer_reset(buffer_t *buf);

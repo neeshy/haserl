@@ -36,10 +36,10 @@ void mime_var_init(mime_var_t *obj);
 void mime_var_destroy(mime_var_t *obj);
 char *mime_substr(char *start, int len);
 void mime_tag_add(mime_var_t *obj, char *str);
-void mime_var_putenv(list_t **env, mime_var_t *obj);
+void mime_var_putenv(mime_var_t *obj);
 void mime_exec(mime_var_t *obj, int fd);
 void mime_var_open_target(mime_var_t *obj);
 void mime_var_writer(mime_var_t *obj, char *str, int len);
-void rfc2388_handler(list_t **env);
+void rfc2388_handler(void);
 
 #endif /* _RFC2388_H */

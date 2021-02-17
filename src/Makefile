@@ -9,20 +9,10 @@ LIBS += $(shell pkg-config --libs -- $(WITH_LUA))
 
 SOURCES = common.c common.h sliding_buffer.c sliding_buffer.h \
           h_error.c h_error.h rfc2388.c rfc2388.h \
-          h_lua.c h_lua.h haserl.c haserl.h haserl_lualib.inc
+          h_lua.c h_lua.h haserl.c haserl.h
 haserl: $(SOURCES)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) \
 		-o $@ $(filter %.c,$^) $(LIBS)
-lua2c_LDFLAGS ?= -Wl,-E
-lua2c: lua2c.c
-	$(CC) $(CFLAGS) $(LDFLAGS) $(lua2c_LDFLAGS) \
-		-o $@ $^ $(LIBS)
-
-haserl_lualib.inc: haserl_lualib.lua lua2c
-	if ! ./lua2c haserl_lualib haserl_lualib.lua >$@; then \
-		rm $@; \
-		exit 1 ;\
-	fi
 
 install: haserl haserl.1
 	install -Dm755 haserl $(DESTDIR)/bin/haserl

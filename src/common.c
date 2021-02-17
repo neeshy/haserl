@@ -50,17 +50,18 @@ xrealloc(void *buf, size_t size)
 /* adds or replaces the "key=value" value in the env_list chain
  * prefix is appended to the key (e.g. FORM_key=value) */
 void
-myputenv(list_t **env, char *str, char *prefix)
+myputenv(list_t **env, char *str)
 {
 	list_t *cur = *env;
 	list_t *prev = NULL;
+	size_t slen;
 	size_t keylen;
 	char *entry = NULL;
 	char *temp = NULL;
 	int array = 0;
-	int len;
 
-	temp = memchr(str, '=', strlen(str));
+	slen = strlen(str);
+	temp = memchr(str, '=', slen);
 	/* if we don't have an equal sign, exit early */
 	if (!temp) {
 		return;
@@ -74,46 +75,30 @@ myputenv(list_t **env, char *str, char *prefix)
 		array = 1;
 	}
 
-	entry = xmalloc(strlen(str) + strlen(prefix) + 1);
-	entry[0] = 0;
-	strcat(entry, prefix);
-
 	if (array) {
+		entry = xmalloc(slen - 1);
 		strncat(entry, str, keylen);
 		strcat(entry, str + keylen + 2);
 	} else {
-		strcat(entry, str);
-	}
-
-	/* does the value already exist? */
-	len = keylen + strlen(prefix) + 1;
-	while (cur) {
-		/* if found a matching key */
-		if (!memcmp(cur->buf, entry, len)) {
-			if (array) {
-				/* if an array, create a new string with this
-				 * value added to the end of the old value(s) */
-				temp = xmalloc(strlen(cur->buf) + strlen(entry) - len + 2);
-				memmove(temp, cur->buf, strlen(cur->buf) + 1);
-				strcat(temp, "\n");
-				strcat(temp, str + keylen + 3);
-				free(entry);
-				entry = temp;
-			}
-
-			/* delete the old entry */
-			free(cur->buf);
-			if (prev) {
-				prev->next = cur->next;
-				free(cur);
-				cur = prev->next;
+		entry = strdup(str);
+		/* does the value already exist? */
+		while (cur) {
+			/* if found a matching key */
+			if (!memcmp(cur->buf, entry, keylen)) {
+				/* delete the old entry */
+				free(cur->buf);
+				if (prev) {
+					prev->next = cur->next;
+					free(cur);
+					cur = prev->next;
+				} else {
+					free(cur);
+					cur = NULL;
+				}
 			} else {
-				free(cur);
-				cur = NULL;
+				prev = cur;
+				cur = cur->next;
 			}
-		} else {
-			prev = cur;
-			cur = cur->next;
 		}
 	}
 

@@ -23,7 +23,7 @@
 
 int lua_loadfile(lua_State *L);
 void lua_doscript(char *name);
-void lua_setup(list_t *env);
+void lua_setup(void);
 void lua_destroy(void);
 
 #endif /* _H_LUA_H */

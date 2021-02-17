@@ -28,31 +28,38 @@
 #include "h_lua.h"
 #include "h_error.h"
 
-/* this is not a mistake. We are including the
- * definition of the lualib here */
-#include "haserl_lualib.inc"
-
 lua_State *lua_vm = NULL;
 
 void
-lua_putenv(char *str)
+lua_putenv(const list_t *env, const char *tbl)
 {
-	char *value;
+	char *str, *value;
 
-	value = memchr(str, '=', strlen(str));
-	if (value) {
-		*value = '\0';
-		value++;
-	} else {
-		value = str + strlen(str);
+	lua_getglobal(lua_vm, tbl);
+	if (lua_isnil(lua_vm, -1)) {
+		lua_pop(lua_vm, 1);
+		lua_newtable(lua_vm);
+		lua_setglobal(lua_vm, tbl);
+		lua_getglobal(lua_vm, tbl);
 	}
 
-	lua_getglobal(lua_vm, "haserl");
-	lua_pushstring(lua_vm, "myputenv");
-	lua_gettable(lua_vm, -2);
-	lua_pushstring(lua_vm, str);
-	lua_pushstring(lua_vm, value);
-	lua_call(lua_vm, 2, 0);
+	while (env) {
+		str = env->buf;
+		value = memchr(str, '=', strlen(str));
+		if (value) {
+			*value = '\0';
+			value++;
+		} else {
+			value = str + strlen(str);
+		}
+
+		lua_pushstring(lua_vm, value);
+		lua_setfield(lua_vm, -2, str);
+
+		env = env->next;
+	}
+
+	lua_pop(lua_vm, 1);
 }
 
 int
@@ -76,31 +83,21 @@ lua_doscript(char *name)
 }
 
 void
-lua_setup(list_t *env)
+lua_setup(void)
 {
 	/* create a lua instance */
 	lua_vm = luaL_newstate();
 	luaL_openlibs(lua_vm);
 
-	/* and load our haserl library */
-	if (luaL_loadbuffer(lua_vm,
-	                    (const char *)&haserl_lualib, sizeof(haserl_lualib),
-	                    "luascript.lua") || lua_pcall(lua_vm, 0, 0, 0)) {
-		die("Error passing the lua library to the lua vm: %s",
-		    lua_tostring(lua_vm, -1));
-	}
-
 	/* and put the vars in the vm */
-	while (env) {
-		lua_putenv(env->buf);
-		env = env->next;
-	}
+	lua_putenv(global.get, "GET");
+	lua_putenv(global.post, "POST");
+	lua_putenv(global.cookie, "COOKIE");
+	lua_putenv(global.haserl, "HASERL");
 
 	/* register our open function in the haserl table */
-	lua_getglobal(lua_vm, "haserl");
-	lua_pushstring(lua_vm, "loadfile");
 	lua_pushcfunction(lua_vm, lua_loadfile);
-	lua_settable(lua_vm, -3);
+	lua_setglobal(lua_vm, "loadfile");
 }
 
 void

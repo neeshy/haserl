@@ -51,7 +51,18 @@
 
 #include "haserl.h"
 
-haserl_t global;
+/* Assign default values to the global structure */
+haserl_t global = {
+	.uploadkb = 0,            /* how big an upload do we allow (0 for none) */
+	.uploaddir = TEMPDIR,     /* where to upload to                         */
+	.uploadhandler = NULL,    /* the upload handler                         */
+	.get = NULL,
+	.post = NULL,
+	.cookie = NULL,
+	.haserl = NULL,
+	.acceptall = FALSE,       /* don't allow POST data for GET method       */
+	.silent = FALSE           /* we do print errors if we find them         */
+};
 
 /* Command line / Config file directives When adding a long option, make sure
  * to update the short_options as well */
@@ -241,7 +252,7 @@ unescape_url(char *url)
 /* if HTTP_COOKIE is passed as an environment variable,
  * attempt to parse its values into environment variables */
 void
-CookieVars(list_t **env)
+CookieVars(void)
 {
 	char *qs;
 	char *token;
@@ -259,14 +270,14 @@ CookieVars(list_t **env)
 		while (token[0] == ' ') {
 			token++;
 		}
-		myputenv(env, token, global.cookie_prefix);
+		myputenv(&global.cookie, token);
 		token = strtok(NULL, ";");
 	}
 	free(qs);
 }
 
 void
-haserl_flags(list_t **env)
+haserl_flags(void)
 {
 	char buf[256];
 
@@ -287,7 +298,7 @@ haserl_flags(list_t **env)
 
 /* Read cgi variables from query string, and put in environment */
 void
-ReadCGIQueryString(list_t **env)
+ReadCGIQueryString(void)
 {
 	char *qs;
 	char *token;
@@ -311,7 +322,7 @@ ReadCGIQueryString(list_t **env)
 	token = strtok(qs, "&;");
 	while (token) {
 		unescape_url(token);
-		myputenv(env, token, global.get_prefix);
+		myputenv(&global.get, token);
 		token = strtok(NULL, "&;");
 	}
 	free(qs);
@@ -319,7 +330,7 @@ ReadCGIQueryString(list_t **env)
 
 /* Read cgi variables from stdin (for POST queries) */
 void
-ReadCGIPOSTValues(list_t **env)
+ReadCGIPOSTValues(void)
 {
 	size_t content_length = 0;
 	size_t max_len;
@@ -343,7 +354,7 @@ ReadCGIPOSTValues(list_t **env)
 	if (content_type &&
 	    !strncasecmp(content_type, "multipart/form-data", 19)) {
 		/* This is a mime request, we need to go to the mime handler */
-		rfc2388_handler(env);
+		rfc2388_handler();
 		return;
 	}
 
@@ -400,7 +411,7 @@ ReadCGIPOSTValues(list_t **env)
 				}
 				unescape_url(data);
 			}
-			myputenv(env, data, global.post_prefix);
+			myputenv(&global.post, data);
 			if (token.data) {
 				buffer_reset(&token);
 			}
@@ -482,19 +493,6 @@ main(int argc, char *argv[])
 	int command;
 	int count;
 
-	list_t *env = NULL;
-
-	/* Assign default values to the global structure */
-	global.uploadkb = 0;            /* how big an upload do we allow (0 for none) */
-	global.silent = FALSE;          /* We do print errors if we find them         */
-	global.uploaddir = TEMPDIR;     /* where to upload to                         */
-	global.uploadhandler = NULL;    /* the upload handler                         */
-	global.acceptall = FALSE;       /* don't allow POST data for GET method       */
-	global.get_prefix = "GET.";
-	global.post_prefix = "POST.";
-	global.cookie_prefix = "COOKIE.";
-	global.haserl_prefix = "HASERL.";
-
 	/* if more than argv[1] and argv[1] is not a file */
 	switch (argc) {
 	case 1:
@@ -541,37 +539,40 @@ main(int argc, char *argv[])
 	stat(filename, &filestat);
 	BecomeUser(filestat.st_uid, filestat.st_gid);
 
-	/* Read the current environment into our chain */
-	haserl_flags(&env);
+	/* Add environment variables */
+	haserl_flags();
 
 	/* Read the request data */
 	if (global.acceptall != NONE) {
 		/* If we have a request method, and we were run as a #! style script */
-		CookieVars(&env);
+		CookieVars();
 		if (getenv("REQUEST_METHOD")) {
 			if (!strcasecmp(getenv("REQUEST_METHOD"), "GET") ||
 			    !strcasecmp(getenv("REQUEST_METHOD"), "DELETE")) {
 				if (global.acceptall == TRUE) {
-					ReadCGIPOSTValues(&env);
+					ReadCGIPOSTValues();
 				}
-				ReadCGIQueryString(&env);
+				ReadCGIQueryString();
 			}
 
 			if (!strcasecmp(getenv("REQUEST_METHOD"), "POST") ||
 			    !strcasecmp(getenv("REQUEST_METHOD"), "PUT")) {
 				if (global.acceptall == TRUE) {
-					ReadCGIQueryString(&env);
+					ReadCGIQueryString();
 				}
-				ReadCGIPOSTValues(&env);
+				ReadCGIPOSTValues();
 			}
 		}
 	}
 
-	lua_setup(env);
+	lua_setup();
 	lua_doscript(filename);
 	lua_destroy();
 
-	free_list(env);
+	free_list(global.get);
+	free_list(global.post);
+	free_list(global.cookie);
+	free_list(global.haserl);
 
 	return 0;
 }
