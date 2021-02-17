@@ -73,9 +73,8 @@ contains the original name of the file, as specified by the client.
 .BI \-\-upload\-handler= "pathspec "
 When specified, file uploads are handled by this handler, rather than written
 to temporary files. The full pathspec must be given (the PATH is not
-searched), and the upload-handler is given one command-line parameter:
-The name of the FIFO on which the upload file
-will be sent. In addition, the handler may receive 3 environment variables:
+searched). The handler will receive file data on standard input.
+In addition, the handler may receive 3 environment variables:
 .BR CONTENT_TYPE ", " FILENAME ", and " NAME .
 These reflect the MIME content-disposition headers for the content. Haserl
 will fork the handler for each file uploaded, and will send the contents

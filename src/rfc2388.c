@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
 #include <sys/fcntl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,9 +34,8 @@
 void
 empty_stdin(void)
 {
-	char c[2000];
-
-	while (read(0, &c, 2000));
+	char c[2048];
+	while (read(0, &c, sizeof(c)));
 }
 
 void
@@ -174,11 +172,12 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 }
 
 void
-mime_exec(mime_var_t *obj, char *fifo)
+mime_exec(mime_var_t *obj, int fd)
 {
-	char *av[4];
-	char *type, *filename, *name, *c;
-	int fh;
+	int i;
+	long limit;
+	char *av[2];
+	char *type, *filename, *name;
 	struct sigaction new_action;
 
 	switch (fork()) {
@@ -194,6 +193,7 @@ mime_exec(mime_var_t *obj, char *fifo)
 			sprintf(type, "CONTENT_TYPE=%s", obj->type);
 			putenv(type);
 		}
+
 		if (obj->filename) {
 			filename = xmalloc(9 + strlen(obj->filename) + 1);
 			sprintf(filename, "FILENAME=%s", obj->filename);
@@ -206,14 +206,28 @@ mime_exec(mime_var_t *obj, char *fifo)
 			putenv(name);
 		}
 
+		if (fd) {
+			close(0);
+			dup2(fd, 0);
+		}
+
+		if ((limit = sysconf(_SC_OPEN_MAX)) == -1) {
+			limit = 1024;
+		}
+
+		for (i = 1; i < limit; i++) {
+			close(i);
+		}
+
+		open("/dev/null", O_RDWR);
+		dup2(1, 2);
+
 		av[0] = global.uploadhandler;
-		av[1] = fifo;
-		av[2] = NULL;
+		av[1] = NULL;
 		execv(av[0], av);
 		/* if we get here, we had a failure. Not much we can do.
 		 * We are the child, so we can't even warn the parent */
-		fh = open(fifo, O_RDONLY);
-		while (read(fh, &c, 1));
+		empty_stdin();
 		exit(-1);
 		break;
 
@@ -233,6 +247,7 @@ void
 mime_var_open_target(mime_var_t *obj)
 {
 	char *tmpname;
+	int fd[2];
 	int ok;
 
 	/* if upload_limit is zero, we die right here */
@@ -241,29 +256,25 @@ mime_var_open_target(mime_var_t *obj)
 		die(g_err_msg[E_FILE_UPLOAD]);
 	}
 
-	tmpname = xmalloc(strlen(global.uploaddir) + 8);
-	strcpy(tmpname, global.uploaddir);
-	strcat(tmpname, "/XXXXXX");
-	obj->fh = mkstemp(tmpname);
-	ok = obj->fh != -1;
-
 	/* reuse the name as a fifo if we have a handler. We do this
 	 * because tempnam uses TEMPDIR if defined, among other bugs */
-	if (ok && global.uploadhandler) {
+	if (global.uploadhandler) {
 		/* I have a handler */
-		close(obj->fh);
-		unlink(tmpname);
-		ok = !mkfifo(tmpname, 0600);
-
-		/* you must open the fifo for reading before writing
-		 * on non linux systems */
+		ok = !pipe(fd);
 		if (ok) {
-			mime_exec(obj, tmpname);
-			obj->fh = open(tmpname, O_WRONLY);
-			ok = obj->fh != -1;
+			mime_exec(obj, fd[0]);
+			close(fd[0]);
+			obj->fh = fd[1];
 		}
 	} else {
-		buffer_add(&obj->value, tmpname, strlen(tmpname));
+		tmpname = xmalloc(strlen(global.uploaddir) + 8);
+		strcpy(tmpname, global.uploaddir);
+		strcat(tmpname, "/XXXXXX");
+		obj->fh = mkstemp(tmpname);
+		ok = obj->fh != -1;
+		if (ok) {
+			buffer_add(&obj->value, tmpname, strlen(tmpname));
+		}
 	}
 
 	if (!ok) {
