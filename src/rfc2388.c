@@ -176,20 +176,18 @@ mime_var_putenv(list_t **env, mime_var_t *obj)
 void
 mime_exec(mime_var_t *obj, char *fifo)
 {
-	int pid;
 	char *av[4];
-	char *type, *filename, *name;
-	char *c;
+	char *type, *filename, *name, *c;
 	int fh;
 	struct sigaction new_action;
 
-	pid = fork();
-	if (pid == -1) {
+	switch (fork()) {
+	case -1:
 		empty_stdin();
 		die(g_err_msg[E_SHELL_FAIL]);
-	}
+		break;
 
-	if (!pid) {
+	case 0:
 		/* store the content type, filename, and form name */
 		if (obj->type) {
 			type = xmalloc(13 + strlen(obj->type) + 1);
@@ -217,12 +215,16 @@ mime_exec(mime_var_t *obj, char *fifo)
 		fh = open(fifo, O_RDONLY);
 		while (read(fh, &c, 1));
 		exit(-1);
-	} else {
+		break;
+
+	default:
 		/* I'm parent - ignore SIGPIPE from the child */
 		new_action.sa_handler = SIG_IGN;
 		sigemptyset(&new_action.sa_mask);
 		new_action.sa_flags = 0;
 		sigaction(SIGPIPE, &new_action, NULL);
+		break;
+
 	}
 	/* control should get to this point only in the parent. */
 } /* end mime_exec */
