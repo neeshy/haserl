@@ -163,9 +163,9 @@ mime_var_putenv(mime_var_t *obj)
 
 		/* this saves the name of the file the client supplied */
 		buffer_add(&buf, obj->name, strlen(obj->name));
-		buffer_add(&buf, "_name=", 6);
+		buffer_add(&buf, "_filename=", 10);
 		buffer_add(&buf, obj->filename, strlen(obj->filename) + 1);
-		myputenv(&global.post, buf.data);
+		myputenv(&global.haserl, buf.data);
 		buffer_reset(&buf);
 	}
 	buffer_destroy(&buf);

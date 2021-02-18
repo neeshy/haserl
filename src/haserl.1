@@ -66,7 +66,7 @@ suppresses the error message, so that the use of haserl is not advertised.
 .BI \-\-upload\-dir= "dirspec "
 Defaults to "/tmp". All uploaded files are created with temporary filename in this
 directory
-.BR HASERL.xxx_path " contains the name of the temporary file. " POST.xxx_name
+.BR HASERL.xxx_path " contains the name of the temporary file. " HASERL.xxx_filename
 contains the original name of the file, as specified by the client.
 
 .TP
@@ -155,7 +155,7 @@ files are uploaded from a web client using <input type=file>.
 When a file is uploaded to the web server, it is stored in the
 .I upload-dir
 directory.
-.BR POST.variable_name " contains the name of the file uploaded "
+.BR HASERL.variable_filename " contains the name of the file uploaded "
 (as specified by the client.)
 .BR HASERL.variable_path " contains the name of the file in "
 .I upload-dir
@@ -291,7 +291,7 @@ io.write("<input type=file name=uploadfile>")
 io.write("<input type=submit value=GO>")
 io.write("<br>")
 if HASERL.uploadfile_path then
-	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", POST.uploadfile_name))
+	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", HASERL.uploadfile_filename))
 	io.write(string.format("temporarily stored on the server as <i>%s</i>.", HASERL.uploadfile_path))
 	local file = io.open(HASERL.uploadfile_path, "r")
 	if file then
@@ -451,12 +451,6 @@ And then a wrapper script to call it:
 exec haserl test.luac
 .fi
 .RE
-
-.SH BUGS
-When files are uploaded using RFC-2388, a temporary file is created. The name of the file
-is stored in
-.BR POST.variable_name ", and " HASERL.variable_name ". Only " HASERL.variable_name
-should be used - the other can be overwritten by a malicious client.
 
 .SH NAME
 The name "haserl" comes from the Bavarian word for "bunny." At first glance it
