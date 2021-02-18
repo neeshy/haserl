@@ -57,7 +57,6 @@ myputenv(list_t **env, const char *str)
 	size_t keylen;
 	char *entry = NULL;
 	char *temp = NULL;
-	int array = 0;
 
 	slen = strlen(str);
 	temp = memchr(str, '=', slen);
@@ -67,37 +66,24 @@ myputenv(list_t **env, const char *str)
 	}
 
 	keylen = (size_t)(temp - str);
-
-	/* is this an array */
-	if (!memcmp(str + keylen - 2, "[]", 2)) {
-		keylen = keylen - 2;
-		array = 1;
-	}
-
-	if (array) {
-		entry = xmalloc(slen - 1);
-		strncat(entry, str, keylen);
-		strcat(entry, str + keylen + 2);
-	} else {
-		entry = strdup(str);
-		/* does the value already exist? */
-		while (cur) {
-			/* if found a matching key */
-			if (!memcmp(cur->buf, entry, keylen)) {
-				/* delete the old entry */
-				free(cur->buf);
-				if (prev) {
-					prev->next = cur->next;
-					free(cur);
-					cur = prev->next;
-				} else {
-					free(cur);
-					cur = NULL;
-				}
+	entry = strdup(str);
+	/* does the value already exist? */
+	while (cur) {
+		/* if found a matching key */
+		if (!strncmp(cur->buf, entry, keylen)) {
+			/* delete the old entry */
+			free(cur->buf);
+			if (prev) {
+				prev->next = cur->next;
+				free(cur);
+				cur = prev->next;
 			} else {
-				prev = cur;
-				cur = cur->next;
+				free(cur);
+				cur = NULL;
 			}
+		} else {
+			prev = cur;
+			cur = cur->next;
 		}
 	}
 
