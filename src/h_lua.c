@@ -36,7 +36,7 @@ lua_putenv(const list_t *env, const char *tbl)
 	char *str, *value;
 
 	lua_getglobal(lua_vm, tbl);
-	if (lua_isnil(lua_vm, -1)) {
+	if (!lua_istable(lua_vm, -1)) {
 		lua_pop(lua_vm, 1);
 		lua_newtable(lua_vm);
 		lua_setglobal(lua_vm, tbl);
