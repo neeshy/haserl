@@ -53,19 +53,17 @@ myputenv(list_t **env, const char *str)
 {
 	list_t *cur = *env;
 	list_t *prev = NULL;
-	size_t slen;
-	size_t keylen;
 	char *entry = NULL;
 	char *temp = NULL;
+	size_t keylen;
 
-	slen = strlen(str);
-	temp = memchr(str, '=', slen);
+	temp = strchr(str, '=');
 	/* if we don't have an equal sign, exit early */
 	if (!temp) {
 		return;
 	}
 
-	keylen = (size_t)(temp - str);
+	keylen = (size_t)(temp - str) + 1;
 	entry = strdup(str);
 	/* does the value already exist? */
 	while (cur) {

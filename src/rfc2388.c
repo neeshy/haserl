@@ -347,7 +347,7 @@ rfc2388_handler(void)
 		i++;
 	}
 
-	boundary = xmalloc(strlen(str + i) + 5); /* \r\n-- + NULL */
+	boundary = xmalloc(strlen(str + i) + 5); /* \r\n--\0 */
 	memcpy(boundary, crlf, 2);
 	memcpy(boundary + 2, "--", 2);
 	memcpy(boundary + 4, str + i, strlen(str + i) + 1);

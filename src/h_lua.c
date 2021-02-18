@@ -45,7 +45,7 @@ lua_putenv(const list_t *env, const char *tbl)
 
 	while (env) {
 		str = env->buf;
-		value = memchr(str, '=', strlen(str));
+		value = strchr(str, '=');
 		if (value) {
 			*value = '\0';
 			value++;
