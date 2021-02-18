@@ -66,7 +66,7 @@ suppresses the error message, so that the use of haserl is not advertised.
 .BI \-\-upload\-dir= "dirspec "
 Defaults to "/tmp". All uploaded files are created with temporary filename in this
 directory
-.BR HASERL.xxx_path " contains the name of the temporary file. " HASERL.xxx_filename
+.BR FORM.xxx_path " contains the name of the temporary file. " FORM.xxx_filename
 contains the original name of the file, as specified by the client.
 
 .TP
@@ -155,9 +155,9 @@ files are uploaded from a web client using <input type=file>.
 When a file is uploaded to the web server, it is stored in the
 .I upload-dir
 directory.
-.BR HASERL.variable_filename " contains the name of the file uploaded "
+.BR FORM.variable_filename " contains the name of the file uploaded "
 (as specified by the client.)
-.BR HASERL.variable_path " contains the name of the file in "
+.BR FORM.variable_path " contains the name of the file in "
 .I upload-dir
 that holds the uploaded content. To prevent malicious clients from
 filling up
@@ -171,12 +171,12 @@ or rename it somewhere in the script.
 .TP
 .B " "
 Note that the filename is stored in
-.BI HASERL .variable_path
+.BI FORM .variable_path
 This is because the GET, and POST variables are modifiable by the client,
 and a malicious client can set a second variable with the name
 .IR variable_path=/etc/passwd .
 Earlier versions did not store the pathspec in
-.B HASERL
+.B FORM
 namespace.
 .I To maintain backward compailibility, the name of the temporary file
 .I is also stored in the
@@ -290,15 +290,15 @@ io.write(string.format("<form action='%s' method=POST enctype='multipart/form-da
 io.write("<input type=file name=uploadfile>")
 io.write("<input type=submit value=GO>")
 io.write("<br>")
-if HASERL.uploadfile_path then
-	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", HASERL.uploadfile_filename))
-	io.write(string.format("temporarily stored on the server as <i>%s</i>.", HASERL.uploadfile_path))
-	local file = io.open(HASERL.uploadfile_path, "r")
+if FORM.uploadfile_path then
+	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", FORM.uploadfile_filename))
+	io.write(string.format("temporarily stored on the server as <i>%s</i>.", FORM.uploadfile_path))
+	local file = io.open(FORM.uploadfile_path, "r")
 	if file then
 		local size = file:seek("end")
 		file:close()
 		io.write(string.format("The file was %d bytes long.</p>", size))
-		os.remove(HASERL.uploadfile_path)
+		os.remove(FORM.uploadfile_path)
 		io.write("<p>Don't worry, the file has just been deleted from the web server.</p>")
 	end
 else
@@ -332,7 +332,7 @@ The number of KB that are allowed to be sent from the client to the server.
 
 .P
 These variables can be modified or overwritten within the script, although the stored in the
-"HASERL" table are informational only, and do not affect the running script.
+"FORM" table are informational only, and do not affect the running script.
 
 .SH SAFETY FEATURES
 There is much literature regarding the dangers of using shell to program CGI scripts.

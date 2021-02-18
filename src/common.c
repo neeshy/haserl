@@ -47,8 +47,7 @@ xrealloc(void *buf, size_t size)
 	return buf;
 }
 
-/* adds or replaces the "key=value" value in the env_list chain
- * prefix is appended to the key (e.g. FORM_key=value) */
+/* adds or replaces the "key=value" value in the env_list chain */
 void
 myputenv(list_t **env, const char *str)
 {

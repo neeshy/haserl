@@ -92,8 +92,8 @@ lua_setup(void)
 	/* and put the vars in the vm */
 	lua_putenv(global.get, "GET");
 	lua_putenv(global.post, "POST");
+	lua_putenv(global.form, "FORM");
 	lua_putenv(global.cookie, "COOKIE");
-	lua_putenv(global.haserl, "HASERL");
 
 	/* register our open function in the haserl table */
 	lua_pushcfunction(lua_vm, lua_loadfile);

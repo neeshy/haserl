@@ -153,19 +153,19 @@ mime_var_putenv(mime_var_t *obj)
 		buffer_reset(&buf);
 	}
 	if (obj->filename) {
-		/* This creates HASERL_foo_path=tempfile_pathspec. */
+		/* This creates FORM.foo_path=tempfile_pathspec. */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_path=", 6);
 		buffer_add(&buf, obj->value.data,
 		           strlen(obj->value.data) + 1);
-		myputenv(&global.haserl, buf.data);
+		myputenv(&global.form, buf.data);
 		buffer_reset(&buf);
 
 		/* this saves the name of the file the client supplied */
 		buffer_add(&buf, obj->name, strlen(obj->name));
 		buffer_add(&buf, "_filename=", 10);
 		buffer_add(&buf, obj->filename, strlen(obj->filename) + 1);
-		myputenv(&global.haserl, buf.data);
+		myputenv(&global.form, buf.data);
 		buffer_reset(&buf);
 	}
 	buffer_destroy(&buf);

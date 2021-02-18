@@ -55,8 +55,8 @@ typedef struct {
 	char          *uploadhandler;  /* a handler for uploads                      */
 	list_t        *get;            /* name-value pairs for GET requests          */
 	list_t        *post;           /* name-value pairs for POST requests         */
+	list_t        *form;           /* name-value pairs for the FORM namespace    */
 	list_t        *cookie;         /* name-value pairs for cookie headers        */
-	list_t        *haserl;         /* name-value pairs for the HASERL namespace  */
 	int            accept;         /* true if we'll accept POST data on
 	                                * GETs and vice versa                        */
 	int            silent;         /* true if we never print errors              */

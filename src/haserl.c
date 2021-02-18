@@ -58,8 +58,8 @@ haserl_t global = {
 	.uploadhandler = NULL,    /* the upload handler                         */
 	.get = NULL,
 	.post = NULL,
+	.form = NULL,
 	.cookie = NULL,
-	.haserl = NULL,
 	.accept = 1,              /* don't allow POST data for GET method       */
 	.silent = 0               /* we do print errors if we find them         */
 };
@@ -571,8 +571,8 @@ main(int argc, char *argv[])
 
 	free_list(global.get);
 	free_list(global.post);
+	free_list(global.form);
 	free_list(global.cookie);
-	free_list(global.haserl);
 
 	return 0;
 }
