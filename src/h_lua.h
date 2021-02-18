@@ -22,7 +22,8 @@
 #define _H_LUA_H
 
 int lua_loadfile(lua_State *L);
-void lua_doscript(char *name);
+void lua_putenv(const list_t *env, const char *tbl);
+void lua_doscript(const char *name);
 void lua_setup(void);
 void lua_destroy(void);
 

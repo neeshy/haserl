@@ -106,7 +106,7 @@ const char *gs_short_options = "+vhu:U:H:anS";
  * free(argv);
  */
 int
-argc_argv(char *instr, argv_t **argv, char *commentstr)
+argc_argv(char *instr, argv_t **argv, const char *commentstr)
 {
 	char quote = '\0';
 	int arg_count = 0;
@@ -219,7 +219,7 @@ argc_argv(char *instr, argv_t **argv, char *commentstr)
 /* Convert 2 char hex string into char it represents
  * (from http://www.jmarshall.com/easy/cgi) */
 char
-x2c(char *what)
+x2c(const char *what)
 {
 	char digit;
 
@@ -422,7 +422,7 @@ ReadCGIPOSTValues(void)
 }
 
 int
-ParseCommandLine(int argc, char *argv[])
+ParseCommandLine(int argc, char * const *argv)
 {
 	int c;
 	int option_index = 0;

@@ -50,7 +50,7 @@ xrealloc(void *buf, size_t size)
 /* adds or replaces the "key=value" value in the env_list chain
  * prefix is appended to the key (e.g. FORM_key=value) */
 void
-myputenv(list_t **env, char *str)
+myputenv(list_t **env, const char *str)
 {
 	list_t *cur = *env;
 	list_t *prev = NULL;
@@ -153,10 +153,9 @@ buffer_reset(buffer_t *buf)
 }
 
 void
-buffer_add(buffer_t *buf, const void *data, unsigned long size)
+buffer_add(buffer_t *buf, const void *data, size_t size)
 {
-	unsigned long newsize;
-	unsigned long index;
+	size_t newsize, index;
 
 	/* if we need to grow the buffer, do so now */
 	if (buf->ptr + size >= buf->limit) {

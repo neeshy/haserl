@@ -24,14 +24,14 @@
 /* how many argv slots to allocate at once */
 #define ALLOC_CHUNK 10
 
-int argc_argv(char *instr, argv_t **argv, char *commentstr);
-char x2c(char *what);
+int argc_argv(char *instr, argv_t **argv, const char *commentstr);
+char x2c(const char *what);
 void unescape_url(char *url);
 void haserl_flags(void);
 void CookieVars(void);
 void ReadCGIQueryString(void);
 void ReadCGIPOSTValues(void);
-int ParseCommandLine(int argc, char *argv[]);
+int ParseCommandLine(int argc, char * const *argv);
 void BecomeUser(uid_t uid, gid_t gid);
 
 #endif /* _HASERL_H */

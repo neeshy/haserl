@@ -86,7 +86,7 @@ mime_var_destroy(mime_var_t *obj)
 }
 
 char *
-mime_substr(char *start, int len)
+mime_substr(const char *start, int len)
 {
 	char *ptr;
 
@@ -99,7 +99,7 @@ mime_substr(char *start, int len)
 }
 
 void
-mime_tag_add(mime_var_t *obj, char *str)
+mime_tag_add(mime_var_t *obj, const char *str)
 {
 	char *a = NULL;
 	char *b = NULL;
@@ -284,7 +284,7 @@ mime_var_open_target(mime_var_t *obj)
 }
 
 void
-mime_var_writer(mime_var_t *obj, char *str, int len)
+mime_var_writer(mime_var_t *obj, const char *str, int len)
 {
 	int err;
 

@@ -71,11 +71,11 @@ extern haserl_t global;
 /* common.c */
 void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
-void myputenv(list_t **cur, char *str);
-void free_list(list_t *);
+void myputenv(list_t **cur, const char *str);
+void free_list(list_t *list);
 void buffer_init(buffer_t *buf);
 void buffer_reset(buffer_t *buf);
 void buffer_destroy(buffer_t *buf);
-void buffer_add(buffer_t *buf, const void *data, unsigned long size);
+void buffer_add(buffer_t *buf, const void *data, size_t size);
 
 #endif /* _COMMON_H */

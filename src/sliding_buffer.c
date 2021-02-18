@@ -58,7 +58,7 @@ s_buffer_destroy(sliding_buffer_t *sbuf)
  * segment ends at a matchstr token, or if we are at the end of the string
  * returns 0 if the segment does not end */
 int
-s_buffer_read(sliding_buffer_t *sbuf, char *matchstr)
+s_buffer_read(sliding_buffer_t *sbuf, const char *matchstr)
 {
 	int len, pos;
 	int r;
