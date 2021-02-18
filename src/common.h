@@ -21,10 +21,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#define TRUE 1
-#define FALSE 0
-#define NONE -1
-
 #ifndef TEMPDIR
 #define TEMPDIR "/tmp"
 #endif
@@ -61,7 +57,7 @@ typedef struct {
 	list_t        *post;           /* name-value pairs for POST requests         */
 	list_t        *cookie;         /* name-value pairs for cookie headers        */
 	list_t        *haserl;         /* name-value pairs for the HASERL namespace  */
-	int            acceptall;      /* true if we'll accept POST data on
+	int            accept;         /* true if we'll accept POST data on
 	                                * GETs and vice versa                        */
 	int            silent;         /* true if we never print errors              */
 } haserl_t;

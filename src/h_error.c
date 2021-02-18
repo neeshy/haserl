@@ -47,7 +47,7 @@ die(const char *s, ...)
 	va_list p;
 	FILE *fo = stderr;
 
-	if (global.silent == FALSE) {
+	if (!global.silent) {
 		if (getenv("REQUEST_METHOD")) {
 			fo = stdout;
 			fprintf(fo, "HTTP/1.0 500 Server Error\r\n"

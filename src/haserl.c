@@ -60,8 +60,8 @@ haserl_t global = {
 	.post = NULL,
 	.cookie = NULL,
 	.haserl = NULL,
-	.acceptall = FALSE,       /* don't allow POST data for GET method       */
-	.silent = FALSE           /* we do print errors if we find them         */
+	.accept = 1,              /* don't allow POST data for GET method       */
+	.silent = 0               /* we do print errors if we find them         */
 };
 
 /* Command line / Config file directives When adding a long option, make sure
@@ -292,7 +292,7 @@ haserl_flags(void)
 	snprintf(buf, 256, "HASERL_UPLOAD_LIMIT=%lu", global.uploadkb);
 	putenv(buf);
 
-	snprintf(buf, 256, "HASERL_ACCEPT_ALL=%d", global.acceptall);
+	snprintf(buf, 256, "HASERL_ACCEPT_ALL=%d", global.accept);
 	putenv(buf);
 }
 
@@ -436,16 +436,16 @@ ParseCommandLine(int argc, char * const *argv)
 	                        ga_long_options, &option_index)) != -1) {
 		switch (c) {
 		case 'S':
-			global.silent = TRUE;
+			global.silent = 1;
 			break;
 		case 'u':
 			global.uploadkb = atoi(optarg);
 			break;
 		case 'a':
-			global.acceptall = TRUE;
+			global.accept = 2;
 			break;
 		case 'n':
-			global.acceptall = NONE;
+			global.accept = 0;
 			break;
 		case 'U':
 			global.uploaddir = optarg;
@@ -543,13 +543,13 @@ main(int argc, char *argv[])
 	haserl_flags();
 
 	/* Read the request data */
-	if (global.acceptall != NONE) {
+	if (global.accept) {
 		/* If we have a request method, and we were run as a #! style script */
 		CookieVars();
 		if (getenv("REQUEST_METHOD")) {
 			if (!strcasecmp(getenv("REQUEST_METHOD"), "GET") ||
 			    !strcasecmp(getenv("REQUEST_METHOD"), "DELETE")) {
-				if (global.acceptall == TRUE) {
+				if (global.accept > 1) {
 					ReadCGIPOSTValues();
 				}
 				ReadCGIQueryString();
@@ -557,7 +557,7 @@ main(int argc, char *argv[])
 
 			if (!strcasecmp(getenv("REQUEST_METHOD"), "POST") ||
 			    !strcasecmp(getenv("REQUEST_METHOD"), "PUT")) {
-				if (global.acceptall == TRUE) {
+				if (global.accept > 1) {
 					ReadCGIQueryString();
 				}
 				ReadCGIPOSTValues();
