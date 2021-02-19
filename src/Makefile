@@ -5,8 +5,8 @@ CPPFLAGS += -D_GNU_SOURCE -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\"
 DESTDIR ?= /usr/local
 
 WITH_LUA ?= luajit
-LUA_CFLAGS += $(shell pkg-config --cflags -- $(WITH_LUA))
-LUA_LDFLAGS += $(shell pkg-config --libs -- $(WITH_LUA))
+LUA_CFLAGS := $(shell pkg-config --cflags -- $(WITH_LUA))
+LUA_LDFLAGS := $(shell pkg-config --libs -- $(WITH_LUA))
 
 #haserl: main.o h_lua.o libhaserl.so
 haserl: haserl.o libhaserl.o main.o common.o h_error.o sliding_buffer.o rfc2388.o h_lua.o
