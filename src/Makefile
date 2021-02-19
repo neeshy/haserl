@@ -1,6 +1,6 @@
 PACKAGE ?= haserl
 VERSION ?= 0.9.35
-CFLAGS += -fpic
+CFLAGS += -fpic -Wall -Werror
 CPPFLAGS += -D_GNU_SOURCE -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\"
 DESTDIR ?= /usr/local
 

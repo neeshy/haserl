@@ -26,8 +26,8 @@
 
 /* name/value pairs */
 typedef struct {
-	char          *string; /* the string */
-	unsigned char  quoted; /* non-zero if the string was quoted */
+	char *string;  /* the string */
+	int   quoted;  /* non-zero if the string was quoted */
 } argv_t;
 
 int argc_argv(char *instr, argv_t **argv, const char *commentstr);

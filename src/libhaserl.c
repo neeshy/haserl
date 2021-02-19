@@ -157,7 +157,7 @@ ReadCGIPOSTValues(void)
 	size_t i, j, x;
 	sliding_buffer_t sbuf;
 	buffer_t token;
-	unsigned char *data;
+	char *data;
 	const char *CONTENT_LENGTH = "CONTENT_LENGTH";
 	const char *CONTENT_TYPE = "CONTENT_TYPE";
 	char *content_type = NULL;

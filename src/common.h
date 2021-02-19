@@ -23,9 +23,9 @@
 
 /* expandable buffer structure */
 typedef struct {
-	unsigned char *data;   /* the data */
-	unsigned char *ptr;    /* where to write to next */
-	unsigned char *limit;  /* maximal allocated buffer pos */
+	char *data;   /* the data */
+	char *ptr;    /* where to write to next */
+	char *limit;  /* maximal allocated buffer pos */
 } buffer_t;
 
 /* common.c */
