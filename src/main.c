@@ -27,9 +27,9 @@
 #include <string.h>
 #include <grp.h>
 
+#include "haserl.h"
 #include "common.h"
 #include "h_error.h"
-#include "haserl.h"
 
 #include <lua.h>
 #include "h_lua.h"

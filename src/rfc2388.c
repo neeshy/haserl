@@ -26,9 +26,11 @@
 #include <string.h>
 #include <signal.h>
 
+#include "haserl.h"
 #include "common.h"
 #include "h_error.h"
 #include "sliding_buffer.h"
+
 #include "rfc2388.h"
 
 void

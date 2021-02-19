@@ -10,7 +10,8 @@ LIBS += $(shell pkg-config --libs -- $(WITH_LUA))
 SOURCES = main.c main.h common.c common.h \
           sliding_buffer.c sliding_buffer.h \
           h_error.c h_error.h rfc2388.c rfc2388.h \
-          h_lua.c h_lua.h haserl.c haserl.h
+          h_lua.c h_lua.h haserl.c haserl.h \
+          libhaserl.c libhaserl.h
 haserl: $(SOURCES)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) \
 		-o $@ $(filter %.c,$^) $(LIBS)

@@ -24,6 +24,12 @@
 /* how many argv slots to allocate at once */
 #define ALLOC_CHUNK 10
 
+/* name/value pairs */
+typedef struct {
+	char          *string; /* the string */
+	unsigned char  quoted; /* non-zero if the string was quoted */
+} argv_t;
+
 int argc_argv(char *instr, argv_t **argv, const char *commentstr);
 void haserl_flags(void);
 int ParseCommandLine(int argc, char * const *argv);

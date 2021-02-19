@@ -18,32 +18,13 @@
  *
  * ------------------------------------------------------------------------ */
 
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef _LIBHASERL_H
+#define _LIBHASERL_H
 
-#ifndef TEMPDIR
-#define TEMPDIR "/tmp"
-#endif
+char x2c(const char *what);
+void unescape_url(char *url);
+void CookieVars(void);
+void ReadCGIQueryString(void);
+void ReadCGIPOSTValues(void);
 
-#ifndef MAX_UPLOAD_KB
-#define MAX_UPLOAD_KB 2048
-#endif
-
-/* expandable buffer structure */
-typedef struct {
-	unsigned char *data;   /* the data */
-	unsigned char *ptr;    /* where to write to next */
-	unsigned char *limit;  /* maximal allocated buffer pos */
-} buffer_t;
-
-/* common.c */
-void *xmalloc(size_t size);
-void *xrealloc(void *buf, size_t size);
-void myputenv(list_t **cur, const char *str);
-void free_list(list_t *list);
-void buffer_init(buffer_t *buf);
-void buffer_reset(buffer_t *buf);
-void buffer_destroy(buffer_t *buf);
-void buffer_add(buffer_t *buf, const void *data, size_t size);
-
-#endif /* _COMMON_H */
+#endif /* _LIBHASERL_H */

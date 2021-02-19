@@ -24,9 +24,11 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+#include "haserl.h"
 #include "common.h"
-#include "h_lua.h"
 #include "h_error.h"
+
+#include "h_lua.h"
 
 lua_State *lua_vm = NULL;
 

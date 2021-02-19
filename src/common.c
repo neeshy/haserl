@@ -21,8 +21,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
+#include "haserl.h"
 #include "h_error.h"
+
+#include "common.h"
 
 /* allocate memory or die, busybox style. */
 void *
