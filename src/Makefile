@@ -7,7 +7,8 @@ WITH_LUA ?= luajit
 CFLAGS += $(shell pkg-config --cflags -- $(WITH_LUA))
 LIBS += $(shell pkg-config --libs -- $(WITH_LUA))
 
-SOURCES = common.c common.h sliding_buffer.c sliding_buffer.h \
+SOURCES = main.c main.h common.c common.h \
+          sliding_buffer.c sliding_buffer.h \
           h_error.c h_error.h rfc2388.c rfc2388.h \
           h_lua.c h_lua.h haserl.c haserl.h
 haserl: $(SOURCES)

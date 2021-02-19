@@ -18,14 +18,15 @@
  *
  * ------------------------------------------------------------------------ */
 
-#ifndef _HASERL_H
-#define _HASERL_H
+#ifndef _MAIN_H
+#define _MAIN_H
 
-void haserl(void);
-char x2c(const char *what);
-void unescape_url(char *url);
-void CookieVars(void);
-void ReadCGIQueryString(void);
-void ReadCGIPOSTValues(void);
+/* how many argv slots to allocate at once */
+#define ALLOC_CHUNK 10
 
-#endif /* _HASERL_H */
+int argc_argv(char *instr, argv_t **argv, const char *commentstr);
+void haserl_flags(void);
+int ParseCommandLine(int argc, char * const *argv);
+void BecomeUser(uid_t uid, gid_t gid);
+
+#endif /* _MAIN_H */
