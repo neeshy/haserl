@@ -21,14 +21,6 @@
 #ifndef _COMMON_H
 #define _COMMON_H
 
-#ifndef TEMPDIR
-#define TEMPDIR "/tmp"
-#endif
-
-#ifndef MAX_UPLOAD_KB
-#define MAX_UPLOAD_KB 2048
-#endif
-
 /* expandable buffer structure */
 typedef struct {
 	unsigned char *data;   /* the data */

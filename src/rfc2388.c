@@ -360,8 +360,7 @@ rfc2388_handler(void)
 		boundary[i] = 0;
 	}
 
-	/* Allow 2MB content, unless they have a global upload set */
-	max_len = (!global.uploadkb ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
+	max_len = global.uploadkb * 1024;
 	content_length = 0;
 
 	/* initialize a 128K sliding buffer */

@@ -43,8 +43,8 @@
 
 /* Assign default values to the global structure */
 haserl_t global = {
-	.uploadkb = 0,            /* how big an upload do we allow (0 for none) */
-	.uploaddir = TEMPDIR,     /* where to upload to                         */
+	.uploadkb = 2048,         /* how big an upload do we allow (0 for none) */
+	.uploaddir = "/tmp",      /* where to upload to                         */
 	.uploadhandler = NULL,    /* the upload handler                         */
 	.get = NULL,
 	.post = NULL,
@@ -183,8 +183,7 @@ ReadCGIPOSTValues(void)
 		matchstr = "&";
 	}
 
-	/* Allow 2MB content, unless they have a global upload set */
-	max_len = (!global.uploadkb ? MAX_UPLOAD_KB : global.uploadkb) * 1024;
+	max_len = global.uploadkb * 1024;
 
 	s_buffer_init(&sbuf, 32768);
 	sbuf.fh = 0;
