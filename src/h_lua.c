@@ -64,18 +64,6 @@ lua_putenv(const list_t *env, const char *tbl)
 	lua_pop(lua_vm, 1);
 }
 
-int
-lua_loadfile(lua_State *L)
-{
-	const char *filename = luaL_checkstring(L, 1);
-
-	if (luaL_loadfile(L, filename)) {
-		die("Cannot load file '%s': %s", filename, lua_tostring(L, -1));
-	}
-
-	return 1;
-}
-
 void
 lua_doscript(const char *name)
 {
@@ -96,10 +84,6 @@ lua_setup(void)
 	lua_putenv(global.post, "POST");
 	lua_putenv(global.form, "FORM");
 	lua_putenv(global.cookie, "COOKIE");
-
-	/* register our open function in the haserl table */
-	lua_pushcfunction(lua_vm, lua_loadfile);
-	lua_setglobal(lua_vm, "loadfile");
 }
 
 void

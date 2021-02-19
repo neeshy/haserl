@@ -31,7 +31,6 @@
 #include "common.h"
 #include "h_error.h"
 
-#include <lua.h>
 #include "h_lua.h"
 
 #include "main.h"

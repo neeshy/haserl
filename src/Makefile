@@ -18,7 +18,6 @@ libhaserl.so: haserl.o libhaserl.o common.o h_error.o sliding_buffer.o rfc2388.o
 haserl.o: haserl.c libhaserl.h
 libhaserl.o: libhaserl.c libhaserl.h haserl.h common.h h_error.h sliding_buffer.h rfc2388.h
 main.o: main.c main.h haserl.h common.h h_error.h h_lua.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_CFLAGS) -c -o $@ $<
 
 common.o: common.c common.h haserl.h h_error.h
 h_error.o: h_error.c h_error.h haserl.h
