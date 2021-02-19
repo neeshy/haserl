@@ -13,7 +13,7 @@ haserl: haserl.o libhaserl.o main.o common.o h_error.o sliding_buffer.o rfc2388.
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_LDFLAGS) -o $@ $^
 
 libhaserl.so: haserl.o libhaserl.o common.o h_error.o sliding_buffer.o rfc2388.o
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_LDFLAGS) -shared -o $@ $^
+	$(CC) $(CFLAGS) $(CPPFLAGS) -shared -o $@ $^
 
 haserl.o: haserl.c libhaserl.h
 libhaserl.o: libhaserl.c libhaserl.h haserl.h common.h h_error.h sliding_buffer.h rfc2388.h
