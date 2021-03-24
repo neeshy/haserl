@@ -286,7 +286,7 @@ main(int argc, char *argv[])
 		puts("This is " PACKAGE " version " VERSION "\n"
 		     "This program runs as a cgi interpeter, not interactively\n"
 		     "Please see:  http://haserl.sourceforge.net\n"
-		     "This version includes Lua (precompiled and interpreted)\n");
+		     "This version includes Lua (precompiled and interpreted)");
 		return 0;
 		break;
 	default: /* more than one */
