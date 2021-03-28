@@ -280,45 +280,42 @@ main(int argc, char *argv[])
 	int count;
 
 	/* if more than argv[1] and argv[1] is not a file */
-	switch (argc) {
-	case 1:
+	if (argc == 1) {
 		/* we were run, instead of called as a shell script */
 		puts("This is " PACKAGE " version " VERSION "\n"
 		     "This program runs as a cgi interpeter, not interactively\n"
 		     "Please see:  http://haserl.sourceforge.net\n"
 		     "This version includes Lua (precompiled and interpreted)");
 		return 0;
-		break;
-	default: /* more than one */
-		/* split combined #! args - linux bundles them as one */
-		command = argc_argv(argv[1], &av, "");
+	}
 
-		if (command > 1) {
-			/* rebuild argv into new av2 */
-			av2c = argc - 1 + command;
-			av2 = xmalloc(sizeof(char *) * av2c);
-			av2[0] = argv[0];
-			for (count = 1; count <= command; count++) {
-				av2[count] = av[count - 1].string;
-			}
-			for (; count < av2c; count++) {
-				av2[count] = argv[count - command + 1];
-			}
+	/* more than one */
+	/* split combined #! args - linux bundles them as one */
+	command = argc_argv(argv[1], &av, "");
+
+	if (command > 1) {
+		/* rebuild argv into new av2 */
+		av2c = argc - 1 + command;
+		av2 = xmalloc(sizeof(char *) * av2c);
+		av2[0] = argv[0];
+		for (count = 1; count <= command; count++) {
+			av2[count] = av[count - 1].string;
 		}
-
-		ParseCommandLine(av2c, av2);
-		free(av);
-		if (av2 != argv) {
-			free(av2);
+		for (; count < av2c; count++) {
+			av2[count] = argv[count - command + 1];
 		}
+	}
 
-		if (optind < av2c) {
-			filename = av2[optind];
-		} else {
-			die(g_err_msg[E_NO_SCRIPT_FILE]);
-		}
+	ParseCommandLine(av2c, av2);
+	free(av);
+	if (av2 != argv) {
+		free(av2);
+	}
 
-		break;
+	if (optind < av2c) {
+		filename = av2[optind];
+	} else {
+		die(g_err_msg[E_NO_SCRIPT_FILE]);
 	}
 
 	/* drop permissions */
