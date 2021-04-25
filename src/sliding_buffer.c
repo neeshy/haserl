@@ -24,7 +24,6 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include "haserl.h"
 #include "common.h"
 
 #include "sliding_buffer.h"

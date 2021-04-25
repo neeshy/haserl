@@ -21,10 +21,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "haserl.h"
 #include "h_error.h"
 
 #include "common.h"
+
+/* Assign default values to the global structure */
+haserl_t global = {
+	.uploadkb = 2048,         /* how big an upload do we allow (0 for none) */
+	.uploaddir = "/tmp",      /* where to upload to                         */
+	.get = NULL,
+	.post = NULL,
+	.form = NULL,
+	.cookie = NULL,
+};
 
 /* allocate memory or die, busybox style. */
 void *

@@ -21,24 +21,11 @@
 #ifndef _HASERL_H
 #define _HASERL_H
 
-/* linked list */
-typedef struct {
-	char *buf;
-	void *next;
-} list_t;
-
-/* Just a silly construct to contain global variables */
-typedef struct {
-	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none) */
-	char          *uploaddir;      /* where we upload to                         */
-	list_t        *get;            /* name-value pairs for GET requests          */
-	list_t        *post;           /* name-value pairs for POST requests         */
-	list_t        *form;           /* name-value pairs for the FORM namespace    */
-	list_t        *cookie;         /* name-value pairs for cookie headers        */
-} haserl_t;
-
-extern haserl_t global;
-
+char x2c(const char *what);
+void unescape_url(char *url);
+void ReadCookie(void);
+void ReadQuery(void);
+void ReadForm(void);
 void haserl(void);
 
 #endif /* _HASERL_H */

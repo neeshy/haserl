@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "haserl.h"
 #include "common.h"
 #include "h_error.h"
 #include "sliding_buffer.h"
