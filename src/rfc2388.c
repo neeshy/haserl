@@ -18,13 +18,9 @@
  *
  * ------------------------------------------------------------------------ */
 
-#include <stdio.h>
 #include <unistd.h>
-#include <sys/wait.h>
-#include <sys/fcntl.h>
 #include <stdlib.h>
 #include <string.h>
-#include <signal.h>
 
 #include "haserl.h"
 #include "common.h"
@@ -54,9 +50,6 @@ mime_var_init(mime_var_t *obj)
 void
 mime_var_destroy(mime_var_t *obj)
 {
-	int status;
-	struct sigaction new_action;
-
 	if (obj->name) {
 		free(obj->name);
 		obj->name = NULL;
@@ -76,13 +69,6 @@ mime_var_destroy(mime_var_t *obj)
 	buffer_destroy(&obj->value);
 	if (obj->fh) {
 		close(abs(obj->fh));
-		if (global.uploadhandler) {
-			wait(&status);
-			new_action.sa_handler = SIG_DFL;
-			sigemptyset(&new_action.sa_mask);
-			new_action.sa_flags = 0;
-			sigaction(SIGPIPE, &new_action, NULL);
-		}
 		obj->fh = 0;
 	}
 }
@@ -173,83 +159,11 @@ mime_var_putenv(mime_var_t *obj)
 	buffer_destroy(&buf);
 }
 
-void
-mime_exec(mime_var_t *obj, int fd)
-{
-	int i;
-	long limit;
-	char *av[2];
-	char *type, *filename, *name;
-	struct sigaction new_action;
-
-	switch (fork()) {
-	case -1:
-		empty_stdin();
-		die(g_err_msg[E_SHELL_FAIL]);
-		break;
-
-	case 0:
-		/* store the content type, filename, and form name */
-		if (obj->type) {
-			type = xmalloc(13 + strlen(obj->type) + 1);
-			sprintf(type, "CONTENT_TYPE=%s", obj->type);
-			putenv(type);
-		}
-
-		if (obj->filename) {
-			filename = xmalloc(9 + strlen(obj->filename) + 1);
-			sprintf(filename, "FILENAME=%s", obj->filename);
-			putenv(filename);
-		}
-
-		if (obj->name) {
-			name = xmalloc(5 + strlen(obj->name) + 1);
-			sprintf(name, "NAME=%s", obj->name);
-			putenv(name);
-		}
-
-		if (fd) {
-			close(0);
-			dup2(fd, 0);
-		}
-
-		if ((limit = sysconf(_SC_OPEN_MAX)) == -1) {
-			limit = 1024;
-		}
-
-		for (i = 1; i < limit; i++) {
-			close(i);
-		}
-
-		open("/dev/null", O_RDWR);
-		dup2(1, 2);
-
-		av[0] = global.uploadhandler;
-		av[1] = NULL;
-		execv(av[0], av);
-		/* if we get here, we had a failure. Not much we can do.
-		 * We are the child, so we can't even warn the parent */
-		empty_stdin();
-		exit(-1);
-		break;
-
-	default:
-		/* I'm parent - ignore SIGPIPE from the child */
-		new_action.sa_handler = SIG_IGN;
-		sigemptyset(&new_action.sa_mask);
-		new_action.sa_flags = 0;
-		sigaction(SIGPIPE, &new_action, NULL);
-		break;
-
-	}
-	/* control should get to this point only in the parent. */
-} /* end mime_exec */
 
 void
 mime_var_open_target(mime_var_t *obj)
 {
 	char *tmpname;
-	int fd[2];
 	int ok;
 
 	/* if upload_limit is zero, we die right here */
@@ -260,26 +174,14 @@ mime_var_open_target(mime_var_t *obj)
 
 	/* reuse the name as a fifo if we have a handler. We do this
 	 * because tempnam uses TEMPDIR if defined, among other bugs */
-	if (global.uploadhandler) {
-		/* I have a handler */
-		ok = !pipe(fd);
-		if (ok) {
-			mime_exec(obj, fd[0]);
-			close(fd[0]);
-			obj->fh = fd[1];
-		}
+	tmpname = xmalloc(strlen(global.uploaddir) + 8);
+	strcpy(tmpname, global.uploaddir);
+	strcat(tmpname, "/XXXXXX");
+	obj->fh = mkstemp(tmpname);
+	ok = obj->fh != -1;
+	if (ok) {
+		buffer_add(&obj->value, tmpname, strlen(tmpname));
 	} else {
-		tmpname = xmalloc(strlen(global.uploaddir) + 8);
-		strcpy(tmpname, global.uploaddir);
-		strcat(tmpname, "/XXXXXX");
-		obj->fh = mkstemp(tmpname);
-		ok = obj->fh != -1;
-		if (ok) {
-			buffer_add(&obj->value, tmpname, strlen(tmpname));
-		}
-	}
-
-	if (!ok) {
 		empty_stdin();
 		die(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
 	}

@@ -41,25 +41,17 @@ void
 haserl(void)
 {
 	/* Read the request data */
-	if (global.accept) {
-		/* If we have a request method, and we were run as a #! style script */
-		CookieVars();
-		if (getenv("REQUEST_METHOD")) {
-			if (!strcasecmp(getenv("REQUEST_METHOD"), "GET") ||
-			    !strcasecmp(getenv("REQUEST_METHOD"), "DELETE")) {
-				if (global.accept > 1) {
-					ReadCGIPOSTValues();
-				}
-				ReadCGIQueryString();
-			}
+	/* If we have a request method, and we were run as a #! style script */
+	CookieVars();
+	if (getenv("REQUEST_METHOD")) {
+		if (!strcasecmp(getenv("REQUEST_METHOD"), "GET") ||
+		    !strcasecmp(getenv("REQUEST_METHOD"), "DELETE")) {
+			ReadCGIQueryString();
+		}
 
-			if (!strcasecmp(getenv("REQUEST_METHOD"), "POST") ||
-			    !strcasecmp(getenv("REQUEST_METHOD"), "PUT")) {
-				if (global.accept > 1) {
-					ReadCGIQueryString();
-				}
-				ReadCGIPOSTValues();
-			}
+		if (!strcasecmp(getenv("REQUEST_METHOD"), "POST") ||
+		    !strcasecmp(getenv("REQUEST_METHOD"), "PUT")) {
+			ReadCGIPOSTValues();
 		}
 	}
 }

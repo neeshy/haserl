@@ -20,7 +20,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <time.h>
 #include <getopt.h>
 #include <sys/stat.h>
 #include <stdlib.h>
@@ -42,14 +41,10 @@ struct option ga_long_options[] = {
 	{ "help",           no_argument,       0, 'h' },
 	{ "upload-limit",   required_argument, 0, 'u' },
 	{ "upload-dir",     required_argument, 0, 'U' },
-	{ "upload-handler", required_argument, 0, 'H' },
-	{ "accept-all",     no_argument,       0, 'a' },
-	{ "accept-none",    no_argument,       0, 'n' },
-	{ "silent",         no_argument,       0, 'S' },
 	{ 0,                0,                 0, 0   }
 };
 
-const char *gs_short_options = "+vhu:U:H:anS";
+const char *gs_short_options = "+vhu:U:";
 
 /*
  * split a string into an argv[] array, and return the number of elements.
@@ -187,26 +182,6 @@ argc_argv(char *instr, argv_t **argv, const char *commentstr)
 	return arg_count;
 }
 
-void
-haserl_flags(void)
-{
-	char buf[256];
-
-	putenv("HASERLVER=" VERSION);
-
-	snprintf(buf, 256, "SESSIONID=%x%x", getpid(), (int)time(NULL));
-	putenv(buf);
-
-	snprintf(buf, 256, "HASERL_UPLOAD_DIR=%s", global.uploaddir);
-	putenv(buf);
-
-	snprintf(buf, 256, "HASERL_UPLOAD_LIMIT=%lu", global.uploadkb);
-	putenv(buf);
-
-	snprintf(buf, 256, "HASERL_ACCEPT_ALL=%d", global.accept);
-	putenv(buf);
-}
-
 int
 ParseCommandLine(int argc, char * const *argv)
 {
@@ -221,23 +196,11 @@ ParseCommandLine(int argc, char * const *argv)
 	while ((c = getopt_long(argc, argv, gs_short_options,
 	                        ga_long_options, &option_index)) != -1) {
 		switch (c) {
-		case 'S':
-			global.silent = 1;
-			break;
 		case 'u':
 			global.uploadkb = atoi(optarg);
 			break;
-		case 'a':
-			global.accept = 2;
-			break;
-		case 'n':
-			global.accept = 0;
-			break;
 		case 'U':
 			global.uploaddir = optarg;
-			break;
-		case 'H':
-			global.uploadhandler = optarg;
 			break;
 		case 'v':
 		case 'h':
@@ -321,9 +284,6 @@ main(int argc, char *argv[])
 	/* drop permissions */
 	stat(filename, &filestat);
 	BecomeUser(filestat.st_uid, filestat.st_gid);
-
-	/* Add environment variables */
-	haserl_flags();
 
 	haserl();
 

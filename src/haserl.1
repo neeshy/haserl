@@ -3,7 +3,7 @@
 .SH NAME
 haserl \- A cgi scripting program for embedded environments
 .SH SYNOPSIS
-.BI "#!/usr/bin/haserl [\-\-upload\-dir=" dirspec "] [\-\-upload\-handler=" handler "] [\-\-upload\-limit=" limit "] [\-\-accept\-all] [\-\-accept\-none] [\-\-silent]"
+.BI "#!/usr/bin/haserl [\-\-upload\-dir=" dirspec "] [\-\-upload\-limit=" limit "]
 
 .SH DESCRIPTION
 Haserl is a small cgi wrapper that uses Lua as the programming language. It is very small, so it can be used in embedded environments, or where something like PHP is too big.
@@ -28,39 +28,12 @@ This is a summary of the command-line options. Please see the
 .B OPTIONS
 section under the long option name for a complete description.
 
-\-a, \-\-accept\-all
-.br
-\-n, \-\-accept\-none
-.br
-\-S, \-\-silent
-.br
 \-U, \-\-upload\-dir
 .br
 \-u, \-\-upload\-limit
 .br
-\-H, \-\-upload\-handler
-.br
 
 .SH OPTIONS
-
-.TP
-.BI \-\-accept\-all
-The program normally accepts POST data only when the REQUEST_METHOD is POST and only accepts
-data on the URL data when the REQUEST_METHOD is GET. This option allows both POST and
-URL data to be accepted regardless of the REQUEST_METHOD. When this option is set,
-the REQUEST_METHOD takes precedence The default is not to accept all input
-methods - just the COOKIE data and the REQUEST_METHOD.
-
-.TP
-.BI \-\-accept\-none
-If given, haserl will not parse standard input as http content before
-processing the script. This is useful if calling a haserl script from
-another haserl script.
-
-.TP
-.BI \-\-silent
-Haserl normally prints an informational message on error conditions. This
-suppresses the error message, so that the use of haserl is not advertised.
 
 .TP
 .BI \-\-upload\-dir= "dirspec "
@@ -68,18 +41,6 @@ Defaults to "/tmp". All uploaded files are created with temporary filename in th
 directory
 .BR FORM.xxx_path " contains the name of the temporary file. " FORM.xxx_filename
 contains the original name of the file, as specified by the client.
-
-.TP
-.BI \-\-upload\-handler= "pathspec "
-When specified, file uploads are handled by this handler, rather than written
-to temporary files. The full pathspec must be given (the PATH is not
-searched). The handler will receive file data on standard input.
-In addition, the handler may receive 3 environment variables:
-.BR CONTENT_TYPE ", " FILENAME ", and " NAME .
-These reflect the MIME content-disposition headers for the content. Haserl
-will fork the handler for each file uploaded, and will send the contents
-of the upload file to the specified FIFO. Haserl will then block until
-the handler terminates. This method is for experts only.
 
 .TP
 .BI \-\-upload\-limit= "limit  "

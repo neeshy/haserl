@@ -45,13 +45,10 @@
 haserl_t global = {
 	.uploadkb = 2048,         /* how big an upload do we allow (0 for none) */
 	.uploaddir = "/tmp",      /* where to upload to                         */
-	.uploadhandler = NULL,    /* the upload handler                         */
 	.get = NULL,
 	.post = NULL,
 	.form = NULL,
 	.cookie = NULL,
-	.accept = 1,              /* don't allow POST data for GET method       */
-	.silent = 0               /* we do print errors if we find them         */
 };
 
 /* Convert 2 char hex string into char it represents
