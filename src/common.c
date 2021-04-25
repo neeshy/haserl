@@ -144,7 +144,7 @@ buffer_add(buffer_t *buf, const void *data, size_t size)
 
 	/* if we need to grow the buffer, do so now */
 	if (buf->ptr + size >= buf->limit) {
-		index = (buf->limit - buf->data);
+		index = buf->limit - buf->data;
 		newsize = index;
 		while (newsize <= index + size) {
 			newsize += 1024;

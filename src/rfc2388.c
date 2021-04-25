@@ -159,7 +159,6 @@ mime_var_putenv(mime_var_t *obj)
 	buffer_destroy(&buf);
 }
 
-
 /* Read multipart/form-data input (RFC2388), typically used when
  * uploading a file. */
 void
