@@ -160,59 +160,6 @@ mime_var_putenv(mime_var_t *obj)
 }
 
 
-void
-mime_var_open_target(mime_var_t *obj)
-{
-	char *tmpname;
-	int ok;
-
-	/* if upload_limit is zero, we die right here */
-	if (!global.uploadkb) {
-		empty_stdin();
-		die(g_err_msg[E_FILE_UPLOAD]);
-	}
-
-	/* reuse the name as a fifo if we have a handler. We do this
-	 * because tempnam uses TEMPDIR if defined, among other bugs */
-	tmpname = xmalloc(strlen(global.uploaddir) + 8);
-	strcpy(tmpname, global.uploaddir);
-	strcat(tmpname, "/XXXXXX");
-	obj->fh = mkstemp(tmpname);
-	ok = obj->fh != -1;
-	if (ok) {
-		buffer_add(&obj->value, tmpname, strlen(tmpname));
-	} else {
-		empty_stdin();
-		die(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
-	}
-}
-
-void
-mime_var_writer(mime_var_t *obj, const char *str, int len)
-{
-	int err;
-
-	/* if not a file upload, then just a normal variable */
-	if (!obj->filename) {
-		buffer_add(&obj->value, str, len);
-	}
-
-	/* if a file upload, but don't have an open filehandle, open one */
-	if (!obj->fh && obj->filename) {
-		mime_var_open_target(obj);
-	}
-
-	/* if we have an open file, write the chunk */
-	if (obj->fh > 0) {
-		err = write(obj->fh, str, len);
-		/* if there was an error, invert the filehandle; we need the
-		 * handle for later when we close it */
-		if (err == -1) {
-			obj->fh = abs(obj->fh) * -1;
-		}
-	}
-}
-
 /* Read multipart/form-data input (RFC2388), typically used when
  * uploading a file. */
 void
@@ -227,6 +174,7 @@ rfc2388_handler(void)
 	char *crlf = "\r\n";
 	char *boundary;
 	char *str;
+	char *tmpname;
 	buffer_t buf;
 	mime_var_t var;
 
@@ -344,8 +292,37 @@ rfc2388_handler(void)
 			break;
 
 		case CONTENT:
-			/* write to writer process, regardless */
-			mime_var_writer(&var, sbuf.segment, sbuf.len);
+			/* write to writer process, regardless
+			 * if not a file upload, then just a normal variable */
+			if (!var.filename) {
+				buffer_add(&var.value, sbuf.segment, sbuf.len);
+			} else if (!var.fh) { /* if a file upload, but don't have an open filehandle, open one */
+				/* if upload_limit is zero, we die right here */
+				if (!global.uploadkb) {
+					empty_stdin();
+					die(g_err_msg[E_FILE_UPLOAD]);
+				}
+
+				/* reuse the name as a fifo if we have a handler. We do this
+				 * because tempnam uses TEMPDIR if defined, among other bugs */
+				tmpname = xmalloc(strlen(global.uploaddir) + 8);
+				strcpy(tmpname, global.uploaddir);
+				strcat(tmpname, "/XXXXXX");
+				if ((var.fh = mkstemp(tmpname)) != -1) {
+					buffer_add(&var.value, tmpname, strlen(tmpname));
+				} else {
+					empty_stdin();
+					die(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
+				}
+			}
+			/* if we have an open file, write the chunk */
+			if (var.fh > 0) {
+				/* if there was an error, invert the filehandle; we need the
+				 * handle for later when we close it */
+				if (write(var.fh, sbuf.segment, sbuf.len) == -1) {
+					var.fh = abs(var.fh) * -1;
+				}
+			}
 			if (x) {
 				buffer_reset(&buf);
 				mime_var_putenv(&var);
