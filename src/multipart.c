@@ -6,7 +6,7 @@
 #include "h_error.h"
 #include "sliding_buffer.h"
 
-#include "rfc2388.h"
+#include "multipart.h"
 
 typedef struct {
 	char     *name;           /* the variable name */
@@ -110,7 +110,7 @@ mime_tag_add(mime_var_t *obj, const char *str)
 }
 
 void
-mime_var_putenv(mime_var_t *obj)
+mime_var_list_add(mime_var_t *obj)
 {
 	buffer_t buf;
 
@@ -122,14 +122,14 @@ mime_var_putenv(mime_var_t *obj)
 			buffer_add(&buf, "_path=", 6);
 			buffer_add(&buf, obj->value.data,
 				   strlen(obj->value.data) + 1);
-			myputenv(&global.form, buf.data);
+			list_add(&global.form, buf.data);
 			buffer_reset(&buf);
 
 			/* this saves the name of the file the client supplied */
 			buffer_add(&buf, obj->name, strlen(obj->name));
 			buffer_add(&buf, "_filename=", 10);
 			buffer_add(&buf, obj->filename, strlen(obj->filename) + 1);
-			myputenv(&global.form, buf.data);
+			list_add(&global.form, buf.data);
 			buffer_reset(&buf);
 		} else {
 			buffer_add(&obj->value, "", 1);
@@ -137,7 +137,7 @@ mime_var_putenv(mime_var_t *obj)
 			buffer_add(&buf, "=", 1);
 			buffer_add(&buf, obj->value.data,
 				   strlen(obj->value.data) + 1);
-			myputenv(&global.post, buf.data);
+			list_add(&global.post, buf.data);
 			buffer_reset(&buf);
 		}
 	}
@@ -147,7 +147,7 @@ mime_var_putenv(mime_var_t *obj)
 /* Read multipart/form-data input (RFC2388), typically used when
  * uploading a file. */
 void
-rfc2388_handler(void)
+multipart_handler(void)
 {
 	enum mime_state_t { DISCARD, BOUNDARY, HEADER, CONTENT };
 
@@ -309,7 +309,7 @@ rfc2388_handler(void)
 			}
 			if (x) {
 				buffer_reset(&buf);
-				mime_var_putenv(&var);
+				mime_var_list_add(&var);
 				mime_var_destroy(&var);
 				state = BOUNDARY;
 				str = crlf;

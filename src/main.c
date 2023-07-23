@@ -276,10 +276,10 @@ main(int argc, char *argv[])
 
 	lua_doscript(filename);
 
-	free_list(global.get);
-	free_list(global.post);
-	free_list(global.form);
-	free_list(global.cookie);
+	list_destroy(global.get);
+	list_destroy(global.post);
+	list_destroy(global.form);
+	list_destroy(global.cookie);
 
 	return 0;
 }

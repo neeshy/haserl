@@ -40,7 +40,7 @@ xrealloc(void *buf, size_t size)
 
 /* adds or replaces the "key=value" value in the env_list chain */
 void
-myputenv(list_t **env, const char *str)
+list_add(list_t **env, const char *str)
 {
 	list_t *cur = *env;
 	list_t *prev = NULL;
@@ -88,7 +88,7 @@ myputenv(list_t **env, const char *str)
 
 /* free list_t */
 void
-free_list(list_t *list)
+list_destroy(list_t *list)
 {
 	list_t *next;
 
@@ -110,6 +110,13 @@ buffer_init(buffer_t *buf)
 	buf->limit = NULL;
 }
 
+/* don't reallocate - just forget about the current contents */
+void
+buffer_reset(buffer_t *buf)
+{
+	buf->ptr = buf->data;
+}
+
 void
 buffer_destroy(buffer_t *buf)
 {
@@ -117,13 +124,6 @@ buffer_destroy(buffer_t *buf)
 		free(buf->data);
 	}
 	buffer_init(buf);
-}
-
-/* don't reallocate - just forget about the current contents */
-void
-buffer_reset(buffer_t *buf)
-{
-	buf->ptr = buf->data;
 }
 
 void
@@ -147,3 +147,4 @@ buffer_add(buffer_t *buf, const void *data, size_t size)
 	memcpy(buf->ptr, data, size);
 	buf->ptr += size;
 }
+

@@ -10,7 +10,7 @@
 #include "h_lua.h"
 
 void
-lua_putenv(lua_State *lua_vm, const list_t *env, const char *tbl)
+lua_putenv(lua_State *lua_vm, const list_t *list, const char *tbl)
 {
 	char *str, *value;
 
@@ -22,8 +22,8 @@ lua_putenv(lua_State *lua_vm, const list_t *env, const char *tbl)
 		lua_getglobal(lua_vm, tbl);
 	}
 
-	while (env) {
-		str = env->buf;
+	while (list) {
+		str = list->buf;
 		value = strchr(str, '=');
 		if (value) {
 			*value = '\0';
@@ -35,7 +35,7 @@ lua_putenv(lua_State *lua_vm, const list_t *env, const char *tbl)
 		lua_pushstring(lua_vm, value);
 		lua_setfield(lua_vm, -2, str);
 
-		env = env->next;
+		list = list->next;
 	}
 
 	lua_pop(lua_vm, 1);

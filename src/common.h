@@ -29,8 +29,8 @@ extern haserl_t global;
 /* common.c */
 void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
-void myputenv(list_t **cur, const char *str);
-void free_list(list_t *list);
+void list_add(list_t **cur, const char *str);
+void list_destroy(list_t *list);
 void buffer_init(buffer_t *buf);
 void buffer_reset(buffer_t *buf);
 void buffer_destroy(buffer_t *buf);

@@ -5,16 +5,12 @@
 #include "h_error.h"
 
 char *g_err_msg[] = {
-	"",
 	"Memory Allocation Failure",
 	"Unable to open file %s",
-	"Unable to start shell",
 	"No script file specified",
 	"Attempted to send content larger than allowed limits",
 	"File uploads are not allowed",
 	"No Mime Boundary Information Found",
-	"Unknown operation",
-	"Unspecified Error",
 };
 
 /* print an error message and die. If sp or where are non-null pointers, then

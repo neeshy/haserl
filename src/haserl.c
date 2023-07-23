@@ -4,7 +4,7 @@
 #include "common.h"
 #include "h_error.h"
 #include "sliding_buffer.h"
-#include "rfc2388.h"
+#include "multipart.h"
 
 #include "haserl.h"
 
@@ -62,7 +62,7 @@ ReadCookie(void)
 		while (*token == ' ') {
 			token++;
 		}
-		myputenv(&global.cookie, token);
+		list_add(&global.cookie, token);
 		token = strtok(NULL, ";");
 	}
 	free(qs);
@@ -92,7 +92,7 @@ ReadQuery(void)
 	token = strtok(qs, "&;");
 	while (token) {
 		unescape_url(token);
-		myputenv(&global.get, token);
+		list_add(&global.get, token);
 		token = strtok(NULL, "&;");
 	}
 	free(qs);
@@ -124,7 +124,7 @@ ReadForm(void)
 	if (content_type &&
 	    !strncasecmp(content_type, "multipart/form-data", 19)) {
 		/* This is a mime request, we need to go to the mime handler */
-		rfc2388_handler();
+		multipart_handler();
 		return;
 	}
 
@@ -180,7 +180,7 @@ ReadForm(void)
 				}
 				unescape_url(data);
 			}
-			myputenv(&global.post, data);
+			list_add(&global.post, data);
 			if (token.data) {
 				buffer_reset(&token);
 			}
