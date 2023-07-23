@@ -1,14 +1,8 @@
-haserl (Html And Shell Embedded Runtime Language) is a cgi
-program that runs interpreted scripts.   It combines three
-elements into a single CGI interpreter:
+haserl (HTML and Shell Embedded Runtime Language) is a CGI program that runs a
+Lua script. It combines three elements into a single CGI interpreter:
 
-1. It parses POST and GET requests, placing form-elements as name=value
-pairs into the environment for the CGI script to use. It is similar
-to uncgi (http://www.midwinter.com/~koreth/uncgi.html) in this respect
-
-2. It opens a shell
-
-3. It is very small, and so can be used in embedded environments
-
-
-Read INSTALL on how to compile haserl
+1. It parses POST and GET requests, placing form-elements as name=value pairs
+into the Lua environment for the CGI script to use. It is similar to uncgi
+(http://www.midwinter.com/~koreth/uncgi.html) in this respect.
+2. It runs a Lua script.
+3. It is very small, so it can be used in embedded environments.

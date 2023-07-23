@@ -1,35 +1,3 @@
-/* --------------------------------------------------------------------------
- * Copyright 2003-2015 (inclusive) Nathan Angelacos
- *                   (nangel@users.sourceforge.net)
- *
- *   This file is part of haserl.
- *
- *   Haserl is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License version 2,
- *   as published by the Free Software Foundation.
- *
- *   Haserl is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with haserl.  If not, see <http://www.gnu.org/licenses/>.
- *
- * -----
- * The x2c() and unescape_url() routines were taken from
- *  http://www.jmarshall.com/easy/cgi/getcgi.c.txt
- *
- * The comments in that text file state:
- *
- ***  Written in 1996 by James Marshall, james@jmarshall.com, except
- ***  that the x2c() and unescape_url() routines were lifted directly
- ***  from NCSA's sample program util.c, packaged with their HTTPD.
- ***     For the latest, see http://www.jmarshall.com/easy/cgi/
- * -----
- *
- * ------------------------------------------------------------------------- */
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -41,7 +9,8 @@
 #include "haserl.h"
 
 /* Convert 2 char hex string into char it represents
- * (from http://www.jmarshall.com/easy/cgi) */
+ * (from http://www.jmarshall.com/easy/cgi)
+ * (specifically http://www.jmarshall.com/easy/cgi/getcgi.c.txt) */
 char
 x2c(const char *what)
 {
@@ -67,7 +36,7 @@ unescape_url(char *url)
 		if (!url[j + 1] || !url[j + 2]) {
 			break;
 		}
-		url[i] = x2c(&url[j + 1]);
+		url[i] = x2c(url + j + 1);
 		j += 2;
 	}
 	url[i] = 0;
@@ -81,17 +50,16 @@ ReadCookie(void)
 	char *qs;
 	char *token;
 
-	if (getenv("HTTP_COOKIE")) {
-		qs = strdup(getenv("HTTP_COOKIE"));
-	} else {
+	if (!getenv("HTTP_COOKIE")) {
 		return;
 	}
+	qs = strdup(getenv("HTTP_COOKIE"));
 
-	/* split on; to extract name value pairs */
+	/* split on ; to extract name value pairs */
 	token = strtok(qs, ";");
 	while (token) {
 		/* skip leading spaces */
-		while (token[0] == ' ') {
+		while (*token == ' ') {
 			token++;
 		}
 		myputenv(&global.cookie, token);
@@ -108,11 +76,10 @@ ReadQuery(void)
 	char *token;
 	int i;
 
-	if (getenv("QUERY_STRING")) {
-		qs = strdup(getenv("QUERY_STRING"));
-	} else {
+	if (!getenv("QUERY_STRING")) {
 		return;
 	}
+	qs = strdup(getenv("QUERY_STRING"));
 
 	/* change plusses into spaces */
 	for (i = 0; qs[i]; i++) {
@@ -122,7 +89,6 @@ ReadQuery(void)
 	}
 
 	/* split on & and ; to extract name value pairs */
-
 	token = strtok(qs, "&;");
 	while (token) {
 		unescape_url(token);

@@ -1,22 +1,22 @@
 .\" Process with groff -man -Tascii haserl.1
 .TH haserl 1 "October 2010"
 .SH NAME
-haserl \- A cgi scripting program for embedded environments
+haserl \- A CGI scripting program for embedded environments
 .SH SYNOPSIS
 .BI "#!/usr/bin/haserl [\-\-upload\-dir=" dirspec "] [\-\-upload\-limit=" limit "]
 
 .SH DESCRIPTION
-Haserl is a small cgi wrapper that uses Lua as the programming language. It is very small, so it can be used in embedded environments, or where something like PHP is too big.
-It combines three features into a small cgi engine:
+Haserl is a small CGI wrapper that uses Lua as the programming language. It is very small, so it can be used in embedded environments, or where something like PHP is too big.
+It combines three features into a small CGI engine:
 
 .IP
 It parses POST and GET requests, placing form-elements as
 name=value
-pairs into the environment for the CGI script to use. This is somewhat like
+pairs into the Lua environment for the CGI script to use. This is somewhat like
 the
 .IR uncgi " wrapper."
 .IP
-It opens a shell
+It runs a Lua script.
 .IP
 It can optionally be installed to drop its permissions to the owner of the
 script, giving
