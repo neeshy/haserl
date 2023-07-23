@@ -28,6 +28,15 @@
 
 #include "rfc2388.h"
 
+typedef struct {
+	char     *name;           /* the variable name */
+	char     *filename;       /* the client-specified filename */
+	char     *type;           /* the mime-type */
+	char     *tempname;       /* the tempfilename */
+	buffer_t  value;          /* the value of the variable */
+	int       fh;             /* the output file handle */
+} mime_var_t;
+
 void
 empty_stdin(void)
 {

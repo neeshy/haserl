@@ -8,12 +8,11 @@ WITH_LUA ?= luajit
 LUA_CFLAGS := $(shell pkg-config --cflags -- $(WITH_LUA))
 LUA_LDFLAGS := $(shell pkg-config --libs -- $(WITH_LUA))
 
-#haserl: main.o h_lua.o libhaserl.so
 haserl: haserl.o main.o common.o h_error.o sliding_buffer.o rfc2388.o h_lua.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_LDFLAGS) -o $@ $^
 
 haserl.o: haserl.c haserl.h common.h h_error.h sliding_buffer.h rfc2388.h
-main.o: main.c main.h haserl.h common.h h_error.h h_lua.h
+main.o: main.c haserl.h common.h h_error.h h_lua.h
 
 common.o: common.c common.h haserl.h h_error.h
 h_error.o: h_error.c h_error.h haserl.h

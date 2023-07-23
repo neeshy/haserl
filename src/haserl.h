@@ -21,11 +21,6 @@
 #ifndef _HASERL_H
 #define _HASERL_H
 
-char x2c(const char *what);
-void unescape_url(char *url);
-void ReadCookie(void);
-void ReadQuery(void);
-void ReadForm(void);
 void haserl(void);
 
 #endif /* _HASERL_H */

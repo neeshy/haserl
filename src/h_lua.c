@@ -29,10 +29,8 @@
 
 #include "h_lua.h"
 
-lua_State *lua_vm = NULL;
-
 void
-lua_putenv(const list_t *env, const char *tbl)
+lua_putenv(lua_State *lua_vm, const list_t *env, const char *tbl)
 {
 	char *str, *value;
 
@@ -66,28 +64,20 @@ lua_putenv(const list_t *env, const char *tbl)
 void
 lua_doscript(const char *name)
 {
-	if (luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0)) {
-		die("%s", lua_tostring(lua_vm, -1));
-	}
-}
-
-void
-lua_setup(void)
-{
 	/* create a lua instance */
-	lua_vm = luaL_newstate();
+	lua_State *lua_vm = luaL_newstate();
 	luaL_openlibs(lua_vm);
 
 	/* and put the vars in the vm */
-	lua_putenv(global.get, "GET");
-	lua_putenv(global.post, "POST");
-	lua_putenv(global.form, "FORM");
-	lua_putenv(global.cookie, "COOKIE");
-}
+	lua_putenv(lua_vm, global.get, "GET");
+	lua_putenv(lua_vm, global.post, "POST");
+	lua_putenv(lua_vm, global.form, "FORM");
+	lua_putenv(lua_vm, global.cookie, "COOKIE");
 
-void
-lua_destroy(void)
-{
+	if (luaL_loadfile(lua_vm, name) || lua_pcall(lua_vm, 0, LUA_MULTRET, 0)) {
+		die("%s", lua_tostring(lua_vm, -1));
+	}
+
 	/* close the lua instance */
 	lua_close(lua_vm);
 }

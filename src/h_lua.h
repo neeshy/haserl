@@ -21,9 +21,6 @@
 #ifndef _H_LUA_H
 #define _H_LUA_H
 
-void lua_putenv(const list_t *env, const char *tbl);
 void lua_doscript(const char *name);
-void lua_setup(void);
-void lua_destroy(void);
 
 #endif /* _H_LUA_H */

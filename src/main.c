@@ -32,7 +32,14 @@
 
 #include "h_lua.h"
 
-#include "main.h"
+/* how many argv slots to allocate at once */
+#define ALLOC_CHUNK 10
+
+/* name/value pairs */
+typedef struct {
+	char *string;  /* the string */
+	int   quoted;  /* non-zero if the string was quoted */
+} argv_t;
 
 /* Command line / Config file directives When adding a long option, make sure
  * to update the short_options as well */
@@ -287,9 +294,7 @@ main(int argc, char *argv[])
 
 	haserl();
 
-	lua_setup();
 	lua_doscript(filename);
-	lua_destroy();
 
 	free_list(global.get);
 	free_list(global.post);
