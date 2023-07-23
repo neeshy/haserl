@@ -49,13 +49,12 @@ name=value pairs into the Lua environment for the CGI script to use.
 The Lua script is executed.
 
 .SH CLIENT SIDE INPUT
-The
 .I haserl
-interpreter will decode data sent via the
+will decode data sent via the
 .I HTTP_COOKIE
 environment variable, and the GET or POST method from the client, and store them
 as elements in tables that can be accessed by the executed Lua script. The name
-of the variable corresponds the name of the method.
+of the variable corresponds to the name of the method.
 
 For cookies, elements are stored in the
 .I COOKIE
