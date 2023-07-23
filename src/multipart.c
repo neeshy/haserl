@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "h_error.h"
+#include "buffer.h"
 #include "sliding_buffer.h"
 
 #include "multipart.h"

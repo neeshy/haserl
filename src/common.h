@@ -7,13 +7,6 @@ typedef struct {
 	void *next;
 } list_t;
 
-/* expandable buffer structure */
-typedef struct {
-	char *data;   /* the data */
-	char *ptr;    /* where to write to next */
-	char *limit;  /* maximal allocated buffer pos */
-} buffer_t;
-
 /* Just a silly construct to contain global variables */
 typedef struct {
 	unsigned long  uploadkb;       /* how big an upload do we allow (0 for none) */
@@ -31,9 +24,5 @@ void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
 void list_add(list_t **cur, const char *str);
 void list_destroy(list_t *list);
-void buffer_init(buffer_t *buf);
-void buffer_reset(buffer_t *buf);
-void buffer_destroy(buffer_t *buf);
-void buffer_add(buffer_t *buf, const void *data, size_t size);
 
 #endif /* _COMMON_H */
