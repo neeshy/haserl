@@ -8,18 +8,17 @@ WITH_LUA ?= luajit
 LUA_CFLAGS := $(shell pkg-config --cflags -- $(WITH_LUA))
 LUA_LDFLAGS := $(shell pkg-config --libs -- $(WITH_LUA))
 
-haserl: haserl.o main.o common.o h_error.o buffer.o sliding_buffer.o multipart.o h_lua.o
+haserl: haserl.o main.o common.o buffer.o sliding_buffer.o multipart.o h_lua.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_LDFLAGS) -o $@ $^
 
-haserl.o: haserl.c haserl.h common.h h_error.h buffer.h sliding_buffer.h multipart.h
-main.o: main.c haserl.h common.h h_error.h h_lua.h
+haserl.o: haserl.c haserl.h common.h buffer.h sliding_buffer.h multipart.h
+main.o: main.c haserl.h common.h h_lua.h
 
-common.o: common.c common.h haserl.h h_error.h
-h_error.o: h_error.c h_error.h haserl.h
+common.o: common.c common.h haserl.h
 buffer.o: buffer.c buffer.h common.h
 sliding_buffer.o: sliding_buffer.c sliding_buffer.h haserl.h common.h
-multipart.o: multipart.c multipart.h haserl.h common.h h_error.h buffer.h sliding_buffer.h
-h_lua.o: h_lua.c h_lua.h haserl.h common.h h_error.h
+multipart.o: multipart.c multipart.h haserl.h common.h buffer.h sliding_buffer.h
+h_lua.o: h_lua.c h_lua.h haserl.h common.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_CFLAGS) -c -o $@ $<
 
 .PHONY: install

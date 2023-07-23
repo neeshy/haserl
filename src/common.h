@@ -19,9 +19,9 @@ typedef struct {
 
 extern haserl_t global;
 
-/* common.c */
 void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
+void die(const char *s, ...);
 void list_add(list_t **cur, const char *str);
 void list_destroy(list_t *list);
 

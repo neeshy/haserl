@@ -1,7 +1,7 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
-
-#include "h_error.h"
 
 #include "common.h"
 
@@ -36,6 +36,34 @@ xrealloc(void *buf, size_t size)
 		die("Memory Re-allocation Failure");
 	}
 	return buf;
+}
+
+/* print an error message and terminate. If there's a request method, then HTTP
+ * headers are added. */
+void
+die(const char *s, ...)
+{
+	va_list p;
+	FILE *fo = stderr;
+
+	if (getenv("REQUEST_METHOD")) {
+		fo = stdout;
+		fprintf(fo, "HTTP/1.0 500 Server Error\r\n"
+		        "Content-Type: text/html\r\n\r\n"
+		        "<html><body><b><font color='#C00'>" PACKAGE
+		        " CGI Error</font></b><br><pre>\r\n");
+	}
+
+	va_start(p, s);
+	vfprintf(fo, s, p);
+	va_end(p);
+	printf("\r\n");
+
+	if (getenv("REQUEST_METHOD")) {
+		fprintf(fo, "</pre></body></html>");
+	}
+
+	exit(-1);
 }
 
 /* adds or replaces the "key=value" value in the env_list chain */

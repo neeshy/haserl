@@ -8,7 +8,6 @@
 
 #include "haserl.h"
 #include "common.h"
-#include "h_error.h"
 
 #include "h_lua.h"
 

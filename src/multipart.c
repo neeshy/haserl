@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "common.h"
-#include "h_error.h"
 #include "buffer.h"
 #include "sliding_buffer.h"
 
