@@ -265,7 +265,7 @@ main(int argc, char *argv[])
 	if (optind < av2c) {
 		filename = av2[optind];
 	} else {
-		die(g_err_msg[E_NO_SCRIPT_FILE]);
+		die("No script file specified");
 	}
 
 	/* drop permissions */

@@ -176,7 +176,7 @@ multipart_handler(void)
 	}
 	if (i == -1) {
 		empty_stdin();
-		die(g_err_msg[E_MIME_BOUNDARY]);
+		die("No MIME Boundary Information Found");
 	}
 
 	i = i + 9;
@@ -227,7 +227,7 @@ multipart_handler(void)
 			if (var.name) {
 				mime_var_destroy(&var);
 			}
-			die(g_err_msg[E_OVER_LIMIT]);
+			die("Attempted to send content larger than allowed limits");
 		}
 
 		switch (state) {
@@ -285,7 +285,7 @@ multipart_handler(void)
 				/* if upload_limit is zero, we die right here */
 				if (!global.uploadkb) {
 					empty_stdin();
-					die(g_err_msg[E_FILE_UPLOAD]);
+					die("File uploads are not allowed");
 				}
 
 				/* reuse the name as a fifo if we have a handler. We do this
@@ -297,7 +297,7 @@ multipart_handler(void)
 					buffer_add(&var.value, tmpname, strlen(tmpname));
 				} else {
 					empty_stdin();
-					die(g_err_msg[E_FILE_OPEN_FAIL], tmpname);
+					die("Unable to open file %s", tmpname);
 				}
 			}
 			/* if we have an open file, write the chunk */

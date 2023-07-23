@@ -4,15 +4,6 @@
 
 #include "h_error.h"
 
-char *g_err_msg[] = {
-	"Memory Allocation Failure",
-	"Unable to open file %s",
-	"No script file specified",
-	"Attempted to send content larger than allowed limits",
-	"File uploads are not allowed",
-	"No Mime Boundary Information Found",
-};
-
 /* print an error message and die. If sp or where are non-null pointers, then
  * a line is added saying where in the script buffer the error occured. If
  * there's a request method, then http headers are added. */

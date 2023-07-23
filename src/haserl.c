@@ -155,7 +155,7 @@ ReadForm(void)
 		x = s_buffer_read(&sbuf, matchstr);
 		content_length += sbuf.len;
 		if (content_length > max_len) {
-			die(g_err_msg[E_OVER_LIMIT]);
+			die("Attempted to send content larger than allowed limits");
 		}
 
 		if (!x || token.data) {

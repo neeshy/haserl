@@ -22,7 +22,7 @@ xmalloc(size_t size)
 	void *buf;
 
 	if (!(buf = malloc(size))) {
-		die(g_err_msg[E_MALLOC_FAIL]);
+		die("Memory Allocation Failure");
 	}
 	memset(buf, 0, size);
 	return buf;
@@ -33,7 +33,7 @@ void *
 xrealloc(void *buf, size_t size)
 {
 	if (!(buf = realloc(buf, size))) {
-		die(g_err_msg[E_MALLOC_FAIL]);
+		die("Memory Re-allocation Failure");
 	}
 	return buf;
 }
