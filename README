@@ -1,8 +1,12 @@
 haserl (HTML and Shell Embedded Runtime Language) is a CGI program that runs a
-Lua script. It combines three elements into a single CGI interpreter:
+Lua script. Here is short overview of its operation:
 
-1. It parses POST and GET requests, placing form-elements as name=value pairs
-into the Lua environment for the CGI script to use. It is similar to uncgi
-(http://www.midwinter.com/~koreth/uncgi.html) in this respect.
-2. It runs a Lua script.
-3. It is very small, so it can be used in embedded environments.
+* If run as root, it drops its privileges by setting its uid/gid to the
+  owner/group of the script.
+* It parses POST and GET requests, placing form-elements as name=value pairs
+  into the Lua environment for the CGI script to use.
+* It executes a Lua script.
+
+See also:
+uncgi (http://www.midwinter.com/~koreth/uncgi.html)
+cgiwrapper (http://cgiwrapper.sourceforge.net)
