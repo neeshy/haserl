@@ -203,16 +203,16 @@ void
 BecomeUser(uid_t uid, gid_t gid)
 {
 	/* This silently fails if it doesn't work */
-	/* Following is from Timo Teras */
 	if (!getuid()) {
+		/* Following is from Timo Teras */
 		setgroups(1, &gid);
+
+		setgid(gid);
+		setgid(getgid());
+
+		setuid(uid);
+		setuid(getuid());
 	}
-
-	setgid(gid);
-	setgid(getgid());
-
-	setuid(uid);
-	setuid(getuid());
 }
 
 int

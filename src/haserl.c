@@ -43,20 +43,20 @@ unescape_url(char *url)
 }
 
 /* if HTTP_COOKIE is passed as an environment variable,
- * attempt to parse its values into environment variables */
+ * attempt to parse its values into a global variable */
 void
 ReadCookie(void)
 {
-	char *qs;
 	char *token;
+	char *cookie;
 
-	if (!getenv("HTTP_COOKIE")) {
+	if (!(cookie = getenv("HTTP_COOKIE"))) {
 		return;
 	}
-	qs = strdup(getenv("HTTP_COOKIE"));
+	cookie = xstrdup(cookie);
 
 	/* split on ; to extract name value pairs */
-	token = strtok(qs, ";");
+	token = strtok(cookie, ";");
 	while (token) {
 		/* skip leading spaces */
 		while (*token == ' ') {
@@ -65,44 +65,44 @@ ReadCookie(void)
 		list_add(&global.cookie, token);
 		token = strtok(NULL, ";");
 	}
-	free(qs);
+	free(cookie);
 }
 
-/* Read cgi variables from query string, and put in environment */
+/* Read CGI variables from query string, and put it into a global variable */
 void
 ReadQuery(void)
 {
-	char *qs;
 	char *token;
+	char *query;
 	int i;
 
-	if (!getenv("QUERY_STRING")) {
+	if (!(query = getenv("QUERY_STRING"))) {
 		return;
 	}
-	qs = strdup(getenv("QUERY_STRING"));
+	query = xstrdup(query);
 
-	/* change plusses into spaces */
-	for (i = 0; qs[i]; i++) {
-		if (qs[i] == '+') {
-			qs[i] = ' ';
+	/* change pluses into spaces */
+	for (i = 0; query[i]; i++) {
+		if (query[i] == '+') {
+			query[i] = ' ';
 		}
 	}
 
 	/* split on & and ; to extract name value pairs */
-	token = strtok(qs, "&;");
+	token = strtok(query, "&;");
 	while (token) {
 		unescape_url(token);
 		list_add(&global.get, token);
 		token = strtok(NULL, "&;");
 	}
-	free(qs);
+	free(query);
 }
 
-/* Read cgi variables from stdin (for POST queries) */
+/* Read CGI variables from stdin (for POST queries) */
 void
 ReadForm(void)
 {
-	size_t content_length = 0;
+	size_t length = 0;
 	size_t max_len;
 	int urldecoding = 0;
 	char *matchstr = "";
@@ -112,37 +112,42 @@ ReadForm(void)
 	char *data;
 	const char *CONTENT_LENGTH = "CONTENT_LENGTH";
 	const char *CONTENT_TYPE = "CONTENT_TYPE";
-	char *content_type = NULL;
+	char *content_type;
+	char *content_length;
 
-	if (!getenv(CONTENT_LENGTH) ||
-	    !strtoul(getenv(CONTENT_LENGTH), NULL, 10)) {
+	if (!(content_length = getenv(CONTENT_LENGTH))) {
 		return;
+	} else {
+		s_buffer_init(&sbuf, 32768);
+		sbuf.fh = 0;
+
+		if (!(sbuf.maxread = strtoul(content_length, NULL, 10))) {
+			return;
+		}
 	}
 
-	content_type = getenv(CONTENT_TYPE);
+	if ((content_type = getenv(CONTENT_TYPE))) {
+		if (!strncasecmp(content_type, "multipart/form-data", 19)) {
+			/* This is a mime request, we need to go to the mime handler */
+			multipart_handler();
+			return;
+		}
 
-	if (content_type &&
-	    !strncasecmp(content_type, "multipart/form-data", 19)) {
-		/* This is a mime request, we need to go to the mime handler */
-		multipart_handler();
-		return;
+		/* at this point its either urlencoded or some other blob */
+		if (!strncasecmp(content_type, "application/x-www-form-urlencoded", 33)) {
+			urldecoding = 1;
+			matchstr = "&";
+		}
 	}
 
-	/* at this point its either urlencoded or some other blob */
-	if (!content_type ||
-	    !strncasecmp(getenv(CONTENT_TYPE), "application/x-www-form-urlencoded", 33)) {
-		urldecoding = 1;
-		matchstr = "&";
-	}
+	/* otherwise, assume just a binary octet stream
+	 *
+	 * These were set in the variable definition - just leave them alone
+	 * urldecoding = 0;
+	 * matchstr = ""; */
 
 	max_len = global.uploadkb * 1024;
 
-	s_buffer_init(&sbuf, 32768);
-	sbuf.fh = 0;
-
-	if (getenv(CONTENT_LENGTH)) {
-		sbuf.maxread = strtoul(getenv(CONTENT_LENGTH), NULL, 10);
-	}
 	buffer_init(&token);
 
 	if (!urldecoding) {
@@ -152,8 +157,8 @@ ReadForm(void)
 	do {
 		/* x is true if this token ends with a matchstr or is at the end of stream */
 		x = s_buffer_read(&sbuf, matchstr);
-		content_length += sbuf.len;
-		if (content_length > max_len) {
+		length += sbuf.len;
+		if (length > max_len) {
 			die("Attempted to send content larger than allowed limits");
 		}
 
@@ -171,7 +176,7 @@ ReadForm(void)
 			}
 
 			if (urldecoding) {
-				/* change plusses into spaces */
+				/* change pluses into spaces */
 				j = strlen(data);
 				for (i = 0; i <= j; i++) {
 					if (data[i] == '+') {
@@ -194,16 +199,16 @@ void
 haserl(void)
 {
 	/* Read the request data */
-	/* If we have a request method, and we were run as a #! style script */
+	char *request_method;
 	ReadCookie();
-	if (getenv("REQUEST_METHOD")) {
-		if (!strcasecmp(getenv("REQUEST_METHOD"), "GET") ||
-		    !strcasecmp(getenv("REQUEST_METHOD"), "DELETE")) {
+	if ((request_method = getenv("REQUEST_METHOD"))) {
+		if (!strcasecmp(request_method, "GET") ||
+		    !strcasecmp(request_method, "DELETE")) {
 			ReadQuery();
 		}
 
-		if (!strcasecmp(getenv("REQUEST_METHOD"), "POST") ||
-		    !strcasecmp(getenv("REQUEST_METHOD"), "PUT")) {
+		if (!strcasecmp(request_method, "POST") ||
+		    !strcasecmp(request_method, "PUT")) {
 			ReadForm();
 		}
 	}

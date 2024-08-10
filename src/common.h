@@ -21,6 +21,7 @@ extern haserl_t global;
 
 void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
+char *xstrdup(const char *s);
 void die(const char *s, ...);
 void list_add(list_t **cur, const char *str);
 void list_destroy(list_t *list);

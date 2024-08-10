@@ -28,7 +28,7 @@ xmalloc(size_t size)
 	return buf;
 }
 
-/* realloc memory, or die xmalloc style. */
+/* realloc or die */
 void *
 xrealloc(void *buf, size_t size)
 {
@@ -36,6 +36,17 @@ xrealloc(void *buf, size_t size)
 		die("Memory Re-allocation Failure");
 	}
 	return buf;
+}
+
+/* strdup or die */
+char *
+xstrdup(const char *s)
+{
+	char *ret;
+	if (!(ret = strdup(s))) {
+		die("Memory Allocation Failure");
+	}
+	return ret;
 }
 
 /* print an error message and terminate. If there's a request method, then HTTP
