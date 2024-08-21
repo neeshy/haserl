@@ -1,9 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
-
 #include "buffer.h"
+#include "common.h"
 
 /* Expandable Buffer is a reimplementation based on buffer.c in GCC
  * originally by Per Bother */
@@ -13,6 +12,14 @@ buffer_init(buffer_t *buf)
 	buf->data = NULL;
 	buf->ptr = NULL;
 	buf->limit = NULL;
+}
+
+void
+buffer_alloc(buffer_t *buf, size_t size)
+{
+	buf->data = xmalloc(size);
+	buf->ptr = buf->data;
+	buf->limit = buf->data + size;
 }
 
 /* don't reallocate - just forget about the current contents */
@@ -34,12 +41,10 @@ buffer_destroy(buffer_t *buf)
 void
 buffer_add(buffer_t *buf, const void *data, size_t size)
 {
-	size_t newsize, index;
-
 	/* if we need to grow the buffer, do so now */
 	if (buf->ptr + size >= buf->limit) {
-		index = buf->limit - buf->data;
-		newsize = index;
+		size_t index = buf->limit - buf->data;
+		size_t newsize = index;
 		while (newsize <= index + size) {
 			newsize += 1024;
 		}

@@ -1,5 +1,5 @@
 haserl (HTML and Shell Embedded Runtime Language) is a CGI program that runs a
-Lua script. Here is short overview of its operation:
+Lua script. Here is a short overview of its operation:
 
 * If run as root, it drops its privileges by setting its uid/gid to the
   owner/group of the script.
@@ -8,5 +8,6 @@ Lua script. Here is short overview of its operation:
 * It executes a Lua script.
 
 See also:
+haserl (the original) (https://haserl.sourceforge.net/)
 uncgi (http://www.midwinter.com/~koreth/uncgi.html)
-cgiwrapper (http://cgiwrapper.sourceforge.net)
+cgiwrapper (http://cgiwrapper.sourceforge.net/)

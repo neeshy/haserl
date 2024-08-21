@@ -1,7 +1,6 @@
 #ifndef _BUFFER_H
 #define _BUFFER_H
 
-/* expandable buffer structure */
 typedef struct {
 	char *data;   /* the data */
 	char *ptr;    /* where to write to next */
@@ -9,6 +8,7 @@ typedef struct {
 } buffer_t;
 
 void buffer_init(buffer_t *buf);
+void buffer_alloc(buffer_t *buf, size_t size);
 void buffer_reset(buffer_t *buf);
 void buffer_destroy(buffer_t *buf);
 void buffer_add(buffer_t *buf, const void *data, size_t size);

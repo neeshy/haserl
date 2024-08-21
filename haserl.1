@@ -1,5 +1,5 @@
 .\" Process with groff -man -Tascii haserl.1
-.TH haserl 1 "October 2010"
+.TH haserl 1 "August 2024"
 .SH NAME
 haserl \- A CGI scripting program for embedded environments
 .SH SYNOPSIS
@@ -123,7 +123,7 @@ io.write("Content-type: text/html\\r\\n\\r\\n")
 
 io.write("<html><body><table border=1><tr>")
 for i, v in ipairs({"Red", "Blue", "Yellow", "Cyan"}) do
-	io.write(string.format("<td bgcolor='%s'>%s</td>", v, v))
+	io.write(("<td bgcolor='%s'>%s</td>"):format(v, v))
 end
 io.write("</tr></table></body></html>")
 .fi
@@ -139,11 +139,11 @@ io.write("Content-Type: text/html\\r\\n\\r\\n")
 
 io.write("<html><body>")
 io.write("<h1>Sample Form</h1>")
-io.write(string.format("<form action='%s' method='GET'>", os.getenv("SCRIPT_NAME")))
+io.write(("<form action='%s' method='GET'>"):format(os.getenv("SCRIPT_NAME")))
 
 -- Do some basic validation of POST.textfield
 -- To prevent common web attacks
-io.write(string.format("<input type=text name=textfield Value='%s' cols=20>",
+io.write(("<input type=text name=textfield Value='%s' cols=20>"):format(
          POST.textfield:gsub("[^%w ]", ""):gsub("%l+", string.upper)))
 io.write("<input type=submit value=GO>")
 
@@ -165,18 +165,18 @@ uppercased.
 io.write("Content-Type: text/html\\r\\n\\r\\n")
 
 io.write("<html><body>")
-io.write(string.format("<form action='%s' method=POST enctype='multipart/form-data'>", os.getenv("SCRIPT_NAME")))
+io.write(("<form action='%s' method=POST enctype='multipart/form-data'>"):format(os.getenv("SCRIPT_NAME")))
 io.write("<input type=file name=uploadfile>")
 io.write("<input type=submit value=GO>")
 io.write("<br>")
 if FORM.uploadfile_path then
-	io.write(string.format("<p>You uploaded a file named <b>%s</b>, and it was", FORM.uploadfile_filename))
-	io.write(string.format("temporarily stored on the server as <i>%s</i>.", FORM.uploadfile_path))
+	io.write(("<p>You uploaded a file named <b>%s</b>, and it was"):format(FORM.uploadfile_filename))
+	io.write(("temporarily stored on the server as <i>%s</i>."):format(FORM.uploadfile_path))
 	local file = io.open(FORM.uploadfile_path, "r")
 	if file then
 		local size = file:seek("end")
 		file:close()
-		io.write(string.format("The file was %d bytes long.</p>", size))
+		io.write(("The file was %d bytes long.</p>"):format(size))
 		os.remove(FORM.uploadfile_path)
 		io.write("<p>Don't worry, the file has just been deleted from the web server.</p>")
 	end
@@ -265,10 +265,14 @@ Both are small, powerful, and have very little in the way of extra features. Lik
 .IR netcat ", " haserl
 attempts to do its job with the least amount of extra "fluff".
 
-.SH AUTHOR
+.SH AUTHORS
+neeshy <neeshy@tfwno.gf>
+.br
 Nathan Angelacos <nangel@users.sourceforge.net>
 
 .SH SEE ALSO
-
-.BR uncgi (http://www.midwinter.com/~koreth/uncgi.html)
-.BR cgiwrapper (http://cgiwrapper.sourceforge.net)
+haserl (the original) (https://haserl.sourceforge.net/)
+.br
+uncgi (http://www.midwinter.com/~koreth/uncgi.html)
+.br
+cgiwrapper (http://cgiwrapper.sourceforge.net/)
