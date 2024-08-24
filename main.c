@@ -47,11 +47,16 @@ split(char *s, char ***ret)
 			append(argv, s, argc, slots);
 			break;
 		case '\\':
-			word = ' ';
-			memmove(s, s + 1, strlen(s));
-			append(argv, s, argc, slots);
-			if (*s) s++;
-			break;
+			switch (s[1]) {
+			case '"':
+			case '\'':
+			case '\\':
+			case ' ':
+			case '\t':
+			case '\r':
+			case '\n':
+				memmove(s, s + 1, strlen(s));
+			}
 		default:
 			word = ' ';
 			append(argv, s, argc, slots);
@@ -74,8 +79,19 @@ split(char *s, char ***ret)
 			}
 			break;
 		case '\\':
-			memmove(s, s + 1, strlen(s));
-			if (*s) s++;
+			if (word == '"' && (s[1] == '"' || s[1] == '\\')) {
+				memmove(s, s + 1, strlen(s));
+			} else if (word == ' ') switch (s[1]) {
+				case '"':
+				case '\'':
+				case '\\':
+				case ' ':
+				case '\t':
+				case '\r':
+				case '\n':
+					memmove(s, s + 1, strlen(s));
+			}
+			s++;
 			break;
 		case ' ':
 		case '\t':
