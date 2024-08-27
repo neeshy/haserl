@@ -29,6 +29,7 @@ void *xmalloc(size_t size);
 void *xrealloc(void *buf, size_t size);
 char *xstrdup(const char *s);
 void haserl_destroy(haserl_t *haserl);
+void drain(int fd);
 void die(const char *s, ...);
 void die_status(int status, const char *s, ...);
 

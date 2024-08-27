@@ -118,9 +118,10 @@ multipart_handler(void)
 			buffer_add(&buf, sbuf.begin, sbuf.end - sbuf.begin);
 			if (matched) {
 				if (!memcmp(buf.data, "--", 2)) {
-					/* all done... what does that mean? */
-					state = DISCARD;
-					str = boundary;
+					/* all done */
+					drain(sbuf.fd);
+					/* manually set EOF */
+					sbuf.read = -1;
 				} else {
 					form_data_init(&form_data);
 					state = HEADER;
@@ -138,13 +139,12 @@ multipart_handler(void)
 					buffer_reset(&buf);
 					if (form_data.name) {
 						state = CONTENT;
-						str = boundary;
 					} else {
 						/* if no name was given, ignore this part */
 						form_data_destroy(&form_data);
 						state = DISCARD;
-						str = boundary;
 					}
+					str = boundary;
 					continue;
 				}
 

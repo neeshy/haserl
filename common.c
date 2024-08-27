@@ -60,15 +60,19 @@ haserl_destroy(haserl_t *haserl)
 	buffer_destroy(&haserl->cookie);
 }
 
+void
+drain(int fd)
+{
+	char c[2048];
+	while (read(fd, c, sizeof(c)));
+}
+
 /* print an error message and terminate.
  * if there's a request method, HTTP headers are added. */
 static void
 vdie(int status, const char *s, va_list ap)
 {
-	/* drain stdin */
-	char c[2048];
-	while (read(0, &c, sizeof(c)));
-
+	drain(0);
 	haserl_destroy(&global);
 
 	if (getenv("REQUEST_METHOD")) {
