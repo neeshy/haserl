@@ -196,21 +196,24 @@ multipart_handler(void)
 			break;
 
 		case CONTENT:
-			if (!form_data.filename) {
-				/* if not a file upload, populate the value field */
-				buffer_add(&form_data.value, sbuf.begin, sbuf.end - sbuf.begin);
-			} else if (form_data.fd > -1) {
+			if (form_data.fd > -1) {
 				/* if we have an open file, write the chunk
 				 * if there was an error, invert the file descriptor
 				 * we need the descriptor later when we close it */
-				if (write(form_data.fd, sbuf.begin, sbuf.end - sbuf.begin) == -1) {
+				size_t count = sbuf.end - sbuf.begin;
+				ssize_t n = write(form_data.fd, sbuf.begin, count);
+				if (n != count || n == -1) {
 					form_data.fd = -form_data.fd - 2;
+					unlink(form_data.value.data);
 				}
+			} else if (form_data.fd == -1) {
+				/* if not a file upload, populate the value field */
+				buffer_add(&form_data.value, sbuf.begin, sbuf.end - sbuf.begin);
 			}
 
 			if (matched) {
-				if (form_data.filename) {
-					/* this creates FORM.foo_path=tempfile_pathspec. */
+				if (form_data.fd > -1) {
+					/* this creates FORM.foo_path=tempfile */
 					buffer_add(&global.form, form_data.name, strlen(form_data.name));
 					buffer_add(&global.form, "_path", 6);
 					buffer_add(&global.form, form_data.value.data, strlen(form_data.value.data) + 1);
@@ -219,7 +222,7 @@ multipart_handler(void)
 					buffer_add(&global.form, form_data.name, strlen(form_data.name));
 					buffer_add(&global.form, "_filename", 10);
 					buffer_add(&global.form, form_data.filename, strlen(form_data.filename) + 1);
-				} else {
+				} else if (form_data.fd == -1) {
 					buffer_add(&global.post, form_data.name, strlen(form_data.name) + 1);
 					buffer_add(&global.post, form_data.value.data, form_data.value.ptr - form_data.value.data);
 					buffer_add(&global.post, "", 1);
