@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "util.h"
+
 #include "buffer.h"
-#include "common.h"
 
 /* Expandable Buffer is a reimplementation based on buffer.c in GCC
  * originally by Per Bother */

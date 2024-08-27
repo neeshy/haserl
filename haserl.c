@@ -3,8 +3,10 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "buffer.h"
+#include <lua.h>
+
 #include "common.h"
+#include "buffer.h"
 #include "multipart.h"
 
 #include "haserl.h"
@@ -38,53 +40,53 @@ unescape(char *where, const char *what)
 }
 
 /* decode %xx to the bytes they represent */
-static void
+static size_t
 unescape_url(char *url)
 {
-	int i = 0;
-	while (url[i]) {
-		if ((*url = url[i]) == '%' && unescape(url, url + i + 1)) {
+	char *ptr = url;
+	size_t i = 0;
+	while (ptr[i]) {
+		if ((*ptr = ptr[i]) == '%' && unescape(ptr, ptr + i + 1)) {
 			i += 2;
 		}
-		url++;
+		ptr++;
 	}
-	*url = 0;
+	*ptr = 0;
+
+	return ptr - url;
 }
 
 /* add a pair of strings delimited on '=' to a buffer */
 static void
-buffer_add_pair(buffer_t *buf, char *str)
+lua_add_pair(const char *tbl, char *str)
 {
 	char *value = strchr(str, '=');
 	if (value) {
 		*value = 0;
-		unescape_url(str);
-		buffer_add(buf, str, value - str + 1);
-		*value++ = '=';
-		unescape_url(value);
-		buffer_add(buf, value, strlen(value) + 1);
+		size_t key_size = unescape_url(str);
+		size_t value_size = unescape_url(++value);
+		lua_set(tbl, str, key_size, value, value_size);
 	} else {
-		unescape_url(str);
-		buffer_add(buf, str, strlen(str) + 1);
-		buffer_add(buf, "", 1);
+		size_t size = unescape_url(str);
+		lua_set(tbl, str, size, "", 0);
 	}
 }
 
 static void
-read_cookie(char *cookie, buffer_t *buf)
+read_cookie(const char *tbl, char *cookie)
 {
 	/* split on ; to extract name value pairs */
 	char *token = strtok(cookie, ";");
 	while (token) {
 		/* skip leading spaces */
 		while (*token == ' ') token++;
-		buffer_add_pair(buf, token);
+		lua_add_pair(tbl, token);
 		token = strtok(NULL, ";");
 	}
 }
 
 static void
-read_query(char *query, buffer_t *buf)
+read_query(const char *tbl, char *query)
 {
 	/* change pluses into spaces */
 	for (char *s = query; *s; s++) {
@@ -94,7 +96,7 @@ read_query(char *query, buffer_t *buf)
 	/* split on & to extract name value pairs */
 	char *token = strtok(query, "&");
 	while (token) {
-		buffer_add_pair(buf, token);
+		lua_add_pair(tbl, token);
 		token = strtok(NULL, "&");
 	}
 }
@@ -145,14 +147,13 @@ read_form(void)
 		die_status(errno, "read: %s", strerror(errno));
 	}
 
-	/* add the ASCIIZ */
-	buffer_add(&buf, "", 1);
 	if (content_type && !strncasecmp(content_type, "application/x-www-form-urlencoded", 33)) {
-		read_query(buf.data, &global.post);
+		/* add the ASCIIZ */
+		buffer_add(&buf, "", 1);
+		read_query("POST", buf.data);
 	} else {
 		/* treat input as an opaque octet stream */
-		buffer_add(&global.post, "body", 5);
-		buffer_add(&global.post, buf.data, buf.ptr - buf.data);
+		lua_set("POST", "body", 4, buf.data, buf.ptr - buf.data);
 	}
 	buffer_destroy(&buf);
 
@@ -165,7 +166,7 @@ haserl(void)
 	char *cookie = getenv("HTTP_COOKIE");
 	if (cookie) {
 		cookie = xstrdup(cookie);
-		read_cookie(cookie, &global.cookie);
+		read_cookie("COOKIE", cookie);
 		free(cookie);
 	}
 
@@ -176,7 +177,7 @@ haserl(void)
 			char *query = getenv("QUERY_STRING");
 			if (query) {
 				query = xstrdup(query);
-				read_query(query, &global.get);
+				read_query("GET", query);
 				free(query);
 			}
 		} else if (!strcasecmp(request_method, "POST") ||

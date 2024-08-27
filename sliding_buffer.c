@@ -3,8 +3,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include "buffer.h"
-#include "common.h"
+#include "util.h"
 
 #include "sliding_buffer.h"
 

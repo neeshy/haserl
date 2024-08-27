@@ -3,9 +3,11 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <lua.h>
+
+#include "common.h"
 #include "buffer.h"
 #include "sliding_buffer.h"
-#include "common.h"
 
 #include "multipart.h"
 
@@ -213,18 +215,16 @@ multipart_handler(void)
 			if (matched) {
 				if (form_data.fd > -1) {
 					/* this creates FORM.foo_path=tempfile */
-					buffer_add(&global.form, form_data.name, strlen(form_data.name));
-					buffer_add(&global.form, "_path", 6);
-					buffer_add(&global.form, form_data.tmpfile, strlen(form_data.tmpfile) + 1);
+					buffer_add(&buf, form_data.name, strlen(form_data.name));
+					buffer_add(&buf, "_path", 5);
+					lua_set("FORM", buf.data, buf.ptr - buf.data, form_data.tmpfile, strlen(form_data.tmpfile));
 
 					/* this saves the name of the file the client supplied */
-					buffer_add(&global.form, form_data.name, strlen(form_data.name));
-					buffer_add(&global.form, "_filename", 10);
-					buffer_add(&global.form, form_data.filename, strlen(form_data.filename) + 1);
+					buf.ptr -= 5;
+					buffer_add(&buf, "_filename", 9);
+					lua_set("FORM", buf.data, buf.ptr - buf.data, form_data.filename, strlen(form_data.filename));
 				} else if (form_data.fd == -1) {
-					buffer_add(&global.post, form_data.name, strlen(form_data.name) + 1);
-					buffer_add(&global.post, buf.data, buf.ptr - buf.data);
-					buffer_add(&global.post, "", 1);
+					lua_set("POST", form_data.name, strlen(form_data.name), buf.data, buf.ptr - buf.data);
 				}
 				form_data_destroy(&form_data);
 				buffer_reset(&buf);

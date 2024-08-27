@@ -6,10 +6,11 @@
 #include <string.h>
 #include <grp.h>
 
-#include "buffer.h"
+#include <lua.h>
+#include <lauxlib.h>
+
 #include "common.h"
 #include "haserl.h"
-#include "h_lua.h"
 
 /*
  * split a string into an argv[] array, and return the number of elements.
@@ -182,9 +183,10 @@ main(int argc, char **argv)
 		setuid(filestat.st_uid);
 	}
 
+	lua_init();
 	haserl();
 	lua_doscript(filename);
-	haserl_destroy(&global);
+	lua_close(global.L);
 
 	return 0;
 }

@@ -5,17 +5,17 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "buffer.h"
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
 #include "common.h"
 
 /* assign default values to the global structure */
 haserl_t global = {
 	.upload_max = 0,           /* maximum upload size (0 disables file uploads) */
 	.upload_dir = "/tmp",      /* where to upload to */
-	.get = { .data = NULL, .ptr = NULL, .limit = NULL },
-	.post = { .data = NULL, .ptr = NULL, .limit = NULL },
-	.form = { .data = NULL, .ptr = NULL, .limit = NULL },
-	.cookie = { .data = NULL, .ptr = NULL, .limit = NULL },
+	.L = NULL,
 };
 
 /* allocate memory or die, busybox style. */
@@ -52,12 +52,48 @@ xstrdup(const char *s)
 }
 
 void
-haserl_destroy(haserl_t *haserl)
+lua_init(void)
 {
-	buffer_destroy(&haserl->get);
-	buffer_destroy(&haserl->post);
-	buffer_destroy(&haserl->form);
-	buffer_destroy(&haserl->cookie);
+	lua_State *L = luaL_newstate();
+	global.L = L;
+	luaL_openlibs(L);
+
+	lua_newtable(L);
+	lua_setglobal(L, "GET");
+
+	lua_newtable(L);
+	lua_setglobal(L, "POST");
+
+	lua_newtable(L);
+	lua_setglobal(L, "FORM");
+
+	lua_newtable(L);
+	lua_setglobal(L, "COOKIE");
+}
+
+void
+lua_set(const char *tbl, const char *key, size_t key_size, const char *value, size_t value_size)
+{
+	lua_getglobal(global.L, tbl);
+	if (!lua_istable(global.L, -1)) {
+		lua_pop(global.L, 1);
+		lua_newtable(global.L);
+		lua_setglobal(global.L, tbl);
+		lua_getglobal(global.L, tbl);
+	}
+
+	lua_pushlstring(global.L, key, key_size);
+	lua_pushlstring(global.L, value, value_size);
+	lua_settable(global.L, -3);
+	lua_pop(global.L, 1);
+}
+
+void
+lua_doscript(const char *filename)
+{
+	if (luaL_loadfile(global.L, filename) || lua_pcall(global.L, 0, 0, 0)) {
+		die("%s", lua_tostring(global.L, -1));
+	}
 }
 
 void
@@ -72,9 +108,6 @@ drain(int fd)
 static void
 vdie(int status, const char *s, va_list ap)
 {
-	drain(0);
-	haserl_destroy(&global);
-
 	if (getenv("REQUEST_METHOD")) {
 		dprintf(1, "HTTP/1.0 500 Server Error\r\n"
 		        "Content-Type: text/html\r\n\r\n"
@@ -86,6 +119,9 @@ vdie(int status, const char *s, va_list ap)
 		vdprintf(2, s, ap);
 		dprintf(2, "\n");
 	}
+
+	drain(0);
+	lua_close(global.L);
 
 	exit(status);
 }
