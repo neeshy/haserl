@@ -10,10 +10,10 @@
 #include "multipart.h"
 
 typedef struct {
-	char     *name;           /* the variable name */
-	char     *filename;       /* the client-specified filename */
-	buffer_t  value;          /* the value of the variable */
-	int       fd;             /* the output file descriptor */
+	char *name;
+	char *filename;
+	char *tmpfile;
+	int   fd;
 } form_data_t;
 
 static void
@@ -21,7 +21,7 @@ form_data_init(form_data_t *obj)
 {
 	obj->name = NULL;
 	obj->filename = NULL;
-	buffer_init(&obj->value);
+	obj->tmpfile = NULL;
 	obj->fd = -1;
 }
 
@@ -30,20 +30,20 @@ form_data_destroy(form_data_t *obj)
 {
 	if (obj->name) {
 		free(obj->name);
-		obj->name = NULL;
 	}
 	if (obj->filename) {
 		free(obj->filename);
-		obj->filename = NULL;
 	}
-	buffer_destroy(&obj->value);
+	if (obj->tmpfile) {
+		free(obj->tmpfile);
+	}
 	if (obj->fd != -1) {
 		if (obj->fd < -1) {
 			obj->fd = -obj->fd - 2;
 		}
 		close(obj->fd);
-		obj->fd = -1;
 	}
+	form_data_init(obj);
 }
 
 /* read multipart/form-data input (RFC2388), typically used when uploading a file. */
@@ -174,18 +174,17 @@ multipart_handler(void)
 
 							if (form_data.fd == -1) {
 								/* if a file upload, but don't have an open fd, open one */
-								char *tmpname = xmalloc(strlen(global.upload_dir) + 8);
-								strcpy(tmpname, global.upload_dir);
-								strcat(tmpname, "/XXXXXX");
-								if ((form_data.fd = mkstemp(tmpname)) == -1) {
+								size_t len = strlen(global.upload_dir);
+								form_data.tmpfile = xmalloc(len + 8);
+								memcpy(form_data.tmpfile, global.upload_dir, len);
+								memcpy(form_data.tmpfile + len, "/XXXXXX", 8);
+								if ((form_data.fd = mkstemp(form_data.tmpfile)) == -1) {
 									free(boundary);
 									s_buffer_destroy(&sbuf);
 									buffer_destroy(&buf);
 									form_data_destroy(&form_data);
-									die_status(errno, "mkstemp: %s: %s", tmpname, strerror(errno));
+									die_status(errno, "mkstemp: %s: %s", form_data.tmpfile, strerror(errno));
 								}
-								buffer_add(&form_data.value, tmpname, strlen(tmpname));
-								free(tmpname);
 							}
 						}
 					}
@@ -204,11 +203,11 @@ multipart_handler(void)
 				ssize_t n = write(form_data.fd, sbuf.begin, count);
 				if (n != count || n == -1) {
 					form_data.fd = -form_data.fd - 2;
-					unlink(form_data.value.data);
+					unlink(form_data.tmpfile);
 				}
 			} else if (form_data.fd == -1) {
 				/* if not a file upload, populate the value field */
-				buffer_add(&form_data.value, sbuf.begin, sbuf.end - sbuf.begin);
+				buffer_add(&buf, sbuf.begin, sbuf.end - sbuf.begin);
 			}
 
 			if (matched) {
@@ -216,7 +215,7 @@ multipart_handler(void)
 					/* this creates FORM.foo_path=tempfile */
 					buffer_add(&global.form, form_data.name, strlen(form_data.name));
 					buffer_add(&global.form, "_path", 6);
-					buffer_add(&global.form, form_data.value.data, strlen(form_data.value.data) + 1);
+					buffer_add(&global.form, form_data.tmpfile, strlen(form_data.tmpfile) + 1);
 
 					/* this saves the name of the file the client supplied */
 					buffer_add(&global.form, form_data.name, strlen(form_data.name));
@@ -224,10 +223,11 @@ multipart_handler(void)
 					buffer_add(&global.form, form_data.filename, strlen(form_data.filename) + 1);
 				} else if (form_data.fd == -1) {
 					buffer_add(&global.post, form_data.name, strlen(form_data.name) + 1);
-					buffer_add(&global.post, form_data.value.data, form_data.value.ptr - form_data.value.data);
+					buffer_add(&global.post, buf.data, buf.ptr - buf.data);
 					buffer_add(&global.post, "", 1);
 				}
 				form_data_destroy(&form_data);
+				buffer_reset(&buf);
 				state = BOUNDARY;
 				str = "\r\n";
 			}
