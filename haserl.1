@@ -106,6 +106,23 @@ it or rename it somewhere in the script.
 When multiple instances of the same variable are sent via the same method, only
 the last one is saved.
 
+.I haserl
+redefines the default Lua
+.I print
+function in order to buffer its output. This effectively protects against
+partially executed responses when an error occurs. If the script were to
+interact directly with standard output, any output from the script would
+interfere with
+.IR haserl 's
+own error messages and produce garbled output.
+.br
+For the sake of programmer
+convenience, the arguments of
+.I print
+mirror those of
+.IR string.format .
+Consult the sections below for usage examples.
+
 .SH EXAMPLES
 .TP
 .B WARNING
@@ -119,13 +136,13 @@ You should be familiar with basic web scripting security before using
 .B Looping with dynamic output
 .nf
 #!/usr/bin/haserl
-io.write("Content-type: text/html\\r\\n\\r\\n")
+print("Content-type: text/html\\r\\n\\r\\n")
 
-io.write("<html><body><table border=1><tr>")
+print("<html><body><table border=1><tr>")
 for i, v in ipairs({"Red", "Blue", "Yellow", "Cyan"}) do
-	io.write(("<td bgcolor='%s'>%s</td>"):format(v, v))
+	print("<td bgcolor='%s'>%s</td>", v, v)
 end
-io.write("</tr></table></body></html>")
+print("</tr></table></body></html>")
 .fi
 
 Sends a mime-type "text/html" document to the client, with a table
@@ -135,20 +152,20 @@ containing elements labeled with each respective background color.
 .B Self Referencing CGI with a form
 .nf
 #!/usr/bin/haserl
-io.write("Content-Type: text/html\\r\\n\\r\\n")
+print("Content-Type: text/html\\r\\n\\r\\n")
 
-io.write("<html><body>")
-io.write("<h1>Sample Form</h1>")
-io.write(("<form action='%s' method='GET'>"):format(os.getenv("SCRIPT_NAME")))
+print("<html><body>")
+print("<h1>Sample Form</h1>")
+print("<form action='%s' method='GET'>", os.getenv("SCRIPT_NAME"))
 
 -- Do some basic validation of POST.textfield
 -- To prevent common web attacks
-io.write(("<input type=text name=textfield Value='%s' cols=20>"):format(
-         POST.textfield:gsub("[^%w ]", ""):gsub("%l+", string.upper)))
-io.write("<input type=submit value=GO>")
+print("<input type=text name=textfield Value='%s' cols=20>",
+      POST.textfield:gsub("[^%w ]", ""):gsub("%l+", string.upper))
+print("<input type=submit value=GO>")
 
-io.write("</form>")
-io.write("</body></html>")
+print("</form>")
+print("</body></html>")
 .fi
 
 Prints a form. If the client enters text in the form, the CGI is reloaded
@@ -161,30 +178,30 @@ uppercased.
 .TP
 .B Uploading a File
 .nf
-#!/usr/bin/haserl \-\-upload\-limit=4096 \-\-upload\-dir=/tmp
-io.write("Content-Type: text/html\\r\\n\\r\\n")
+#!/usr/bin/haserl \-\-upload\-limit=4096
+print("Content-Type: text/html\\r\\n\\r\\n")
 
-io.write("<html><body>")
-io.write(("<form action='%s' method=POST enctype='multipart/form-data'>"):format(os.getenv("SCRIPT_NAME")))
-io.write("<input type=file name=uploadfile>")
-io.write("<input type=submit value=GO>")
-io.write("<br>")
+print("<html><body>")
+print("<form action='%s' method=POST enctype='multipart/form-data'>", os.getenv("SCRIPT_NAME"))
+print("<input type=file name=uploadfile>")
+print("<input type=submit value=GO>")
+print("<br>")
 if FORM.uploadfile_path then
-	io.write(("<p>You uploaded a file named <b>%s</b>, and it was"):format(FORM.uploadfile_filename))
-	io.write(("temporarily stored on the server as <i>%s</i>."):format(FORM.uploadfile_path))
+	print("<p>You uploaded a file named <b>%s</b>, and it was", FORM.uploadfile_filename)
+	print("temporarily stored on the server as <i>%s</i>.", FORM.uploadfile_path)
 	local file = io.open(FORM.uploadfile_path, "r")
 	if file then
 		local size = file:seek("end")
 		file:close()
-		io.write(("The file was %d bytes long.</p>"):format(size))
+		print("The file was %d bytes long.</p>", size)
 		os.remove(FORM.uploadfile_path)
-		io.write("<p>Don't worry, the file has just been deleted from the web server.</p>")
+		print("<p>Don't worry, the file has just been deleted from the web server.</p>")
 	end
 else
-	io.write("You haven't uploaded a file yet.")
+	print("You haven't uploaded a file yet.")
 end
-io.write("</form>")
-io.write("</body></html>")
+print("</form>")
+print("</body></html>")
 .fi
 
 Displays a form that allows for file uploading. This is accomplished by using the
@@ -213,7 +230,7 @@ If the URL does not contain an unencoded "=", then the CGI spec states the
 options are to be used as command-line parameters to the program. For instance,
 according to the CGI spec:
 .I http://192.168.0.1/test.cgi?\-\-upload\-limit%3d2000&foo%3dbar
-.RS
+.br
 Should set the upload-limit to 2000KB in addition to setting "Foo=bar". To
 protect against clients enabling their own uploads,
 .I haserl
@@ -232,8 +249,8 @@ Here is an example of a trivial script, converted into a luac CGI script:
 Given the file test.lua:
 .RS
 .nf
-io.write("Content-Type: text/plain\\r\\n\\r\\n")
-io.write("Hello, world!\\r\\n")
+print("Content-Type: text/plain\\r\\n\\r\\n")
+print("Hello, world!\\r\\n")
 .fi
 .RE
 
