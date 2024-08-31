@@ -5,6 +5,9 @@
 
 #include "buffer.h"
 
+/* NOTE: this doesn't work when x (or y) is 0 */
+#define ceildiv(x, y) (((x - 1) / y) + 1)
+
 /* Expandable Buffer is a reimplementation based on buffer.c in GCC
  * originally by Per Bother */
 void
@@ -44,12 +47,9 @@ buffer_add(buffer_t *buf, const void *data, size_t size)
 {
 	/* if we need to grow the buffer, do so now */
 	if (buf->ptr + size >= buf->limit) {
-		size_t index = buf->limit - buf->data;
-		size_t newsize = index;
-		while (newsize <= index + size) {
-			newsize += 1024;
-		}
-		index = buf->ptr - buf->data;
+		size_t index = buf->ptr - buf->data;
+		size_t newsize = buf->limit - buf->data + size;
+		newsize = newsize ? ceildiv(newsize, ALLOC_SIZE) * ALLOC_SIZE : ALLOC_SIZE;
 		buf->data = xrealloc(buf->data, newsize);
 		buf->limit = buf->data + newsize;
 		buf->ptr = buf->data + index;

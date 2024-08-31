@@ -1,6 +1,8 @@
 #ifndef _BUFFER_H
 #define _BUFFER_H
 
+#define ALLOC_SIZE 1024
+
 typedef struct {
 	char *data;   /* the data */
 	char *ptr;    /* where to write to next */
