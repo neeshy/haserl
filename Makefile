@@ -12,12 +12,12 @@ LUA_LDFLAGS := $(shell pkg-config --libs -- $(WITH_LUA))
 haserl: haserl.o multipart.o main.o common.o buffer.o sliding_buffer.o
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_LDFLAGS) -o $@ $^
 
-haserl.o: haserl.c haserl.h common.h util.h buffer.h multipart.h
-main.o: main.c haserl.h common.h util.h
+haserl.o: haserl.c common.h util.h buffer.h
+main.o: main.c common.h util.h
 common.o: common.c common.h util.h
 buffer.o: buffer.c buffer.h util.h
 sliding_buffer.o: sliding_buffer.c sliding_buffer.h util.h
-multipart.o: multipart.c multipart.h common.h util.h buffer.h sliding_buffer.h
+multipart.o: multipart.c common.h util.h buffer.h sliding_buffer.h
 
 haserl.o main.o common.o buffer.o sliding_buffer.o multipart.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LUA_CFLAGS) -c -o $@ $<

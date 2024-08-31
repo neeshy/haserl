@@ -7,9 +7,6 @@
 
 #include "common.h"
 #include "buffer.h"
-#include "multipart.h"
-
-#include "haserl.h"
 
 static int
 unescape(char *where, const char *what)

@@ -14,6 +14,9 @@ typedef struct {
 
 extern haserl_t global;
 
+void haserl(void);
+void multipart_handler(void);
+
 void lua_init(void);
 void lua_set(const char *tbl, const char *key, size_t key_size, const char *value, size_t value_size);
 void lua_exec(const char *filename);

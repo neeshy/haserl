@@ -9,8 +9,6 @@
 #include "buffer.h"
 #include "sliding_buffer.h"
 
-#include "multipart.h"
-
 typedef struct {
 	char *name;
 	char *filename;

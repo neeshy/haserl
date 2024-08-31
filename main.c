@@ -10,7 +10,6 @@
 #include <lauxlib.h>
 
 #include "common.h"
-#include "haserl.h"
 
 /*
  * split a string into an argv[] array, and return the number of elements.
