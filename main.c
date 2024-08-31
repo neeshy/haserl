@@ -185,7 +185,7 @@ main(int argc, char **argv)
 
 	lua_init();
 	haserl();
-	lua_doscript(filename);
+	lua_exec(filename);
 	lua_close(global.L);
 
 	return 0;

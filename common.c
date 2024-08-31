@@ -112,7 +112,7 @@ lua_print(lua_State *L)
 }
 
 void
-lua_doscript(const char *filename)
+lua_exec(const char *filename)
 {
 	lua_State *L = global.L;
 
