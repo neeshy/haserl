@@ -53,7 +53,7 @@ void
 drain(int fd)
 {
 	char c[2048];
-	while (read(fd, c, sizeof(c)));
+	while (read(fd, c, sizeof(c)) > 0);
 }
 
 /* print an error message and terminate.
